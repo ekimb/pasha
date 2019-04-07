@@ -10,6 +10,10 @@ Pasha is a tool developed for research and still under development. It is not pr
 
 Pasha takes the k-mer length k, the sequence length L, and the approximation constants epsilon and delta as input, and outputs a compact universal hitting set of k-mers.
 
+# Installing the package
+
+# Example commands
+
 ## License
 
 Pasha is freely available under the MIT License.
@@ -28,11 +32,8 @@ If you find Pasha useful, please cite the following papers:
 
 Development of Pasha is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University.
 
+## Contact
 
+All of the software executables, manuals, and quick-start scripts, in addition to the calculated universal hitting sets are provided [here](http://pasha.csail.mit.edu/). Should you have any inquiries, please contact [Barış Ekim](http://people.csail.mit.edu/ekim/) at baris [at] mit [dot] edu.
 
-This distribution is our officially supported executable for DOCKS. These binary are mostly self-contained and should work out of the box without any issues. For Integer Linear Programming solver (ILP) DOCKS uses Gurobi solver.
-
-The software is freely available under the GNU Lesser General Public License, version 3, or any later version at your choice.
-
-DOCKS is a research tool, still in the development stage. Hence, it is not presented as error-free, accurate, complete, useful, suitable for any specific application or free from any infringement of any rights. The Software is licensed AS IS, entirely at the user's own risk.
 
