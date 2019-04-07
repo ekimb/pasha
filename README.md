@@ -10,7 +10,7 @@ Pasha takes the k-mer length k, the sequence length L, and the approximation con
 
 ## License
 
-
+Pasha is available under the MIT License.
 
 ## References
 
