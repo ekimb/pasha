@@ -3,6 +3,25 @@
 //Defining main commands
 #define DECYCLING = "decycling"
 #define GENERATE = "generate"
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+void printDecyclingHelp(string argError)
+{
+  cout << "Usage: pasha " << DECYCLING << " -k <kmerlength> <outputfile>" << endl;
+  cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
+  if(error != "") {
+    cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
+    cout << "Please follow the specifications above." << endl << endl;
+  }
+  exit(0);
+}
+
 void parseArguments(int argc, char* argv[]){
   //Parsing main command line arguments
   cout << endl;
@@ -38,12 +57,17 @@ void parseArguments(int argc, char* argv[]){
               printDecyclingHelp("Incorrect argument " + argNext+ ".");
           if (argc != i+1) //Too many arguments
               printDecyclingHelp("Too many arguments.");
-          decyclingFile = argv[i];
+          decyclingFile = argv[i]; //If no dash, it's output file
           cout << "Decycling set will be saved to: " << decyclingFile << endl;
           checkFile();
           i+=1;
         }
       }
+      if (decyclingFile == ""){
+        printDecyclingHelp("No output file name specified.");
+      }
+      //Create directory here
+      //Open file to write
     }
   }
 }
