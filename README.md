@@ -16,7 +16,7 @@ Pasha takes the k-mer length k, the sequence length L, and the approximation con
 
 ## License
 
-Pasha is freely available under the MIT License.
+Pasha is freely available under the [MIT License](https://opensource.org/licenses/MIT).
 
 ## References
 
