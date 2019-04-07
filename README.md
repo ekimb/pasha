@@ -8,6 +8,8 @@
 
 Pasha takes the k-mer length k, the sequence length L, and the approximation constants epsilon and delta as input, and outputs a compact universal hitting set of k-mers.
 
+## License
+
 
 
 ## References
@@ -23,6 +25,8 @@ If you find Pasha useful, please cite the following papers:
 ## Contributors
 
 Development of Pasha is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University.
+
+
 
 This distribution is our officially supported executable for DOCKS. These binary are mostly self-contained and should work out of the box without any issues. For Integer Linear Programming solver (ILP) DOCKS uses Gurobi solver.
 
