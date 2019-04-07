@@ -10,9 +10,9 @@ Pasha is a tool developed for research and still under development. It is not pr
 
 Pasha takes the k-mer length k, the sequence length L, and the approximation constants epsilon and delta as input, and outputs a compact universal hitting set of k-mers.
 
-# Installing the package
+### Installing the package
 
-# Example commands
+### Example commands
 
 ## License
 
