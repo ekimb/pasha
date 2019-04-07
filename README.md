@@ -8,7 +8,7 @@
 
 > Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for small hitting set approximations. *19th International Workshop on Algorithms in Bioinformatics* (2019).
 
-Pasha is a tool developed for research and still under development. It is not presented as accurate or free of any errors, and free  is a research tool, still in the development stage. Hence, it is not presented as error-free, or complete. Pasha is provided "AS IS", without warranty of any kind.
+Pasha is a tool for research and still under development. It is not presented as accurate or free of any errors, and is provided "AS IS", without warranty of any kind.
 
 ## Installation and setup
 
