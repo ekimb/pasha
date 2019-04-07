@@ -27,22 +27,23 @@ void parseArguments(int argc, char* argv[]){
           printDecyclingHelp("Missing parameter for argument" + argNext + ".");
         }
         if (argNext == "-k"){
-            argK = atoi(argv[i+1]);
-            if (argK < 5 || argK > 12){
-              printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
-              i += 2;
-            }
+          argK = atoi(argv[i+1]);
+          if (argK < 5 || argK > 12){
+            printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
+            i += 2;
           }
-
-
+        }
+        else {
+          if (argNext[0] == '-') //Incorrect argument
+              printDecyclingHelp("Incorrect argument " + argNext+ ".");
+          if (argc != i+1) //Too many arguments
+              printDecyclingHelp("Too many arguments.");
+          decyclingFile = argv[i];
+          cout << "Decycling set will be saved to: " << decyclingFile << endl;
+          checkFile();
+          i+=1;
+        }
       }
-
     }
-
-
   }
-
-
-
-
 }
