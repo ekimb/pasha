@@ -1,4 +1,3 @@
-// my first program in C++
 #include <iostream>
 //Defining main commands
 #define DECYCLING = "decycling"
