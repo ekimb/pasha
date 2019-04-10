@@ -1,7 +1,9 @@
 #include <iostream>
+#include "decycling.h"
+#include "graph.h"
 //Defining main commands
-#define DECYCLING = "decycling"
-#define GENERATE = "generate"
+#define DECYCLING  "decycling"
+#define GENERATE  "generate"
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
@@ -14,15 +16,20 @@ void printDecyclingHelp(string argError)
 {
   cout << "Usage: pasha " << DECYCLING << " -k <kmerlength> <outputfile>" << endl;
   cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
-  if(error != "") {
+  if (argError != "") {
     cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
     cout << "Please follow the specifications above." << endl << endl;
   }
   exit(0);
 }
 
-void parseArguments(int argc, char* argv[]){
-  //Parsing main command line arguments
+int main(int argc, char* argv[]) {
+  int k;
+  string decyclingFile;
+  const int ALPHABET_SIZE = 4;
+  const double PI = 3.1415926;
+  const string ALPHABET = "ACGT";
+  ofstream outputStream;
   cout << endl;
   if (argc == 1 || string(argv[1]) == "-h" || string(argv[1]) == "--help" || string(argv[1]) == "help"){
     cout << "Usage: pasha <command> [options]" << endl << endl;
@@ -31,7 +38,7 @@ void parseArguments(int argc, char* argv[]){
     cout << endl << "For help on either command, run 'pasha <command>' without any options." << endl << endl;
     exit(0);
   }
-  string firstArgument(argv[1]);
+  string argFirst = string(argv[1]);
   if (argFirst == DECYCLING){
     //k-mer length (required)
     //output file
@@ -45,8 +52,8 @@ void parseArguments(int argc, char* argv[]){
           printDecyclingHelp("Missing parameter for argument" + argNext + ".");
         }
         if (argNext == "-k"){
-          argK = atoi(argv[i+1]);
-          if (argK < 5 || argK > 12){
+          k = atoi(argv[i+1]);
+          if (k < 5 || k > 12){
             printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
             i += 2;
           }
@@ -56,9 +63,8 @@ void parseArguments(int argc, char* argv[]){
               printDecyclingHelp("Incorrect argument " + argNext+ ".");
           if (argc != i+1) //Too many arguments
               printDecyclingHelp("Too many arguments.");
-          decyclingFile = argv[i]; //If no dash, it's output file
+          decyclingFile = string(argv[i]); //If no dash, it's output file
           cout << "Decycling set will be saved to: " << decyclingFile << endl;
-          checkFile();
           i+=1;
         }
       }
@@ -69,4 +75,15 @@ void parseArguments(int argc, char* argv[]){
       //Open file to write
     }
   }
+  graph newGraph = graph(k, ALPHABET_SIZE, ALPHABET);
+  newGraph.generateGraph(k);
+  decycling newDecycling;
+  vector<int> decyclingSet = newDecycling.computeDecyclingSet(k, ALPHABET_SIZE, ALPHABET); // Generate decycling set of order k
+  outputStream.open(decyclingFile);
+  for (int i = 0; i < decyclingSet.size(); i++) {
+            string label = newGraph.getLabel(decyclingSet.at(i));
+            outputStream << label << "\n";
+  }
+  outputStream.close();
+  return 0;
 }

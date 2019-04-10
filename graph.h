@@ -10,8 +10,8 @@
 using namespace std;
 class graph {
 	public:
-	static int ALPHABET_SIZE;
-	static string ALPHABET;
+	int ALPHABET_SIZE;
+	string ALPHABET;
 	int* edgeArray;
 	static map<char, int> alphabetMap;
     int k;
@@ -30,8 +30,6 @@ class graph {
     int vertexExp_1 = pow(ALPHABET_SIZE, k-2);
     int vertexLog = (int)(log(ALPHABET_SIZE)/log(2));
 	void generateGraph(int k) {
-			ALPHABET_SIZE = 4;
-			ALPHABET = "ACGT";
 		    edgeNum = pow(ALPHABET_SIZE, k);
 		    edgeArray[edgeNum];
 		    edgeCount = edgeNum;
@@ -39,22 +37,24 @@ class graph {
 			vertexCount = edgeNum / ALPHABET_SIZE; 
 
     }
-    static char getChar(int i) {
+    char getChar(int i, string ALPHABET) {
     	return ALPHABET[i];
     }
-    string getEdgeLabel(int i) {
-    		return getString(i, k, ALPHABET_SIZE);
+    string getLabel(int i) {
+    		return getString(i, k, ALPHABET_SIZE, ALPHABET);
     }
-    static string getString(int a, int k, int ALPHABET_SIZE) {
+    string getString(int a, int k, int ALPHABET_SIZE, string ALPHABET) {
 		string finalString = "";
 		for (int i = 0; i < k; i++) {
-			finalString = getChar(a % ALPHABET_SIZE) + finalString;
+			finalString = getChar((a % ALPHABET_SIZE), ALPHABET) + finalString;
 			a = a / ALPHABET_SIZE;
 		}
 		return finalString;
 	}
-	graph(int _k, const int ALPHABET_SIZE, string ALPHABET) {
-		k = _k;
+	graph(int _k, int _ALPHABET_SIZE, string _ALPHABET) {
+		int k = _k;
+		int ALPHABET_SIZE = _ALPHABET_SIZE;
+		string ALPHABET = _ALPHABET;
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++)
