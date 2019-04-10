@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -47,7 +48,6 @@ class graph {
 		string finalString = "";
 		for (int i = 0; i < k; i++) {
 			finalString = getChar((a % ALPHABET_SIZE), ALPHABET) + finalString;
-			cout << finalString << endl;
 			a = a / ALPHABET_SIZE;
 		}
 		return finalString;

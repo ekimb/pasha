@@ -14,8 +14,21 @@
 
 void printDecyclingHelp(string argError)
 {
-  cout << "Usage: pasha " << DECYCLING << " -k <kmerlength> <outputfile>" << endl;
+  cout << "Usage: pasha " << DECYCLING << " -k <kmerlength>" << endl;
   cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
+  if (argError != "") {
+    cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
+    cout << "Please follow the specifications above." << endl << endl;
+  }
+  exit(0);
+}
+void printGenerateHelp(string argError)
+{
+  cout << "Usage: pasha " << GENERATE << " -k <kmerlength> [-p] [-r] -l <seqlength>" << endl;
+  cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
+  cout << "-p parallelization (optional)." << endl;
+  cout << "-r randomized (optional)." << endl;
+  cout << "-l <seqlength [int 20-200]> sequence length (required)." << endl;
   if (argError != "") {
     cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
     cout << "Please follow the specifications above." << endl << endl;
@@ -25,9 +38,11 @@ void printDecyclingHelp(string argError)
 
 int main(int argc, char* argv[]) {
   int k;
+  int l;
   string decyclingFile;
+  string hittingFile;
   const int ALPHABET_SIZE = 4;
-  const double PI = 3.1415926;
+  const double PI = 3.14159;
   const string ALPHABET = "ACGT";
   ofstream outputStream;
   cout << endl;
@@ -53,6 +68,7 @@ int main(int argc, char* argv[]) {
         }
         if (argNext == "-k"){
           k = atoi(argv[i+1]);
+          decyclingFile = "decycling_" + string(argv[i+1]) + ".txt";
           if (k < 5 || k > 12){
             printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
             i += 3;
@@ -64,16 +80,70 @@ int main(int argc, char* argv[]) {
               printDecyclingHelp("Incorrect argument " + argNext+ ".");
           if (argc != i+1) //Too many arguments
               printDecyclingHelp("Too many arguments.");
-          decyclingFile = string(argv[i]); //If no dash, it's output file
           cout << "Decycling set will be saved to: " << decyclingFile << endl;
           i += 1;
         }
       }
-      if (decyclingFile == ""){
-        printDecyclingHelp("No output file name specified.");
-      }
       //Create directory here
       //Open file to write
+    }
+  }
+  if (argFirst == GENERATE){
+    //k-mer length (required)
+    //any path or l long path
+    //parallel or not
+    //randomized or not
+    //output file
+    if (argc <= 2 || string(argv[2]) == "--help" || string(argv[2]) == "help" || string(argv[2]) == "-h"){
+      printGenerateHelp("");
+    }
+    else {
+      for (int i = 2; i < argc;){
+        string argNext = string(argv[i]);
+        if (argNext == "-p" || argNext == "-r"){
+          if (argNext == "-p"){
+          bool parallel = true;
+          }
+          else if (argNext == "-r"){
+          bool randomized = true;
+          }
+          if (string(argv[i+2]) != "-k"){
+            printGenerateHelp("Wrong order of arguments.");
+          }
+          i += 2;
+        }
+        else if (argNext == "-l"){
+          l = atoi(argv[i+1]);
+          hittingFile =  to_string(k) + string(argv[i+1]) + ".txt";
+          if (l < 20 || l > 200){
+            printGenerateHelp("Pasha only supports sequence lengths between 20 and 200.");
+            i += 100;
+          }
+          i += 2;
+        }
+        else if (argNext[0] == '-' && argc < i+2){
+          printDecyclingHelp("Missing parameter for argument" + argNext + ".");
+        }
+        else if (argNext == "-k"){
+          k = atoi(argv[i+1]);
+          decyclingFile = "decycling_" + string(argv[i+1]) + ".txt";
+          if (k < 5 || k > 12){
+            printGenerateHelp("Pasha only supports k-mer lengths between 5 and 12.");
+          }
+          if (string(argv[i+2]) != "-l"){
+            printGenerateHelp("Wrong order of arguments.");
+          }
+          i += 2;
+        } else {
+          if (argNext[0] == '-') //Incorrect argument
+              printGenerateHelp("Incorrect argument " + argNext+ ".");
+          if (argc != i+1) //Too many arguments
+              printGenerateHelp("Too many arguments.");
+          cout << "Decycling set will be saved to: " << decyclingFile << endl;
+          cout << "Hitting set will be saved to: " << hittingFile << endl;
+          i += 1;
+        }
+      }
     }
   }
   graph newGraph = graph(k, ALPHABET_SIZE, ALPHABET);
@@ -82,11 +152,12 @@ int main(int argc, char* argv[]) {
   vector<int> decyclingSet = newDecycling.computeDecyclingSet(k, ALPHABET_SIZE, ALPHABET); // Generate decycling set of order k
   outputStream.open(decyclingFile);
   for (int i = 0; i < decyclingSet.size(); i++) {
-            cout << decyclingSet.at(i) << endl;
             string label = newGraph.getLabel(decyclingSet.at(i), k, ALPHABET_SIZE, ALPHABET); 
             cout << "Writing " << label << endl;
             outputStream << label << "\n";
   }
+  cout << "Completed writing decycling set of size " << decyclingSet.size() << endl;
   outputStream.close();
+
   return 0;
 }
