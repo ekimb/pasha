@@ -13,6 +13,7 @@ vector<int> computeDecyclingSet(int k, const int ALPHABET_SIZE, const string ALP
 		if (k % i == 0) {
 			int decyclingNode = getEdge(a, i, decyclingSet.size()+1, k, ALPHABET_SIZE);
 	        decyclingSet.push_back(decyclingNode);
+	        cout << decyclingNode << endl;
 		}
 		for (i = k; a[i] == ALPHABET_SIZE-1; i--);
 		if (i != 0) {

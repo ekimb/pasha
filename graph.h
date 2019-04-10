@@ -40,13 +40,14 @@ class graph {
     char getChar(int i, string ALPHABET) {
     	return ALPHABET[i];
     }
-    string getLabel(int i) {
+    string getLabel(int i, int k, int ALPHABET_SIZE, string ALPHABET) {
     		return getString(i, k, ALPHABET_SIZE, ALPHABET);
     }
     string getString(int a, int k, int ALPHABET_SIZE, string ALPHABET) {
 		string finalString = "";
 		for (int i = 0; i < k; i++) {
 			finalString = getChar((a % ALPHABET_SIZE), ALPHABET) + finalString;
+			cout << finalString << endl;
 			a = a / ALPHABET_SIZE;
 		}
 		return finalString;

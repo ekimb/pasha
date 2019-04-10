@@ -48,15 +48,16 @@ int main(int argc, char* argv[]) {
     else {
       for (int i = 2; i < argc;){
         string argNext = string(argv[i]);
-        if (argNext[0] == '-' && argc < i+1){
+        if (argNext[0] == '-' && argc < i+2){
           printDecyclingHelp("Missing parameter for argument" + argNext + ".");
         }
         if (argNext == "-k"){
           k = atoi(argv[i+1]);
           if (k < 5 || k > 12){
             printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
-            i += 2;
+            i += 3;
           }
+          i += 2;
         }
         else {
           if (argNext[0] == '-') //Incorrect argument
@@ -65,7 +66,7 @@ int main(int argc, char* argv[]) {
               printDecyclingHelp("Too many arguments.");
           decyclingFile = string(argv[i]); //If no dash, it's output file
           cout << "Decycling set will be saved to: " << decyclingFile << endl;
-          i+=1;
+          i += 1;
         }
       }
       if (decyclingFile == ""){
@@ -81,7 +82,9 @@ int main(int argc, char* argv[]) {
   vector<int> decyclingSet = newDecycling.computeDecyclingSet(k, ALPHABET_SIZE, ALPHABET); // Generate decycling set of order k
   outputStream.open(decyclingFile);
   for (int i = 0; i < decyclingSet.size(); i++) {
-            string label = newGraph.getLabel(decyclingSet.at(i));
+            cout << decyclingSet.at(i) << endl;
+            string label = newGraph.getLabel(decyclingSet.at(i), k, ALPHABET_SIZE, ALPHABET); 
+            cout << "Writing " << label << endl;
             outputStream << label << "\n";
   }
   outputStream.close();
