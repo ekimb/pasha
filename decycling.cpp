@@ -13,7 +13,7 @@ void main(string outputFile, int k) {
 	const string ALPHABET = "ACGT";
 	ofstream outputStream;
     vector<int> decyclingSet = computeDecyclingSet(k, ALPHABET_SIZE, ALPHABET); // Generate decycling set of order k
-    graph newGraph = generateGraph(k, ALPHABET_SIZE, ALPHABET);
+    generateGraph(k);
     outputStream.open(outputFile);
     for (int i = 0; i < decyclingSet.size(); i++) {
             	outputFile << newGraph.getLabel(decyclingSet.at(i)) + "\n";

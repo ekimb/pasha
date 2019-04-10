@@ -7,6 +7,7 @@
 #include <vector>
 #include "graph.h"
 
-graph generateGraph(int k, const int ALPHABET_SIZE, string ALPHABET);
+void generateGraph(int k);
+
 
 #endif
