@@ -1,36 +1,45 @@
 #include "decycling.h"
 #include "graph.h"
 int graph::calculateHittingNumber(int L) {
+	cout << "calchit" << endl;
 	int maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	hittingNumArray = new int[sizeof(edgeArray)];
-	for (int i = 0; i < sizeof(edgeArray); i++) hittingNumArray[i] = 0;
-    for (int i = 0; i < sizeof(edgeArray); i++) {
+	vector<int> hittingNumVector (edgeVector.size(), 0);
+    for (int i = 0; i < edgeVector.size(); i++) {
         int hittingNum = 0;
-        for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
-        	hittingNum = hittingNum + F[j][i % vertexExp] * D[L-j-1][i / ALPHABET_SIZE];
-			hittingNumArray[i] = hittingNum;
+        for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
+        	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
+			hittingNumVector[i] = hittingNum;
         }
         if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
     }
     return imaxHittingNum;
 }
-double graph::calculatePaths(int L) {
-	for (int i = 0; i < vertexExp; i++) {F[0][i] = D[0][i] = 1;}
+int graph::calculatePaths(int L) {
+	vertexExp2 = vertexExp * 2;
+    vertexExp3 = vertexExp * 3;
+    vertexExpMask = vertexExp - 1;
+    vertexExp_1 = pow(ALPHABET_SIZE, k-2);
+   	cout << "calcpaths" << vertexExp << ALPHABET_SIZE << endl;
+	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
+		cout << "l is" << L << j << endl;
 		for (int i = 0; i < vertexExp; i++) {
+			cout << "calcpaths" << vertexExp << edgeVector.size() << endl;
 			int index = (i * 4);
-            F[j][i] = edgeArray[index] * F[j-1][index & vertexExpMask] + edgeArray[index + 1] * F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2] * F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3] * F[j-1][(index + 3) & vertexExpMask];
-            D[j][i] = edgeArray[i] * D[j-1][(i >> 2)] + edgeArray[i + vertexExp] * D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2] * D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3] * D[j-1][((i + vertexExp3) >> 2)];
+            F[j][i] = edgeVector[index] * F[j-1][index & vertexExpMask] + edgeVector[index + 1] * F[j-1][index + 1 & vertexExpMask] + edgeVector[index + 2] * F[j-1][index + 2 & vertexExpMask] + edgeVector[index + 3] * F[j-1][index + 3 & vertexExpMask];
+            D[j][i] = edgeVector[i] * D[j-1][i >> 2] + edgeVector[i + vertexExp] * D[j-1][(i + vertexExp >> 2)] + edgeVector[i + vertexExp2] * D[j-1][(i + vertexExp2 >> 2)] + edgeVector[i + vertexExp3] * D[j-1][(i + vertexExp3 >> 2)];
         }
 	}
+cout << "calcpaths" << endl;
+cout << "calcpaths2" << endl;
 return 0;
 }
-int graph::depthFirstSearch(bool* used, bool* finished, int* res, int index, int u) {
-	used[u] = true;
+int graph::depthFirstSearch(vector<bool> used, vector<bool> finished, vector<int> res, int index, int u) {
+	used.at(u) = true;
 	bool cycle = false;
-	int* adjVertex = getAdjacent(u);
-	for (int v = 0; v < sizeof(adjVertex); v++) {
+	vector<int> adjVertex = getAdjacent(u);
+	for (int v = 0; v < adjVertex.size(); v++) {
 		// Return true for cycle
 		if (used[v] && !finished[v]) cycle = true;
 		if (!used[v]) {
@@ -43,54 +52,59 @@ int graph::depthFirstSearch(bool* used, bool* finished, int* res, int index, int
 	if (cycle) return -1;
 	else return index + 1;
 }
-int* graph::getAdjacent(int v) {
+vector<int> graph::getAdjacent(int v) {
 	int count = 0;
-	int adjVertex[ALPHABET_SIZE];
-	int vertexExp = pow(ALPHABET_SIZE, k-1);
+	vector<int> adjVertex(ALPHABET_SIZE);
 	for (int i = 0; i < ALPHABET_SIZE; i++) {
 		int index = v + i * vertexExp;
-		if (edgeArray[index] == 1)
+		if (edgeVector[index] == 1)
 			adjVertex[count++] = index / ALPHABET_SIZE;
 	}
-	int rc[count];
+	vector<int> rc(count);
 	for (int i = 0; i < count; i++) {
 		rc[i] = adjVertex[i];
 	}
 	return rc;
 }
 int graph::Hitting(int L, string hittingFile) {
+	vertexExp = pow(ALPHABET_SIZE, k-1);
     int imaxHittingNum = -1;
     ofstream hittingStream;
     int hittingCount = 0;
-    int l = L-k+1;
-    D = new int*[l];
-    for (int i = 0; i < l; i++)	D[i] = new int[vertexExp];
-    F = new int*[l];
-    for (int i = 0; i < l; i++)	F[i] = new int[vertexExp];
-    hittingStream.open(hittingFile);
+    l = L-k+1;
+    cout << l << endl;
+    cout << vertexExp << endl;
+    D.resize(l + 1, vector<int>(vertexExp));
+    cout << "here" << endl;
+    F.resize(l + 1, vector<int>(vertexExp));
+    cout << "here" << endl;
     while (calculatePaths(l) && (imaxHittingNum = calculateHittingNumber(l)) >= 0) {
+    	cout << "in while" << endl;
         if (imaxHittingNum > -1) {
+        		hittingStream.open(hittingFile);
                 removeEdge(imaxHittingNum);
 	            string label = getLabel(imaxHittingNum); 
 	            cout << "Writing " << label << endl;
 	            hittingStream << label << "\n";
 	            hittingCount++;
+	            hittingStream.close();
+
         }
     }
-    int* topoSort = topologicalSort();
+    vector<int> topoSort = topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << endl;
     return hittingCount;
 }
 
 int graph::maxLength() {
-	int depth[sizeof(topoSort)];
+	vector<int> depth(topoSort.size());
 	int maxDepth = -1;
-	for (int i = 0; i < sizeof(topoSort); i++) {
+	for (int i = 0; i < topoSort.size(); i++) {
 		int maxVertDepth = -1;
 		for (int j = 0; j < ALPHABET_SIZE; j++) {
 			int edgeIndex = topoSort[i] + j * vertexExp;
 			int vertexIndex = edgeIndex / ALPHABET_SIZE; // >> log;
-			if (depth[vertexIndex] > maxVertDepth && edgeArray[edgeIndex] == 1) maxVertDepth = depth[vertexIndex];
+			if (depth[vertexIndex] > maxVertDepth && edgeVector[edgeIndex] == 1) maxVertDepth = depth[vertexIndex];
 		}
 		depth[topoSort[i]] = maxVertDepth + 1;
 		if (depth[topoSort[i]] > maxDepth) {maxDepth = depth[topoSort[i]];}
@@ -98,7 +112,7 @@ int graph::maxLength() {
 	return maxDepth;
 }
 void graph::removeEdge(int i) {
-	if (edgeArray[i] == 1) {
+	if (edgeVector[i] == 1) {
 			edgeCount--;
 			//if (S != null){
 			//	S[i] = -1;
@@ -111,24 +125,24 @@ void graph::removeEdge(int i) {
 			//}
 			//System.out.println("Removing edge " + getEdgeLabel(i) + ", " + numEdges + " edges remaining");
 	}
-	edgeArray[i] = 0;
+	edgeVector[i] = 0;
 }
-int* graph::topologicalSort() {
+vector<int> graph::topologicalSort() {
+	vector<int> nullVector(0);
 	int n = vertexCount;
-	bool used[n];
-	bool finished[n];
-	int res[n];
+	vector<bool> used(n);
+	vector<bool> finished(n);
+	vector<int> res(n);
 	int index = 0;
 	for (int i = 0; i < n; i++) {
 		if (!used[i]) {
 			index = depthFirstSearch(used, finished, res, index, i);
-
-			if (index == -1) return NULL;
+			if (index == -1) return nullVector;
 		}
 	}
-	int rc[sizeof(res)];
-	for (int i = 0; i < sizeof(rc); i++)
-		rc[i] = res[sizeof(res)-i-1];
+	vector<int> rc(res.size());
+	for (int i = 0; i < rc.size(); i++)
+		rc[i] = res[res.size()-i-1];
 	return res;
 }
 

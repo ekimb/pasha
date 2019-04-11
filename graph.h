@@ -13,30 +13,30 @@ class graph {
 	public:
 	int ALPHABET_SIZE;
 	string ALPHABET;
-	int* edgeArray;
-	int* hittingNumArray;
-	int* topoSort;
+	vector<int> edgeVector;
+	vector<int> hittingNumVector;
+	vector<int> topoSort;
 	static map<char, int> alphabetMap;
     int k;
     int l;
     int edgeNum;
 	int edgeCount;
     int vertexCount; 
-    int** D;
-    int** F;
+    vector<vector<int>> D;
+    vector<int> Drow;
+    vector<vector<int>> F;
+    vector<int> Frow;
     double epsilon;
     double delta;
-    int vertexExp = pow(ALPHABET_SIZE, k-1);
-    int vertexExp2 = vertexExp * 2;
-    int vertexExp3 = vertexExp * 3;
-    int vertexExpMask = vertexExp - 1;
-    int vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-    int vertexLog = (int)(log(ALPHABET_SIZE)/log(2));
+    int vertexExp;
+    int vertexExp2;
+    int vertexExp3;
+    int vertexExpMask;
+    int vertexExp_1;
 	void generateGraph(int k) {
 		    edgeNum = pow(ALPHABET_SIZE, k);
-		    edgeArray = new int[edgeNum];
+		    edgeVector.resize(edgeNum, 1);
 		    edgeCount = edgeNum;
-			fill_n(edgeArray, edgeNum, 1);
 			vertexCount = edgeNum / ALPHABET_SIZE; 
     }
     char getChar(int i) {
@@ -62,11 +62,11 @@ class graph {
     }
     int maxLength();
     void removeEdge(int i);
-    int* topologicalSort();
+    vector<int> topologicalSort();
     int Hitting(int L, string hittingFile);
-    int* getAdjacent(int v);
-    int depthFirstSearch(bool* used, bool* finished, int* res, int index, int u);
-    double calculatePaths(int L);
+    vector<int> getAdjacent(int v);
+    int depthFirstSearch(vector<bool> used, vector<bool> finished, vector<int> res, int index, int u);
+    int calculatePaths(int L);
     int calculateHittingNumber(int L);
 
 };
