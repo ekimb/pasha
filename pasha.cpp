@@ -1,6 +1,7 @@
 #include <iostream>
 #include "decycling.h"
 #include "graph.h"
+#include "ops.h"
 //Defining main commands
 #define DECYCLING  "decycling"
 #define GENERATE  "generate"
@@ -24,10 +25,11 @@ void printDecyclingHelp(string argError)
 }
 void printGenerateHelp(string argError)
 {
-  cout << "Usage: pasha " << GENERATE << " -k <kmerlength> [-p] [-r] -l <seqlength>" << endl;
-  cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
+  cout << "Usage: pasha " << GENERATE << " [-a][-p][-r] -k <kmerlength>  -l <seqlength>" << endl;
+  cout << "-a calculate all paths (optional)." << endl;
   cout << "-p parallelization (optional)." << endl;
   cout << "-r randomized (optional)." << endl;
+  cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
   cout << "-l <seqlength [int 20-200]> sequence length (required)." << endl;
   if (argError != "") {
     cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
@@ -38,13 +40,17 @@ void printGenerateHelp(string argError)
 
 int main(int argc, char* argv[]) {
   int k;
-  int l;
+  int L;
   string decyclingFile;
   string hittingFile;
+  bool parallel = false;
+  bool randomized = false;
+  bool any = false;
   const int ALPHABET_SIZE = 4;
   const double PI = 3.14159;
   const string ALPHABET = "ACGT";
-  ofstream outputStream;
+  ofstream decyclingStream;
+  ofstream hittingStream;
   cout << endl;
   if (argc == 1 || string(argv[1]) == "-h" || string(argv[1]) == "--help" || string(argv[1]) == "help"){
     cout << "Usage: pasha <command> [options]" << endl << endl;
@@ -100,22 +106,26 @@ int main(int argc, char* argv[]) {
     else {
       for (int i = 2; i < argc;){
         string argNext = string(argv[i]);
-        if (argNext == "-p" || argNext == "-r"){
-          if (argNext == "-p"){
-          bool parallel = true;
-          }
-          else if (argNext == "-r"){
-          bool randomized = true;
-          }
-          if (string(argv[i+2]) != "-k"){
+        if (argNext == "-a"){
+          any = true;
+          if (string(argv[i+1]) != "-p" || string(argv[i+1]) != "-r"){
             printGenerateHelp("Wrong order of arguments.");
           }
-          i += 2;
+          i += 1;
+        }
+        if (argNext == "-p" || argNext == "-r"){
+          if (argNext == "-p"){
+          parallel = true;
+          }
+          else if (argNext == "-r"){
+          randomized = true;
+          }
+          i += 1;
         }
         else if (argNext == "-l"){
-          l = atoi(argv[i+1]);
+          L = atoi(argv[i+1]);
           hittingFile =  to_string(k) + string(argv[i+1]) + ".txt";
-          if (l < 20 || l > 200){
+          if (L < 20 || L > 200){
             printGenerateHelp("Pasha only supports sequence lengths between 20 and 200.");
             i += 100;
           }
@@ -134,30 +144,49 @@ int main(int argc, char* argv[]) {
             printGenerateHelp("Wrong order of arguments.");
           }
           i += 2;
-        } else {
-          if (argNext[0] == '-') //Incorrect argument
+        } 
+        else {
+          if (argNext[0] == '-'){ //Incorrect argument
               printGenerateHelp("Incorrect argument " + argNext+ ".");
-          if (argc != i+1) //Too many arguments
+          }
+          else if (argc != i+1){ //Too many arguments
               printGenerateHelp("Too many arguments.");
-          cout << "Decycling set will be saved to: " << decyclingFile << endl;
-          cout << "Hitting set will be saved to: " << hittingFile << endl;
-          i += 1;
+          }
         }
       }
     }
+    cout << "Decycling set will be saved to: " << decyclingFile << endl;
+    cout << "Hitting set will be saved to: " << hittingFile << endl;
   }
-  graph newGraph = graph(k, ALPHABET_SIZE, ALPHABET);
-  newGraph.generateGraph(k);
+  graph newGraph = graph(k);
   decycling newDecycling;
-  vector<int> decyclingSet = newDecycling.computeDecyclingSet(k, ALPHABET_SIZE, ALPHABET); // Generate decycling set of order k
-  outputStream.open(decyclingFile);
+  vector<int> decyclingSet = newDecycling.computeDecyclingSet(k); // Generate decycling set of order k
+  decyclingStream.open(decyclingFile);
   for (int i = 0; i < decyclingSet.size(); i++) {
-            string label = newGraph.getLabel(decyclingSet.at(i), k, ALPHABET_SIZE, ALPHABET); 
-            cout << "Writing " << label << endl;
-            outputStream << label << "\n";
+            string label = newGraph.getLabel(decyclingSet.at(i)); 
+            cout << "Writing " << decyclingSet.at(i) << endl;
+            decyclingStream << label << "\n";
   }
   cout << "Completed writing decycling set of size " << decyclingSet.size() << endl;
-  outputStream.close();
+  decyclingStream.close();
+  if (any == true){
+    if (parallel == true){
+      if (randomized == true){
+        //num = HittingRandomParallelAny(newGraph, L, x, hittingFile);
+      }
+      //else num = HittingParallelAny(newGraph, L, x, hittingFile);
+    }
+    //else num = HittingAny(newGraph, L, x, hittingFile);
+  }
+  else {
+    if (parallel == true){
+      if (randomized == true){
+        //num = HittingRandomParallel(newGraph, L, hittingFile);
+      }
+      //else num = HittingParallel(newGraph, L, hittingFile);
+    }
+    else return newGraph.Hitting(L, hittingFile);
+  }
 
   return 0;
 }

@@ -14,14 +14,16 @@ class graph {
 	int ALPHABET_SIZE;
 	string ALPHABET;
 	int* edgeArray;
+	int* hittingNumArray;
+	int* topoSort;
 	static map<char, int> alphabetMap;
     int k;
     int l;
     int edgeNum;
 	int edgeCount;
     int vertexCount; 
-    double* D;
-    double* F;
+    int** D;
+    int** F;
     double epsilon;
     double delta;
     int vertexExp = pow(ALPHABET_SIZE, k-1);
@@ -32,35 +34,40 @@ class graph {
     int vertexLog = (int)(log(ALPHABET_SIZE)/log(2));
 	void generateGraph(int k) {
 		    edgeNum = pow(ALPHABET_SIZE, k);
-		    edgeArray[edgeNum];
+		    edgeArray = new int[edgeNum];
 		    edgeCount = edgeNum;
 			fill_n(edgeArray, edgeNum, 1);
 			vertexCount = edgeNum / ALPHABET_SIZE; 
-
     }
-    char getChar(int i, string ALPHABET) {
+    char getChar(int i) {
     	return ALPHABET[i];
     }
-    string getLabel(int i, int k, int ALPHABET_SIZE, string ALPHABET) {
-    		return getString(i, k, ALPHABET_SIZE, ALPHABET);
-    }
-    string getString(int a, int k, int ALPHABET_SIZE, string ALPHABET) {
+    string getLabel(int i) {
 		string finalString = "";
-		for (int i = 0; i < k; i++) {
-			finalString = getChar((a % ALPHABET_SIZE), ALPHABET) + finalString;
-			a = a / ALPHABET_SIZE;
+		for (int j = 0; j < k; j++) {
+			//cout << k << ALPHABET_SIZE << ALPHABET << finalString << endl;
+			finalString = getChar((i % ALPHABET_SIZE)) + finalString;
+			i = i / ALPHABET_SIZE;
 		}
 		return finalString;
 	}
-	graph(int _k, int _ALPHABET_SIZE, string _ALPHABET) {
-		int k = _k;
-		int ALPHABET_SIZE = _ALPHABET_SIZE;
-		string ALPHABET = _ALPHABET;
+	graph(int argK) {
+		ALPHABET = "ACGT";
+		ALPHABET_SIZE = 4;
+		k = argK;
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++)
 			alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
-    	}
+    }
+    int maxLength();
+    void removeEdge(int i);
+    int* topologicalSort();
+    int Hitting(int L, string hittingFile);
+    int* getAdjacent(int v);
+    int depthFirstSearch(bool* used, bool* finished, int* res, int index, int u);
+    double calculatePaths(int L);
+    int calculateHittingNumber(int L);
 
 };
 #endif

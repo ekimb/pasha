@@ -3,7 +3,9 @@
 #include "graph.h"
 class decycling {
 public:
-vector<int> computeDecyclingSet(int k, const int ALPHABET_SIZE, const string ALPHABET) {
+int ALPHABET_SIZE = 4;
+string ALPHABET = "ACGT";
+vector<int> computeDecyclingSet(int k) {
 	vector<int> decyclingSet;
 	// Iterate for each cycle in the graph
 	int a[k+1];
@@ -11,7 +13,7 @@ vector<int> computeDecyclingSet(int k, const int ALPHABET_SIZE, const string ALP
 	int i = 1; a[0] = -1;
 	do {
 		if (k % i == 0) {
-			int decyclingNode = getEdge(a, i, decyclingSet.size()+1, k, ALPHABET_SIZE);
+			int decyclingNode = getEdge(a, i, decyclingSet.size()+1, k);
 	        decyclingSet.push_back(decyclingNode);
 		}
 		for (i = k; a[i] == ALPHABET_SIZE-1; i--);
@@ -24,7 +26,7 @@ vector<int> computeDecyclingSet(int k, const int ALPHABET_SIZE, const string ALP
 
 
 }
-int getEdge(int a[], int i, int d, int k, const int ALPHABET_SIZE){
+int getEdge(int a[], int i, int d, int k){
     double u = 3.1415926 * 2.0 / (double)k;
     int q;
     if (i < k)
