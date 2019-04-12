@@ -59,8 +59,8 @@ int graph::calculatePaths(int L) {
             D[j][i] = edgeVector[i]*D[j-1][(i >> 2)] + edgeVector[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeVector[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeVector[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
         }
 	}
-//cout << "Calculated paths." << endl;
-return 1;
+cout << "Calculated paths." << endl;
+return 0;
 }
 int graph::depthFirstSearch(int index, int u) {
 	//cout << u << endl;
