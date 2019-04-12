@@ -163,30 +163,34 @@ int main(int argc, char* argv[]) {
   vector<int> decyclingSet = newDecycling.computeDecyclingSet(k); // Generate decycling set of order k
   decyclingStream.open(decyclingFile);
   for (int i = 0; i < decyclingSet.size(); i++) {
-            string label = newGraph.getLabel(decyclingSet.at(i)); 
-            cout << "Writing " << decyclingSet.at(i) << endl;
+            string label = newGraph.getLabel(decyclingSet[i]);
+            newGraph.removeEdge(decyclingSet[i]);
+            cout << "Writing " << decyclingSet[i] << endl;
             decyclingStream << label << "\n";
   }
-  cout << "Completed writing decycling set of size " << decyclingSet.size() << endl;
+  int decyclingSize = decyclingSet.size();
+  cout << "Completed writing decycling set of size " << decyclingSize << endl;
   decyclingStream.close();
-  if (any == true){
-    if (parallel == true){
-      if (randomized == true){
-        //num = HittingRandomParallelAny(newGraph, L, x, hittingFile);
+  int hittingSize = 0;
+  if (argFirst == GENERATE){
+    if (any == true){
+      if (parallel == true){
+        if (randomized == true){
+          //num = HittingRandomParallelAny(newGraph, L, x, hittingFile);
+        }
+        //else num = HittingParallelAny(newGraph, L, x, hittingFile);
       }
-      //else num = HittingParallelAny(newGraph, L, x, hittingFile);
+      //else num = HittingAny(newGraph, L, x, hittingFile);
     }
-    //else num = HittingAny(newGraph, L, x, hittingFile);
-  }
-  else {
-    if (parallel == true){
-      if (randomized == true){
-        //num = HittingRandomParallel(newGraph, L, hittingFile);
+    else {
+      if (parallel == true){
+        if (randomized == true){
+          //num = HittingRandomParallel(newGraph, L, hittingFile);
+        }
+        //else num = HittingParallel(newGraph, L, hittingFile);
       }
-      //else num = HittingParallel(newGraph, L, hittingFile);
+      else hittingSize = newGraph.Hitting(L, hittingFile);
     }
-    else return newGraph.Hitting(L, hittingFile);
   }
-
-  return 0;
+  return hittingSize + decyclingSize;
 }

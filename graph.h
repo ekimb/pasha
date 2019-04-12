@@ -23,9 +23,10 @@ class graph {
 	int edgeCount;
     int vertexCount; 
     vector<vector<int>> D;
-    vector<int> Drow;
     vector<vector<int>> F;
-    vector<int> Frow;
+    vector<bool> used;
+    vector<bool> finished;
+    vector<int> res;
     double epsilon;
     double delta;
     int vertexExp;
@@ -65,9 +66,11 @@ class graph {
     vector<int> topologicalSort();
     int Hitting(int L, string hittingFile);
     vector<int> getAdjacent(int v);
-    int depthFirstSearch(vector<bool> used, vector<bool> finished, vector<int> res, int index, int u);
     int calculatePaths(int L);
     int calculateHittingNumber(int L);
+	private:
+	int depthFirstSearch(int index, int u);
+
 
 };
 #endif
