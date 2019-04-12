@@ -1,4 +1,9 @@
 #include <iostream>
+#include <sys/resource.h> 
+#include <sys/time.h> 
+#include <unistd.h> 
+#include<stdio.h> 
+#include <time.h>
 #include "decycling.h"
 #include "graph.h"
 #include "ops.h"
@@ -165,13 +170,16 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < decyclingSet.size(); i++) {
             string label = newGraph.getLabel(decyclingSet[i]);
             newGraph.removeEdge(decyclingSet[i]);
-            cout << "Writing " << decyclingSet[i] << endl;
+            //cout << "Writing " << decyclingSet[i] << endl;
             decyclingStream << label << "\n";
   }
   int decyclingSize = decyclingSet.size();
   cout << "Completed writing decycling set of size " << decyclingSize << endl;
   decyclingStream.close();
   int hittingSize = 0;
+  struct timespec start, finish;
+  double elapsed;
+  clock_gettime(CLOCK_MONOTONIC, &start);  
   if (argFirst == GENERATE){
     if (any == true){
       if (parallel == true){
@@ -187,10 +195,15 @@ int main(int argc, char* argv[]) {
         if (randomized == true){
           //num = HittingRandomParallel(newGraph, L, hittingFile);
         }
-        //else num = HittingParallel(newGraph, L, hittingFile);
+
+        else hittingSize = newGraph.HittingParallel(L, hittingFile);
       }
       else hittingSize = newGraph.Hitting(L, hittingFile);
     }
   }
+  clock_gettime(CLOCK_MONOTONIC, &finish);
+  elapsed = (finish.tv_sec - start.tv_sec);
+  elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+  cout << elapsed << " seconds." << endl;
   return hittingSize + decyclingSize;
-}
+  }

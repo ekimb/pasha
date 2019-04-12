@@ -1,10 +1,20 @@
 #include "decycling.h"
 #include "graph.h"
+#include <cstdlib>
+#include <iomanip>
+#include <omp.h>
+int graph::calculateForEach(int i, int L){
+	int hittingNum = 0;
+    for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
+    	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
+		//cout << hittingNum << endl;
+    }
+    hittingNumVector[i] = hittingNum;
+}
 int graph::calculateHittingNumber(int L) {
 	//cout << "calchit" << endl;
 	int maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	//cout << vertexExp << ALPHABET_SIZE << F.size() << D.size() << edgeVector.size() << endl;
 	hittingNumVector.resize(edgeVector.size(), 0);
     for (int i = 0; i < edgeVector.size(); i++) {
         int hittingNum = 0;
@@ -14,6 +24,23 @@ int graph::calculateHittingNumber(int L) {
 			//cout << hittingNum << endl;
         }
         if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
+    }
+    //cout << imaxHittingNum << endl;
+    return imaxHittingNum;
+}
+int graph::calculateHittingNumberParallel(int L) {
+	omp_set_dynamic(0);
+	//cout << "calchit" << endl;
+	int maxHittingNum = 0;
+	int imaxHittingNum = -1;
+	//cout << vertexExp << ALPHABET_SIZE << F.size() << D.size() << edgeVector.size() << endl;
+	hittingNumVector.resize(edgeVector.size(), 0);
+  	#pragma omp parallel for num_threads(40)
+    for (int i = 0; i < edgeVector.size(); i++) {
+    	calculateForEach(i, L);
+    }
+    for (int i = 0; i < edgeVector.size(); i++) {
+    	if (hittingNumVector[i]*edgeVector[i] > maxHittingNum) {maxHittingNum = hittingNumVector[i]; imaxHittingNum = i;};
     }
     //cout << imaxHittingNum << endl;
     return imaxHittingNum;
@@ -32,8 +59,8 @@ int graph::calculatePaths(int L) {
             D[j][i] = edgeVector[i]*D[j-1][(i >> 2)] + edgeVector[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeVector[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeVector[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
         }
 	}
-cout << "Calculated paths." << endl;
-return 0;
+//cout << "Calculated paths." << endl;
+return 1;
 }
 int graph::depthFirstSearch(int index, int u) {
 	//cout << u << endl;
@@ -71,6 +98,33 @@ vector<int> graph::getAdjacent(int v) {
 }
 int graph::Hitting(int L, string hittingFile) {
 	vertexExp = pow(ALPHABET_SIZE, k-1);
+    ofstream hittingStream;
+    int hittingCount = 0;
+    l = L-k+1;
+    //cout << l << endl;
+    //cout << vertexExp << endl;
+    D.resize(l + 1, vector<int>(vertexExp));
+    cout << "D initialized." << endl;
+    F.resize(l + 1, vector<int>(vertexExp));
+    cout << "F initialized." << endl;
+    hittingStream.open(hittingFile); 
+    while (calculatePaths(l)){
+    	int imaxHittingNum = calculateHittingNumber(l);
+    	if (imaxHittingNum < 0) break;
+    	//cout << imaxHittingNum << endl;
+        removeEdge(imaxHittingNum);
+        string label = getLabel(imaxHittingNum);
+        //cout << "Writing " << label << endl;
+        hittingStream << label << "\n";
+        hittingCount++;
+   	}
+   	hittingStream.close();
+    topoSort = topologicalSort();
+	cout << "Length of longest remaining path: " <<  maxLength() << endl;
+    return hittingCount;
+}
+int graph::HittingParallel(int L, string hittingFile) {
+	vertexExp = pow(ALPHABET_SIZE, k-1);
     int imaxHittingNum = -1;
     ofstream hittingStream;
     int hittingCount = 0;
@@ -81,19 +135,16 @@ int graph::Hitting(int L, string hittingFile) {
     cout << "D initialized." << endl;
     F.resize(l + 1, vector<int>(vertexExp));
     cout << "F initialized." << endl;
-    calculatePaths(l);
-    imaxHittingNum = calculateHittingNumber(l);
     hittingStream.open(hittingFile); 
-    while (imaxHittingNum >= 0) {
-        if (imaxHittingNum > -1) {
-            removeEdge(imaxHittingNum);
-            string label = getLabel(imaxHittingNum);
-            cout << "Writing " << label << endl;
-            hittingStream << label << "\n";
-            hittingCount++;
-		}
-		calculatePaths(l);
-		imaxHittingNum = calculateHittingNumber(l);
+    while (calculatePaths(l)){
+    	int imaxHittingNum = calculateHittingNumberParallel(l);
+    	if (imaxHittingNum < 0) break;
+    	//cout << imaxHittingNum << endl;
+        removeEdge(imaxHittingNum);
+        string label = getLabel(imaxHittingNum);
+        //cout << "Writing " << label << endl;
+        hittingStream << label << "\n";
+        hittingCount++;
    	}
    	hittingStream.close();
     topoSort = topologicalSort();

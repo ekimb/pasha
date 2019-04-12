@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+
+
 using namespace std;
 class graph {
 	public:
@@ -65,9 +67,12 @@ class graph {
     void removeEdge(int i);
     vector<int> topologicalSort();
     int Hitting(int L, string hittingFile);
+    int HittingParallel(int L, string hittingFile);
     vector<int> getAdjacent(int v);
     int calculatePaths(int L);
     int calculateHittingNumber(int L);
+    int calculateHittingNumberParallel(int L);
+    int calculateForEach(int i, int L);
 	private:
 	int depthFirstSearch(int index, int u);
 
