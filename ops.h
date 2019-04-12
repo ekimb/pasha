@@ -20,7 +20,7 @@ int graph::calculatePaths(int L) {
     vertexExp3 = vertexExp * 3;
     vertexExpMask = vertexExp - 1;
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-   	cout << "calcpaths" << vertexExp << ALPHABET_SIZE << endl;
+   	//cout << "calcpaths" << vertexExp << ALPHABET_SIZE << endl;
 	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
 		cout << "l is" << L << j << endl;
@@ -32,14 +32,15 @@ int graph::calculatePaths(int L) {
         }
 	}
 cout << "calcpaths" << endl;
-cout << "calcpaths2" << endl;
+cout << "calcpaths2 before return" << endl;
 return 0;
 }
 int graph::depthFirstSearch(vector<bool> used, vector<bool> finished, vector<int> res, int index, int u) {
-	used.at(u) = true;
+	cout << u << endl;
+	used[u] = true;
 	bool cycle = false;
-	vector<int> adjVertex = getAdjacent(u);
-	for (int v = 0; v < adjVertex.size(); v++) {
+	cout << "here dfs" << endl;
+	for (int v : getAdjacent(u)) {
 		// Return true for cycle
 		if (used[v] && !finished[v]) cycle = true;
 		if (!used[v]) {
@@ -49,8 +50,8 @@ int graph::depthFirstSearch(vector<bool> used, vector<bool> finished, vector<int
 	}
 	finished[u] = true;
 	res[index] = u;
-	if (cycle) return -1;
-	else return index + 1;
+	if (cycle){	cout << "dfs done cycle " << u << endl; return -1;}
+	else {	cout << "dfs done normal" << endl; return index + 1;}
 }
 vector<int> graph::getAdjacent(int v) {
 	int count = 0;
@@ -78,12 +79,17 @@ int graph::Hitting(int L, string hittingFile) {
     cout << "here" << endl;
     F.resize(l + 1, vector<int>(vertexExp));
     cout << "here" << endl;
-    while (calculatePaths(l) && (imaxHittingNum = calculateHittingNumber(l)) >= 0) {
+    calculatePaths(l);
+    cout << "here after path" << endl;
+    topoSort = topologicalSort();
+    cout << "here after topo" << endl;
+    imaxHittingNum = calculateHittingNumber(l);
+    while (calculatePaths(l) && (imaxHittingNum = calculateHittingNumber(l) >= 0)) {
     	cout << "in while" << endl;
         if (imaxHittingNum > -1) {
-        		hittingStream.open(hittingFile);
                 removeEdge(imaxHittingNum);
-	            string label = getLabel(imaxHittingNum); 
+	            string label = getLabel(imaxHittingNum);
+	            hittingStream.open(hittingFile); 
 	            cout << "Writing " << label << endl;
 	            hittingStream << label << "\n";
 	            hittingCount++;
@@ -91,7 +97,7 @@ int graph::Hitting(int L, string hittingFile) {
 
         }
     }
-    vector<int> topoSort = topologicalSort();
+    topoSort = topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << endl;
     return hittingCount;
 }
@@ -128,16 +134,20 @@ void graph::removeEdge(int i) {
 	edgeVector[i] = 0;
 }
 vector<int> graph::topologicalSort() {
-	vector<int> nullVector(0);
 	int n = vertexCount;
+	cout << vertexCount << endl;
+	vector<int> nullVector(n, 0);
 	vector<bool> used(n);
 	vector<bool> finished(n);
 	vector<int> res(n);
 	int index = 0;
 	for (int i = 0; i < n; i++) {
+		cout << "topo running" << endl;
 		if (!used[i]) {
+			cout << i << endl;
 			index = depthFirstSearch(used, finished, res, index, i);
-			if (index == -1) return nullVector;
+			cout << "after dfs" << endl;
+			if (index == -1) {cout << "null return" << endl; return nullVector;}
 		}
 	}
 	vector<int> rc(res.size());
