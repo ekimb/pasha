@@ -35,7 +35,7 @@ int graph::calculateHittingNumberParallel(int L) {
 	int imaxHittingNum = -1;
 	//cout << vertexExp << ALPHABET_SIZE << F.size() << D.size() << edgeVector.size() << endl;
 	hittingNumVector.resize(edgeVector.size(), 0);
-  	#pragma omp parallel for num_threads(40)
+  	#pragma omp parallel for num_threads(16)
     for (int i = 0; i < edgeVector.size(); i++) {
     	calculateForEach(i, L);
     }
@@ -85,7 +85,7 @@ int graph::depthFirstSearch(int index, int u) {
 }
 vector<int> graph::getAdjacent(int v) {
 	int count = 0;
-	vector<int> adjVertex(ALPHABET_SIZE);
+	int adjVertex[ALPHABET_SIZE];
 	for (int i = 0; i < ALPHABET_SIZE; i++) {
 		int index = v + i * vertexExp;
 		if (edgeVector[index] == 1) adjVertex[count++] = index / ALPHABET_SIZE;
@@ -165,6 +165,7 @@ int graph::maxLength() {
 		depth[topoSort[i]] = maxVertDepth + 1;
 		if (depth[topoSort[i]] > maxDepth) {maxDepth = depth[topoSort[i]];}
 	}
+	depth.shrink_to_fit();
 	return maxDepth;
 }
 void graph::removeEdge(int i) {
@@ -199,6 +200,9 @@ vector<int> graph::topologicalSort() {
 	vector<int> rc(res.size());
 	for (int i = 0; i < rc.size(); i++)
 		rc[i] = res[res.size()-i-1];
+	rc.shrink_to_fit();
+	used.shrink_to_fit();
+	finished.shrink_to_fit();
 	return res;
 }
 
