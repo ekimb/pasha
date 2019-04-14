@@ -7,6 +7,7 @@
 #include "decycling.h"
 #include "graph.h"
 #include "ops.h"
+#include "hitting.h"
 //Defining main commands
 #define DECYCLING  "decycling"
 #define GENERATE  "generate"
@@ -46,6 +47,7 @@ void printGenerateHelp(string argError)
 int main(int argc, char* argv[]) {
   int k;
   int L;
+  int x;
   string decyclingFile;
   string hittingFile;
   bool parallel = false;
@@ -113,12 +115,15 @@ int main(int argc, char* argv[]) {
         string argNext = string(argv[i]);
         if (argNext == "-a"){
           any = true;
-          if (string(argv[i+1]) != "-p" || string(argv[i+1]) != "-r"){
-            printGenerateHelp("Wrong order of arguments.");
+          x = 1;
+          if (string(argv[i+1]) != "-p" && string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k"){
+            x = atoi(argv[i+1]);
+            cout << string(argv[i+1]) << endl;
+            i += 2;
           }
-          i += 1;
+          else i += 1;
         }
-        if (argNext == "-p" || argNext == "-r"){
+        else if (argNext == "-p" || argNext == "-r"){
           if (argNext == "-p"){
           parallel = true;
           }
@@ -154,9 +159,9 @@ int main(int argc, char* argv[]) {
           if (argNext[0] == '-'){ //Incorrect argument
               printGenerateHelp("Incorrect argument " + argNext+ ".");
           }
-          else if (argc != i+1){ //Too many arguments
-              printGenerateHelp("Too many arguments.");
-          }
+         // else if (argc != i+1){ //Too many arguments
+            //  printGenerateHelp("Too many arguments.");
+          //}
         }
       }
     }
@@ -169,6 +174,7 @@ int main(int argc, char* argv[]) {
   decyclingStream.open(decyclingFile);
   for (int i = 0; i < decyclingSet.size(); i++) {
             string label = newGraph.getLabel(decyclingSet[i]);
+            //cout << decyclingSet[i] << endl;
             newGraph.removeEdge(decyclingSet[i]);
             //cout << "Writing " << decyclingSet[i] << endl;
             decyclingStream << label << "\n";
@@ -186,9 +192,9 @@ int main(int argc, char* argv[]) {
         if (randomized == true){
           //num = HittingRandomParallelAny(newGraph, L, x, hittingFile);
         }
-        //else num = HittingParallelAny(newGraph, L, x, hittingFile);
+        else hittingSize = newGraph.HittingParallelAny(L, x, hittingFile);
       }
-      //else num = HittingAny(newGraph, L, x, hittingFile);
+      else hittingSize = newGraph.HittingAny(L, x, hittingFile);
     }
     else {
       if (parallel == true){
@@ -205,5 +211,6 @@ int main(int argc, char* argv[]) {
   elapsed = (finish.tv_sec - start.tv_sec);
   elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
   cout << elapsed << " seconds." << endl;
+  cout << "Set size: " << hittingSize << endl;
   return hittingSize + decyclingSize;
   }

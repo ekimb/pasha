@@ -15,8 +15,10 @@ class graph {
 	public:
 	int ALPHABET_SIZE;
 	string ALPHABET;
-	vector<int> edgeVector;
-	vector<int> hittingNumVector;
+	int* edgeVector;
+    double* hittingNumVector;
+	//vector<int> hittingNumVector;
+    double* hittingNumAnyVector;
 	vector<int> topoSort;
 	static map<char, int> alphabetMap;
     int k;
@@ -24,8 +26,10 @@ class graph {
     int edgeNum;
 	int edgeCount;
     int vertexCount; 
-    vector<vector<int>> D;
-    vector<vector<int>> F;
+    //vector<vector<int>> D;
+    double** D;
+    //vector<vector<int>> F;
+    double** F;
     vector<bool> used;
     vector<bool> finished;
     vector<int> res;
@@ -36,11 +40,13 @@ class graph {
     int vertexExp3;
     int vertexExpMask;
     int vertexExp_1;
-	void generateGraph(int k) {
-		    edgeNum = pow(ALPHABET_SIZE, k);
-		    edgeVector.resize(edgeNum, 1);
-		    edgeCount = edgeNum;
-			vertexCount = edgeNum / ALPHABET_SIZE; 
+	void generateGraph(int k) {      
+        edgeNum = pow(ALPHABET_SIZE, k);
+        edgeVector = new int[edgeNum];
+        //edgeVector.resize(edgeNum, 1);
+        for (int i = 0; i < edgeNum; i++) edgeVector[i] = 1;
+		edgeCount = edgeNum;
+		vertexCount = edgeNum / ALPHABET_SIZE; 
     }
     char getChar(int i) {
     	return ALPHABET[i];
@@ -68,13 +74,19 @@ class graph {
     vector<int> topologicalSort();
     int Hitting(int L, string hittingFile);
     int HittingParallel(int L, string hittingFile);
+    int HittingAny(int L, int x, string hittingFile);
+    int HittingParallelAny(int L, int x, string hittingFile);
     vector<int> getAdjacent(int v);
     int calculatePaths(int L);
+    int calculatePathsAny();
     int calculateHittingNumber(int L);
     int calculateHittingNumberParallel(int L);
-    int calculateForEach(int i, int L);
-	private:
+    vector<int> calculateHittingNumberAny(int x);
+    vector<int> calculateHittingNumberParallelAny(int x);
+    void calculateForEach(int i, int L);
+    void calculateForEachAny(int i);
 	int depthFirstSearch(int index, int u);
+    vector<int> findMaxAny(int x);
 
 
 };

@@ -1,29 +1,50 @@
+#ifndef OPS_H
+#define OPS_H
 #include "decycling.h"
 #include "graph.h"
 #include <cstdlib>
 #include <iomanip>
 #include <omp.h>
-int graph::calculateForEach(int i, int L){
-	int hittingNum = 0;
+void graph::calculateForEach(int i, int L){
+	double hittingNum = 0;
     for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
     	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
 		//cout << hittingNum << endl;
     }
     hittingNumVector[i] = hittingNum;
 }
+void graph::calculateForEachAny(int i){
+	double hittingNum = 0;
+        hittingNum =  edgeVector[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
+		hittingNumAnyVector[i] = hittingNum;
+}
 int graph::calculateHittingNumber(int L) {
-	//cout << "calchit" << endl;
-	int maxHittingNum = 0;
+	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	hittingNumVector.resize(edgeVector.size(), 0);
-    for (int i = 0; i < edgeVector.size(); i++) {
+	hittingNumVector = new double[edgeNum];
+	//hittingNumVector.resize(edgeNum, 0);
+    for (int i = 0; i < edgeNum; i++) {
         int hittingNum = 0;
         for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
         	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
 			hittingNumVector[i] = hittingNum;
-			//cout << hittingNum << endl;
         }
         if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
+    }
+    return imaxHittingNum;
+}
+vector<int> graph::calculateHittingNumberAny(int x) {
+	vector<double> maxHittingNum (x);
+	vector<int> imaxHittingNum (x);
+	hittingNumAnyVector = new double[edgeNum];
+    for (int i = 0; i < edgeNum; i++) {
+        double hittingNum = 0;
+        hittingNum = edgeVector[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
+		hittingNumAnyVector[i] = hittingNum;
+			//cout << hittingNum << endl;
+        int j = 0;
+        while (j < x && hittingNum <= maxHittingNum[j]) j++;
+        if (j < x && hittingNum > maxHittingNum[j]) {maxHittingNum[j] = hittingNum; imaxHittingNum[j] = i;}
     }
     //cout << imaxHittingNum << endl;
     return imaxHittingNum;
@@ -31,17 +52,30 @@ int graph::calculateHittingNumber(int L) {
 int graph::calculateHittingNumberParallel(int L) {
 	omp_set_dynamic(0);
 	//cout << "calchit" << endl;
-	int maxHittingNum = 0;
+	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
 	//cout << vertexExp << ALPHABET_SIZE << F.size() << D.size() << edgeVector.size() << endl;
-	hittingNumVector.resize(edgeVector.size(), 0);
+	hittingNumVector = new double[edgeNum];
   	#pragma omp parallel for num_threads(16)
-    for (int i = 0; i < edgeVector.size(); i++) {
+    for (int i = 0; i < edgeNum; i++) {
     	calculateForEach(i, L);
     }
-    for (int i = 0; i < edgeVector.size(); i++) {
+    for (int i = 0; i < edgeNum; i++) {
     	if (hittingNumVector[i]*edgeVector[i] > maxHittingNum) {maxHittingNum = hittingNumVector[i]; imaxHittingNum = i;};
     }
+    //cout << imaxHittingNum << endl;
+    return imaxHittingNum;
+}
+vector<int> graph::calculateHittingNumberParallelAny(int x) {
+	omp_set_dynamic(0);
+	vector<double> maxHittingNum (x);
+	vector<int> imaxHittingNum (x);
+	hittingNumAnyVector = new double[edgeNum];
+	#pragma omp parallel for num_threads(16)
+    for (int i = 0; i < edgeNum; i++) {
+        calculateForEachAny(i);
+	}
+    imaxHittingNum = findMaxAny(x);
     //cout << imaxHittingNum << endl;
     return imaxHittingNum;
 }
@@ -50,7 +84,6 @@ int graph::calculatePaths(int L) {
     vertexExp3 = vertexExp * 3;
     vertexExpMask = vertexExp - 1;
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-   	//cout << "calcpaths" << vertexExp << ALPHABET_SIZE << endl;
 	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
 		for (int i = 0; i < vertexExp; i++) {
@@ -59,9 +92,22 @@ int graph::calculatePaths(int L) {
             D[j][i] = edgeVector[i]*D[j-1][(i >> 2)] + edgeVector[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeVector[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeVector[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
         }
 	}
-cout << "Calculated paths." << endl;
-return 0;
+	//cout << "Calculated paths." << endl;
+	return 1;
 }
+int graph::calculatePathsAny() {
+	vertexExp2 = vertexExp * 2;
+    vertexExp3 = vertexExp * 3;
+    vertexExpMask = vertexExp - 1;
+    vertexExp_1 = pow(ALPHABET_SIZE, k-2);
+    for (int i = 0; i < vertexExp; i++) {F[0][i] = 1; D[0][i] = 1;}
+    for (int i = 0; i < topoSort.size(); i++) {
+    	D[0][topoSort[i]] += edgeVector[topoSort[i]]*D[0][(topoSort[i] >> 2)] + edgeVector[topoSort[i] + vertexExp]*D[0][((topoSort[i] + vertexExp) >> 2)] + edgeVector[topoSort[i] + vertexExp2]*D[0][((topoSort[i] + vertexExp2) >> 2)] + edgeVector[topoSort[i] + vertexExp3]*D[0][((topoSort[i] + vertexExp3) >> 2)];
+   	 	int index = (topoSort[topoSort.size()-i-1] * 4);
+   	 	F[0][topoSort[topoSort.size()-i-1]] += edgeVector[index]*F[0][index & vertexExpMask] + edgeVector[index+1]*F[0][(index+1) & vertexExpMask] + edgeVector[index+2]*F[0][(index+2) & vertexExpMask] + edgeVector[index+3]*F[0][(index+3) & vertexExpMask];
+    }
+    return 1;
+	}
 int graph::depthFirstSearch(int index, int u) {
 	//cout << u << endl;
 	used[u] = 1;
@@ -96,62 +142,17 @@ vector<int> graph::getAdjacent(int v) {
 	}
 	return rc;
 }
-int graph::Hitting(int L, string hittingFile) {
-	vertexExp = pow(ALPHABET_SIZE, k-1);
-    ofstream hittingStream;
-    int hittingCount = 0;
-    l = L-k+1;
-    //cout << l << endl;
-    //cout << vertexExp << endl;
-    D.resize(l + 1, vector<int>(vertexExp));
-    cout << "D initialized." << endl;
-    F.resize(l + 1, vector<int>(vertexExp));
-    cout << "F initialized." << endl;
-    hittingStream.open(hittingFile); 
-    while (calculatePaths(l)){
-    	int imaxHittingNum = calculateHittingNumber(l);
-    	if (imaxHittingNum < 0) break;
-    	//cout << imaxHittingNum << endl;
-        removeEdge(imaxHittingNum);
-        string label = getLabel(imaxHittingNum);
-        //cout << "Writing " << label << endl;
-        hittingStream << label << "\n";
-        hittingCount++;
-   	}
-   	hittingStream.close();
-    topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
-    return hittingCount;
+vector<int> graph::findMaxAny(int x) {
+	vector<double> max(x);
+	vector<int> imax(x);
+	for (int i = 0; i < edgeNum; i++){
+		int j = 0;
+		while (j < x && hittingNumAnyVector[i] <= max[j]) j++;
+		if (j < x && hittingNumAnyVector[i] > max[j]) {
+			max[j] = hittingNumAnyVector[i]; imax[j] = i;}
+	}
+	return imax;
 }
-int graph::HittingParallel(int L, string hittingFile) {
-	vertexExp = pow(ALPHABET_SIZE, k-1);
-    int imaxHittingNum = -1;
-    ofstream hittingStream;
-    int hittingCount = 0;
-    l = L-k+1;
-    //cout << l << endl;
-    //cout << vertexExp << endl;
-    D.resize(l + 1, vector<int>(vertexExp));
-    cout << "D initialized." << endl;
-    F.resize(l + 1, vector<int>(vertexExp));
-    cout << "F initialized." << endl;
-    hittingStream.open(hittingFile); 
-    while (calculatePaths(l)){
-    	int imaxHittingNum = calculateHittingNumberParallel(l);
-    	if (imaxHittingNum < 0) break;
-    	//cout << imaxHittingNum << endl;
-        removeEdge(imaxHittingNum);
-        string label = getLabel(imaxHittingNum);
-        //cout << "Writing " << label << endl;
-        hittingStream << label << "\n";
-        hittingCount++;
-   	}
-   	hittingStream.close();
-    topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
-    return hittingCount;
-}
-
 int graph::maxLength() {
 	vector<int> depth(topoSort.size());
 	int maxDepth = -1;
@@ -165,7 +166,6 @@ int graph::maxLength() {
 		depth[topoSort[i]] = maxVertDepth + 1;
 		if (depth[topoSort[i]] > maxDepth) {maxDepth = depth[topoSort[i]];}
 	}
-	depth.shrink_to_fit();
 	return maxDepth;
 }
 void graph::removeEdge(int i) {
@@ -200,13 +200,9 @@ vector<int> graph::topologicalSort() {
 	vector<int> rc(res.size());
 	for (int i = 0; i < rc.size(); i++)
 		rc[i] = res[res.size()-i-1];
-	rc.shrink_to_fit();
-	used.shrink_to_fit();
-	finished.shrink_to_fit();
 	return res;
 }
-
-
+#endif
 
 
 
