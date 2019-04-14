@@ -19,7 +19,7 @@ class graph {
     double* hittingNumVector;
 	//vector<int> hittingNumVector;
     double* hittingNumAnyVector;
-	vector<int> topoSort;
+	int* topoSort;
 	static map<char, int> alphabetMap;
     int k;
     int l;
@@ -32,7 +32,7 @@ class graph {
     double** F;
     vector<bool> used;
     vector<bool> finished;
-    vector<int> res;
+    int* res;
     double epsilon;
     double delta;
     int vertexExp;
@@ -71,7 +71,7 @@ class graph {
     }
     int maxLength();
     void removeEdge(int i);
-    vector<int> topologicalSort();
+    int* topologicalSort();
     int Hitting(int L, string hittingFile);
     int HittingParallel(int L, string hittingFile);
     int HittingAny(int L, int x, string hittingFile);
@@ -85,8 +85,9 @@ class graph {
     vector<int> calculateHittingNumberParallelAny(int x);
     void calculateForEach(int i, int L);
     void calculateForEachAny(int i);
-	int depthFirstSearch(int index, int u);
     vector<int> findMaxAny(int x);
+    private:
+	int depthFirstSearch(int index, int u);
 
 
 };

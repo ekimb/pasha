@@ -96,16 +96,19 @@ int graph::calculatePaths(int L) {
 	return 1;
 }
 int graph::calculatePathsAny() {
+	int n = vertexExp;
 	vertexExp2 = vertexExp * 2;
     vertexExp3 = vertexExp * 3;
     vertexExpMask = vertexExp - 1;
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
+    //cout << n << endl;
     for (int i = 0; i < vertexExp; i++) {F[0][i] = 1; D[0][i] = 1;}
-    for (int i = 0; i < topoSort.size(); i++) {
+    for (int i = 0; i < n; i++) {
     	D[0][topoSort[i]] += edgeVector[topoSort[i]]*D[0][(topoSort[i] >> 2)] + edgeVector[topoSort[i] + vertexExp]*D[0][((topoSort[i] + vertexExp) >> 2)] + edgeVector[topoSort[i] + vertexExp2]*D[0][((topoSort[i] + vertexExp2) >> 2)] + edgeVector[topoSort[i] + vertexExp3]*D[0][((topoSort[i] + vertexExp3) >> 2)];
-   	 	int index = (topoSort[topoSort.size()-i-1] * 4);
-   	 	F[0][topoSort[topoSort.size()-i-1]] += edgeVector[index]*F[0][index & vertexExpMask] + edgeVector[index+1]*F[0][(index+1) & vertexExpMask] + edgeVector[index+2]*F[0][(index+2) & vertexExpMask] + edgeVector[index+3]*F[0][(index+3) & vertexExpMask];
+   	 	int index = (topoSort[n-i-1] * 4);
+   	 	F[0][topoSort[n-i-1]] += edgeVector[index]*F[0][index & vertexExpMask] + edgeVector[index+1]*F[0][(index+1) & vertexExpMask] + edgeVector[index+2]*F[0][(index+2) & vertexExpMask] + edgeVector[index+3]*F[0][(index+3) & vertexExpMask];
     }
+    //cout << "Calculated paths." << endl;
     return 1;
 	}
 int graph::depthFirstSearch(int index, int u) {
@@ -154,14 +157,14 @@ vector<int> graph::findMaxAny(int x) {
 	return imax;
 }
 int graph::maxLength() {
-	vector<int> depth(topoSort.size());
+	vector<int> depth(vertexExp);
 	int maxDepth = -1;
-	for (int i = 0; i < topoSort.size(); i++) {
+	for (int i = 0; i < vertexExp; i++) {
 		int maxVertDepth = -1;
 		for (int j = 0; j < ALPHABET_SIZE; j++) {
 			int edgeIndex = topoSort[i] + j * vertexExp;
 			int vertexIndex = edgeIndex / ALPHABET_SIZE; // >> log;
-			if (depth[vertexIndex] > maxVertDepth && edgeVector[edgeIndex] == 1) maxVertDepth = depth[vertexIndex];
+			if ((depth[vertexIndex] > maxVertDepth) && (edgeVector[edgeIndex] == 1)) maxVertDepth = depth[vertexIndex];
 		}
 		depth[topoSort[i]] = maxVertDepth + 1;
 		if (depth[topoSort[i]] > maxDepth) {maxDepth = depth[topoSort[i]];}
@@ -184,22 +187,21 @@ void graph::removeEdge(int i) {
 	}
 	edgeVector[i] = 0;
 }
-vector<int> graph::topologicalSort() {
+int* graph::topologicalSort() {
 	int n = vertexExp;
-	vector<int> nullVector(n, 0);
 	used.resize(n, 0);
 	finished.resize(n, 0);
-	res.resize(n);
+	res = new int[n];
 	int index = 0;
 	for (int i = 0; i < n; i++) {
 		if (used[i] == 0) {
 			index = depthFirstSearch(index, i);
-			if (index == -1) {cout << "null return" << endl; return nullVector;}
+			if (index == -1) {cout << "null return" << endl; return NULL;}
 		}
 	}
-	vector<int> rc(res.size());
-	for (int i = 0; i < rc.size(); i++)
-		rc[i] = res[res.size()-i-1];
+	int rc[n];
+	for (int i = 0; i < n; i++)
+		rc[i] = res[n-i-1];
 	return res;
 }
 #endif

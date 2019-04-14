@@ -42,13 +42,14 @@ int graph::Hitting(int L, string hittingFile) {
 	delete [] *F;
 	delete [] F;
     topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
+	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
 int graph::HittingAny(int L, int x, string hittingFile) {
+	ofstream hittingStream;
+	hittingStream.open(hittingFile);
 	vertexExp = pow(ALPHABET_SIZE, k-1);
 	vector<int> imaxHittingNum(x);
-    ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
     //cout << l << endl;
@@ -66,7 +67,6 @@ int graph::HittingAny(int L, int x, string hittingFile) {
     F = new double*[1];
     double* Fpool = new double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Fpool += vertexExp) F[i] = Fpool;
-    hittingStream.open(hittingFile);
     while(maxLength() >= l) { 
     	calculatePathsAny();
     	imaxHittingNum = calculateHittingNumberAny(x);
@@ -80,14 +80,17 @@ int graph::HittingAny(int L, int x, string hittingFile) {
         //cout << "Writing " << label << endl;
    	}
    	hittingStream.close();
-    topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
-	//for(int i = 0; i < vertexExp; i++) {delete [] D[i];}
-	delete [] *D;
+   	delete [] *D;
 	delete [] D;
 	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
 	delete [] *F;
 	delete [] F;
+	int* topoSort;
+    topoSort = topologicalSort();
+	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
+	//for(int i = 0; i < vertexExp; i++) {delete [] D[i];}
+	delete [] edgeVector;
+	//delete [] topoSort;
     return hittingCount;
 }
 int graph::HittingParallel(int L, string hittingFile) {
@@ -120,13 +123,13 @@ int graph::HittingParallel(int L, string hittingFile) {
         hittingCount++;
    	}
    	hittingStream.close();
+    topoSort = topologicalSort();
+	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
 	delete [] *D;
 	delete [] D;
 	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
 	delete [] *F;
 	delete [] F;
-    topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
     return hittingCount;
 }
 int graph::HittingParallelAny(int L, int x, string hittingFile) {
@@ -162,13 +165,15 @@ int graph::HittingParallelAny(int L, int x, string hittingFile) {
         }
    	}
    	hittingStream.close();
+   	int* topoSort;
     topoSort = topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << endl;
+	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
 	delete [] *D;
 	delete [] D;
 	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
 	delete [] *F;
 	delete [] F;
+	delete [] edgeVector;
     return hittingCount;
 }
 #endif
