@@ -123,6 +123,15 @@ int graph::HittingParallel(int L, string hittingFile) {
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
+
+    hittingNumVector = new double[edgeNum];
+    used = new bool[vertexExp];
+	finished = new bool[vertexExp];
+	topoSort = new int[vertexExp];
+
+    cout << "D initialized." << endl;
+    cout << "F initialized." << endl;
+
     //cout << l << endl;
     //cout << vertexExp << endl;
     //D.resize(l + 1, vector<int>(vertexExp));
@@ -147,13 +156,21 @@ int graph::HittingParallel(int L, string hittingFile) {
         hittingCount++;
    	}
    	hittingStream.close();
-    topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-	delete [] *D;
+    delete [] *D;
 	delete [] D;
-	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
 	delete [] *F;
 	delete [] F;
+
+    topologicalSort();
+
+    delete [] used;
+    delete [] finished;
+
+	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
+
+   	delete [] topoSort;
+    delete [] edgeVector;
+    delete [] hittingNumVector;
     return hittingCount;
 }
 int graph::HittingParallelAny(int L, int x, string hittingFile) {
