@@ -1,3 +1,11 @@
+/**
+    Pasha: Parallel Algorithms for Approximating Compact Universal Hitting Sets
+    graph.h
+    Header file for graph-related attributes, as well as operations prior to the
+    hitting set calculations.
+    @author Baris Ekim
+    @version 1.0 4/15/19
+*/
 #ifndef GRAPH_H
 #define GRAPH_H
 #include <iostream>
@@ -7,50 +15,67 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <cstdlib>
+#include <iomanip>
+#include <omp.h>
 using namespace std;
 
 class graph {
 
 	public:
-	int ALPHABET_SIZE;
-	string ALPHABET;
-	int* edgeVector;
-    int* stageVector;
-    double* maxHittingNum;
-    int* imaxHittingNum;
-    double* hittingNumVector;
-    double* hittingNumAnyVector;
-	int* topoSort;
-	static map<char, int> alphabetMap;
-    int k;
-    int l;
-    int edgeNum;
-	int edgeCount;
-    int vertexCount; 
-    double** D;
-    double** F;
+    bool* finished;
     bool* pick;
     bool* used;
-    bool* finished;
-    double epsilon;
     double delta;
+	double epsilon;
+    double* hittingNumAnyArray;
+    double* hittingNumArray;
+    double* maxHittingNum;
+    double** D;
+    double** F;
+    int ALPHABET_SIZE;
+	int edgeCount;
+    int edgeNum;
+    int k;
+    int l;
+    int vertexCount; 
     int vertexExp;
     int vertexExp2;
     int vertexExp3;
     int vertexExpMask;
     int vertexExp_1;
+    int* edgeArray;
+    int* imaxHittingNum;
+    int* stageArray;
+    int* topoSort;
+    static map<char, int> alphabetMap;
+    string ALPHABET;
 
-	void generateGraph(int k) {      
-        for (int i = 0; i < edgeNum; i++) edgeVector[i] = 1;
+	void generateGraph(int k) {  
+    /**
+    Generates a complete de Bruijn graph of order k.
+    @param k: Desired k-mer length (order of complete graph).
+    */
+        for (int i = 0; i < edgeNum; i++) edgeArray[i] = 1;
 		edgeCount = edgeNum;
 		vertexCount = edgeNum / ALPHABET_SIZE; 
     }
 
     char getChar(int i) {
+    /**
+    Gets alphabet character from index.
+    @param i: Index of character.
+    @return The character in the alphabet.
+    */
     	return ALPHABET[i];
     }
 
     string getLabel(int i) {
+    /**
+    Gets label of the input edge index.
+    @param i: Index of edge.
+    @return The label of the edge.
+    */
 		string finalString = "";
 		for (int j = 0; j < k; j++) {
 			finalString = getChar((i % ALPHABET_SIZE)) + finalString;
@@ -60,11 +85,16 @@ class graph {
 	}
 
 	graph(int argK) {
+    /**
+    Definition of a graph object. Generates a graph of order k, creates an empty
+    edge index array, calculates number of edges, builds a character-index map.
+    @param argK: Argument passed as k-mer length.
+    */
 		ALPHABET = "ACGT";
 		ALPHABET_SIZE = 4;
 		k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeVector = new int[edgeNum];
+        edgeArray = new int[edgeNum];
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
@@ -86,7 +116,6 @@ class graph {
     int HittingParallel(int L, string hittingFile);
     int HittingParallelAny(int L, int x, string hittingFile);
     int HittingRandomParallel(int L, string hittingFile);
-    int HittingParallelRandomAny(int L, int x, string hittingFile);
     int maxLength();
     void removeEdge(int i);
     void stageOps(int l, double maxPtr);
@@ -95,5 +124,4 @@ class graph {
 	int depthFirstSearch(int index, int u);
 
 };
-
 #endif

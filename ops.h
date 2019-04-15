@@ -1,82 +1,113 @@
+/**
+    Pasha: Parallel Algorithms for Approximating Compact Universal Hitting Sets
+    ops.h
+    Header file for main operations involving the calculation of the hitting set
+    after the generation of the graph and the removal of the decycling set.
+    @author Baris Ekim
+    @version 1.0 4/15/19
+*/
 #ifndef OPS_H
 #define OPS_H
 #include "decycling.h"
 #include "graph.h"
-#include <cstdlib>
-#include <iomanip>
-#include <omp.h>
-void graph::calculateForEach(int i, int L){
+
+void graph::calculateForEach(int i, int L) {
+/**
+Calculates hitting number for an edge of specified index with respect to a specified
+sequence length, counting paths of length L-k+1.
+@param i: Index of edge, L: Sequence length.
+*/
 	double hittingNum = 0;
-    for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
-    	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
-		//cout << hittingNum << endl;
-    }
-    hittingNumVector[i] = hittingNum;
+    for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
+    hittingNumArray[i] = hittingNum;
 }
-void graph::calculateForEachAny(int i){
+
+void graph::calculateForEachAny(int i) {
+/**
+Calculates hitting number for an edge of specified index with respect to a specified
+sequence length, counting all paths.
+@param i: Index of edge.
+*/
 	double hittingNum = 0;
-        hittingNum =  edgeVector[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
-		hittingNumAnyVector[i] = hittingNum;
+    hittingNum = edgeArray[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
+	hittingNumAnyArray[i] = hittingNum;
 }
 int graph::calculateHittingNumber(int L) {
+/**
+Calculates hitting number of all edges, counting paths of length L-k+1.
+@param L: Sequence length.
+@return imaxHittingNum: Index of vertex with maximum hitting number.
+*/	
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	//hittingNumVector.resize(edgeNum, 0);
     for (int i = 0; i < edgeNum; i++) {
         int hittingNum = 0;
-        for (int j = (1 - edgeVector[i]) * L; j < L; j++) {
+        for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
         	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
-			hittingNumVector[i] = hittingNum;
+			hittingNumArray[i] = hittingNum;
         }
         if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
     }
     return imaxHittingNum;
 }
+
 int* graph::calculateHittingNumberAny(int x) {
+/**
+Calculates hitting number of all edges, counting all paths.
+@param x: Number of vertices to consider.
+@return imaxHittingNum: Array of index of x edges with maximum hitting number.
+*/
 	maxHittingNum = new double[x];
 	imaxHittingNum = new int[x];
     for (int i = 0; i < edgeNum; i++) {
         double hittingNum = 0;
-        hittingNum = edgeVector[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
-		hittingNumAnyVector[i] = hittingNum;
-			//cout << hittingNum << endl;
+        hittingNum = edgeArray[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
+		hittingNumAnyArray[i] = hittingNum;
         int j = 0;
         while (j < x && hittingNum <= maxHittingNum[j]) j++;
         if (j < x && hittingNum > maxHittingNum[j]) {maxHittingNum[j] = hittingNum; imaxHittingNum[j] = i;}
     }
-    //cout << imaxHittingNum << endl;
     return imaxHittingNum;
 }
 int graph::calculateHittingNumberParallel(int L) {
+/**
+Calculates hitting number of all edges, counting paths of length L-k+1, in parallel.
+@param L: Sequence length.
+@return imaxHittingNum: Index of vertex with maximum hitting number.
+*/	
 	omp_set_dynamic(0);
-	//cout << "calchit" << endl;
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	//cout << vertexExp << ALPHABET_SIZE << F.size() << D.size() << edgeVector.size() << endl;
-	hittingNumVector = new double[edgeNum];
+	hittingNumArray = new double[edgeNum];
   	#pragma omp parallel for num_threads(16)
+    for (int i = 0; i < edgeNum; i++) calculateForEach(i, L);
     for (int i = 0; i < edgeNum; i++) {
-    	calculateForEach(i, L);
+    	if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;};
     }
-    for (int i = 0; i < edgeNum; i++) {
-    	if (hittingNumVector[i]*edgeVector[i] > maxHittingNum) {maxHittingNum = hittingNumVector[i]; imaxHittingNum = i;};
-    }
-    //cout << imaxHittingNum << endl;
     return imaxHittingNum;
 }
+
 int* graph::calculateHittingNumberParallelAny(int x) {
+/**
+Calculates hitting number of all edges counting all paths, in parallel.
+@param x: Top x vertices to be considered for removal.
+@return imaxHittingNum: Array of index of x edges with maximum hitting number.
+*/
 	omp_set_dynamic(0);
 	maxHittingNum = new double[x];
 	imaxHittingNum = new int[x];
 	#pragma omp parallel for num_threads(16)
-    for (int i = 0; i < edgeNum; i++) {
-        calculateForEachAny(i);
-	}
+    for (int i = 0; i < edgeNum; i++) calculateForEachAny(i);
     imaxHittingNum = findMaxAny(x);
-    //cout << imaxHittingNum << endl;
     return imaxHittingNum;
 }
+
 int graph::calculatePaths(int L) {
+/**
+Calculates number of L-k+1 long paths for all vertices.
+@param L: Sequence length.
+@return 1: True if path calculation completes.
+*/
 	vertexExp2 = vertexExp * 2;
     vertexExp3 = vertexExp * 3;
     vertexExpMask = vertexExp - 1;
@@ -85,54 +116,60 @@ int graph::calculatePaths(int L) {
 	for (int j = 1; j <= L; j++) {
 		for (int i = 0; i < vertexExp; i++) {
 			int index = (i * 4);
-            F[j][i] = edgeVector[index]*F[j-1][index & vertexExpMask] + edgeVector[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeVector[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeVector[index + 3]*F[j-1][(index + 3) & vertexExpMask];
-            D[j][i] = edgeVector[i]*D[j-1][(i >> 2)] + edgeVector[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeVector[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeVector[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+            F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
+            D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
         }
 	}
-	//cout << "Calculated paths." << endl;
 	return 1;
 }
 int graph::calculatePathsAny() {
-	int n = vertexExp;
+/**
+Calculates number of paths of any length for all vertices.
+@return 1: True if path calculation completes.
+*/
 	vertexExp2 = vertexExp * 2;
     vertexExp3 = vertexExp * 3;
     vertexExpMask = vertexExp - 1;
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-    //cout << n << endl;
     for (int i = 0; i < vertexExp; i++) {F[0][i] = 1; D[0][i] = 1;}
-    for (int i = 0; i < n; i++) {
-    	D[0][topoSort[i]] += edgeVector[topoSort[i]]*D[0][(topoSort[i] >> 2)] + edgeVector[topoSort[i] + vertexExp]*D[0][((topoSort[i] + vertexExp) >> 2)] + edgeVector[topoSort[i] + vertexExp2]*D[0][((topoSort[i] + vertexExp2) >> 2)] + edgeVector[topoSort[i] + vertexExp3]*D[0][((topoSort[i] + vertexExp3) >> 2)];
-   	 	int index = (topoSort[n-i-1] * 4);
-   	 	F[0][topoSort[n-i-1]] += edgeVector[index]*F[0][index & vertexExpMask] + edgeVector[index+1]*F[0][(index+1) & vertexExpMask] + edgeVector[index+2]*F[0][(index+2) & vertexExpMask] + edgeVector[index+3]*F[0][(index+3) & vertexExpMask];
+    for (int i = 0; i < vertexExp; i++) {
+    	D[0][topoSort[i]] += edgeArray[topoSort[i]]*D[0][(topoSort[i] >> 2)] + edgeArray[topoSort[i] + vertexExp]*D[0][((topoSort[i] + vertexExp) >> 2)] + edgeArray[topoSort[i] + vertexExp2]*D[0][((topoSort[i] + vertexExp2) >> 2)] + edgeArray[topoSort[i] + vertexExp3]*D[0][((topoSort[i] + vertexExp3) >> 2)];
+   	 	int index = (topoSort[vertexExp-i-1] * 4);
+   	 	F[0][topoSort[vertexExp-i-1]] += edgeArray[index]*F[0][index & vertexExpMask] + edgeArray[index+1]*F[0][(index+1) & vertexExpMask] + edgeArray[index+2]*F[0][(index+2) & vertexExpMask] + edgeArray[index+3]*F[0][(index+3) & vertexExpMask];
     }
-    //cout << "Calculated paths." << endl;
     return 1;
-	}
+}
 int graph::depthFirstSearch(int index, int u) {
-	//cout << u << endl;
+/**
+Depth-first search of a given index of an edge.
+@param index: Depth of recursion, u: Index of edge.
+@return -1: The search cycles, index+1: Current depth.
+*/
 	used[u] = true;
 	bool cycle = false;
 	for (int v : getAdjacent(u)) {
-		// Return true for cycle
-		if (used[v] == true && finished[v] == false) {cycle = true;}
+		if (used[v] == true && finished[v] == false) cycle = true;
 		if (used[v] == false) {
 			index = depthFirstSearch(index, v);
 			cycle = cycle || (index == -1);
 		}
 	}
-	//cout << "dfs done" << endl;
 	finished[u] = true;
-	//cout << "finished assign" << endl;
 	topoSort[index] = u;
-	if (cycle){	/*cout << "dfs done cycle " << u << endl;*/ return -1;}
-	else { return index + 1;}
+	if (cycle) return -1;
+	else return index + 1;
 }
 vector<int> graph::getAdjacent(int v) {
+/**
+Get adjacent vertices to a given index of a vertex.
+@param v: Index of vertex.
+@return rc: Array of adjacent vertices.
+*/
 	int count = 0;
 	int adjVertex[ALPHABET_SIZE];
 	for (int i = 0; i < ALPHABET_SIZE; i++) {
 		int index = v + i * vertexExp;
-		if (edgeVector[index] == 1) adjVertex[count++] = index / ALPHABET_SIZE;
+		if (edgeArray[index] == 1) adjVertex[count++] = index / ALPHABET_SIZE;
 	}
 	vector<int> rc(count);
 	for (int i = 0; i < count; i++) {
@@ -140,60 +177,82 @@ vector<int> graph::getAdjacent(int v) {
 	}
 	return rc;
 }
+
 int graph::findLog(double base, double x) {
+/**
+Finds the logarithm of a given number with respect to a given base.
+@param base: Base of logartihm, x: Input number.
+@return (int)(log(x) / log(base)): Integer logarithm of the number and the given base.
+*/
     return (int)(log(x) / log(base));
 }
+
 int* graph::findMaxAny(int x) {
+/**
+Finds the x vertices with maximum hitting number.
+@param x: Number of vertices to consider.
+@return imaxHittingNum: Array of index of x edges with maximum hitting number.
+*/
 	for (int i = 0; i < edgeNum; i++){
 		int j = 0;
-		while (j < x && hittingNumAnyVector[i] <= maxHittingNum[j]) j++;
-		if (j < x && hittingNumAnyVector[i] > maxHittingNum[j]) {
-			maxHittingNum[j] = hittingNumAnyVector[i]; imaxHittingNum[j] = i;}
+		while (j < x && hittingNumAnyArray[i] <= maxHittingNum[j]) j++;
+		if (j < x && hittingNumAnyArray[i] > maxHittingNum[j]) {
+			maxHittingNum[j] = hittingNumAnyArray[i]; imaxHittingNum[j] = i;}
 	}
 	return imaxHittingNum;
 }
 int graph::maxLength() {
+/**
+Calculates the length of the maximum length path in the graph.
+@return maxDepth: Maximum length.
+*/
 	vector<int> depth(vertexExp);
-	//cout << vertexExp << endl;
 	int maxDepth = -1;
 	for (int i = 0; i < vertexExp; i++) {
 		int maxVertDepth = -1;
 		for (int j = 0; j < ALPHABET_SIZE; j++) {
 			int edgeIndex = topoSort[i] + j * vertexExp;
-			int vertexIndex = edgeIndex / ALPHABET_SIZE; // >> log;
-			if ((depth[vertexIndex] > maxVertDepth) && (edgeVector[edgeIndex] == 1)) maxVertDepth = depth[vertexIndex];
+			int vertexIndex = edgeIndex / ALPHABET_SIZE;
+			if ((depth[vertexIndex] > maxVertDepth) && (edgeArray[edgeIndex] == 1)) maxVertDepth = depth[vertexIndex];
 		}
 		depth[topoSort[i]] = maxVertDepth + 1;
 		if (depth[topoSort[i]] > maxDepth) {maxDepth = depth[topoSort[i]];}
 	}
 	return maxDepth;
 }
+
 void graph::removeEdge(int i) {
-	if (edgeVector[i] == 1) {
-			edgeCount--;
-			//System.out.println("Removing edge " + getEdgeLabel(i) + ", " + numEdges + " edges remaining");
-	}
-	edgeVector[i] = 0;
+/**
+Removes an edge from the graph.
+@param i: Index of edge.
+*/
+	if (edgeArray[i] == 1) edgeCount--;
+	edgeArray[i] = 0;
 }
+
 void graph::stageOps(int l, double maxPtr) {
+/**
+Includes operations for randomized hitting set calculation for each stage.
+@param l: Path length, maxPtr: Maximum hitting number value.
+*/
 	int h = findLog((1.0+epsilon), maxPtr);
-	stageVector = new int[edgeNum];
+	stageArray = new int[edgeNum];
 	int imaxHittingNum = -1;
 	omp_set_dynamic(0);
 	for (int i = h; i-- > 0;){
 		for (int i = 0; i < edgeNum; i++) {
-			if (((hittingNumVector[i])*edgeVector[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumVector[i])*edgeVector[i] <= pow((1.0+epsilon), h))) stageVector[i] = 1;
-			else stageVector[i] = 0;
+			if (((hittingNumArray[i])*edgeArray[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i])*edgeArray[i] <= pow((1.0+epsilon), h))) stageArray[i] = 1;
+			else stageArray[i] = 0;
 		}
 		calculatePaths(l);
     	imaxHittingNum = calculateHittingNumberParallel(l);
 		if (imaxHittingNum < 0) break;
     	double total = 0;
-        for (int i = 0; i < edgeNum; i++) total += (hittingNumVector[i] * stageVector[i]);
+        for (int i = 0; i < edgeNum; i++) total += (hittingNumArray[i] * stageArray[i]);
         for (int i = 0; i < edgeNum; i++){
-            if ((stageVector[i]*edgeVector[i] != 0) && (hittingNumVector[i] > ((pow(delta, 3)/(1+epsilon)) * total))){
+            if ((stageArray[i]*edgeArray[i] != 0) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))){
             	string label = getLabel(i);
-                stageVector[i] = 0;
+                stageArray[i] = 0;
 				pick[i] = true;
                 removeEdge(i);
             }
@@ -202,10 +261,10 @@ void graph::stageOps(int l, double maxPtr) {
         double prob = delta/(pow((1.0+epsilon), l));
         #pragma omp parallel for num_threads(8)
         for (int i = 0; i < edgeNum; i++){
-        	if ((pick[i] == false) && ((stageVector[i] == 1)) && (edgeVector[i] == 1)){
+        	if ((pick[i] == false) && ((stageArray[i] == 1)) && (edgeArray[i] == 1)){
         		if (rand() % 2 <= prob){
 	        		string label = getLabel(i);
-		          	stageVector[i] = 0;
+		          	stageArray[i] = 0;
 					pick[i] = true;
 		          	removeEdge(i);
 				}
@@ -216,7 +275,11 @@ void graph::stageOps(int l, double maxPtr) {
         if ((maxLength() < l)) break;
    	}
 }
+
 void graph::topologicalSort() {
+/**
+Traverses the graph in topological order.
+*/
 	for (int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
 	int index = 0;
 	for (int i = 0; i < vertexExp; i++) {
@@ -226,9 +289,9 @@ void graph::topologicalSort() {
 		}
 	}
 	int rc[vertexExp];
-	for (int i = 0; i < vertexExp; i++)
-		rc[i] = topoSort[vertexExp-i-1];
+	for (int i = 0; i < vertexExp; i++) rc[i] = topoSort[vertexExp-i-1];
 }
+
 #endif
 
 

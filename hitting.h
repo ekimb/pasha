@@ -1,3 +1,10 @@
+/**
+    Pasha: Parallel Algorithms for Approximating Compact Universal Hitting Sets
+    hitting.h
+    Header file for main operations for different options of hitting set calculations.
+    @author Baris Ekim
+    @version 1.0 4/15/19
+*/
 #ifndef HITTING_H
 #define HITTING_H
 #include "decycling.h"
@@ -6,90 +13,75 @@
 #include <iomanip>
 #include <omp.h>
 int graph::Hitting(int L, string hittingFile) {
+/**
+Performs hitting set calculations without parallelization
+or randomization, counting L-k+1-long paths.
+@param L: Sequence length, hittingFile: Output file destination.
+@return hittingCount: Size of hitting set.
+*/
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int imaxHittingNum = -1;
     int hittingCount = 0;
     l = L-k+1;
-
-    hittingNumVector = new double[edgeNum];
+    hittingNumArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-
-    cout << "D initialized." << endl;
-    cout << "F initialized." << endl;
-
     hittingStream.open(hittingFile); 
-
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)*vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-
-    while (calculatePaths(l)){
-    	//cout << "in while" << endl;
+    while (calculatePaths(l)) {
     	imaxHittingNum = calculateHittingNumber(l);
     	if (imaxHittingNum < 0) break;
-    	//cout << imaxHittingNum << endl;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
         hittingStream << label << "\n";
         hittingCount++;
    	}
    	hittingStream.close();
-
-   	delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
-
+   	//delete [] *D;
+	//delete [] D;
+	//delete [] *F;
+	//delete [] F;
     topologicalSort();
-
-    delete [] used;
-    delete [] finished;
-
+    //delete [] used;
+    //delete [] finished;
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-
-   	delete [] topoSort;
-    delete [] edgeVector;
-    delete [] hittingNumVector;
+   	//delete [] topoSort;
+    //delete [] edgeArray;
+    //delete [] hittingNumArray;
     return hittingCount;
 }
 int graph::HittingAny(int L, int x, string hittingFile) {
+/**
+Performs hitting set calculations without parallelization
+or randomization, counting paths of all length.
+@param L: Sequence length, x: Number of vertices, hittingFile: Output file destination.
+@return hittingCount: Size of hitting set.
+*/
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int* imaxHittingNum;
     int hittingCount = 0;
     l = L-k+1;
-
-    hittingNumAnyVector = new double[edgeNum];
+    hittingNumAnyArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-
-    //cout << "D initialized." << endl;
-    //cout << "F initialized." << endl;
     hittingStream.open(hittingFile); 
-
-    //cout << l << endl;
-    //cout << vertexExp << endl;
    	topologicalSort();
-    //cout << l << endl;
-    //cout << vertexExp << endl;
-    //D.resize(l + 1, vector<int>(vertexExp));
-   	//cout << "D initialized." << endl;
-    //F.resize(l + 1, vector<int>(vertexExp));
-    //cout << "F initialized." << endl;
     D = new double*[1];
     double* Dpool = new double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Dpool += vertexExp) D[i] = Dpool;
     F = new double*[1];
     double* Fpool = new double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while(maxLength() >= l) { 
+    while (maxLength() >= l) { 
     	calculatePathsAny();
     	imaxHittingNum = calculateHittingNumberAny(x);
     	for (int i = 0; i < x; i++) {
@@ -98,46 +90,39 @@ int graph::HittingAny(int L, int x, string hittingFile) {
         	hittingStream << label << "\n";
 	    	hittingCount++;
         }
-    	//cout << imaxHittingNum << endl;
-        //cout << "Writing " << label << endl;
    	}
    	hittingStream.close();
-   	delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
-	delete [] hittingNumAnyVector;
-	delete [] imaxHittingNum;
+   	//delete [] *D;
+	//delete [] D;
+	//delete [] *F;
+	//delete [] F;
+	//delete [] hittingNumAnyArray;
+	//delete [] imaxHittingNum;
     topologicalSort();
-    delete [] used;
-    delete [] finished;
+    //delete [] used;
+    //delete [] finished;
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-   	delete [] topoSort;
-    delete [] edgeVector;
+   	//delete [] topoSort;
+    //delete [] edgeArray;
 	//delete [] topoSort;
     return hittingCount;
 }
 int graph::HittingParallel(int L, string hittingFile) {
+/**
+Performs hitting set calculations with parallelization
+and without randomization, counting L-k+1-long paths.
+@param L: Sequence length, hittingFile: Output file destination.
+@return hittingCount: Size of hitting set.
+*/
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     int imaxHittingNum = -1;
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-
-    hittingNumVector = new double[edgeNum];
+    hittingNumArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-
-    cout << "D initialized." << endl;
-    cout << "F initialized." << endl;
-
-    //cout << l << endl;
-    //cout << vertexExp << endl;
-    //D.resize(l + 1, vector<int>(vertexExp));
-   	//cout << "D initialized." << endl;
-    //F.resize(l + 1, vector<int>(vertexExp));
-    //cout << "F initialized." << endl;
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
@@ -145,53 +130,48 @@ int graph::HittingParallel(int L, string hittingFile) {
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while (calculatePaths(l)){
+    while (calculatePaths(l)) {
     	int imaxHittingNum = calculateHittingNumberParallel(l);
     	if (imaxHittingNum < 0) break;
-    	//cout << imaxHittingNum << endl;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
-        //cout << "Writing " << label << endl;
         hittingStream << label << "\n";
         hittingCount++;
    	}
    	hittingStream.close();
-    delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
+    //delete [] *D;
+	//delete [] D;
+	//delete [] *F;
+	//delete [] F;
 
     topologicalSort();
 
-    delete [] used;
-    delete [] finished;
+    //delete [] used;
+    //delete [] finished;
 
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
 
-   	delete [] topoSort;
-    delete [] edgeVector;
-    delete [] hittingNumVector;
+   	//delete [] topoSort;
+    //delete [] edgeArray;
+    //delete [] hittingNumArray;
     return hittingCount;
 }
 int graph::HittingParallelAny(int L, int x, string hittingFile) {
+/**
+Performs hitting set calculations with parallelization and
+without randomization, counting paths of all length.
+@param L: Sequence length, x: Number of vertices, hittingFile: Output file destination.
+@return hittingCount: Size of hitting set.
+*/
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    hittingNumAnyVector = new double[edgeNum];
+    hittingNumAnyArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-
-    //cout << l << endl;
-    //cout << vertexExp << endl;
    	topologicalSort();
-    //cout << l << endl;
-    //cout << vertexExp << endl;
-    //D.resize(l + 1, vector<int>(vertexExp));
-   	//cout << "D initialized." << endl;
-    //F.resize(l + 1, vector<int>(vertexExp));
-    //cout << "F initialized." << endl;
     D = new double*[1];
     double* Dpool = new double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Dpool += vertexExp) D[i] = Dpool;
@@ -214,15 +194,21 @@ int graph::HittingParallelAny(int L, int x, string hittingFile) {
    	int* topoSort;
     topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-	delete [] *D;
-	delete [] D;
+	//delete [] *D;
+	//delete [] D;
 	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
-	delete [] *F;
-	delete [] F;
-	delete [] edgeVector;
+	//delete [] *F;
+	//delete [] F;
+	//delete [] edgeArray;
     return hittingCount;
 }
 int graph::HittingRandomParallel(int L, string hittingFile) {
+/**
+Performs hitting set calculations with parallelization
+and with randomization, counting L-k+1-long paths.
+@param L: Sequence length, hittingFile: Output file destination.
+@return hittingCount: Size of hitting set.
+*/
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int imaxHittingNum = -1;
@@ -230,14 +216,10 @@ int graph::HittingRandomParallel(int L, string hittingFile) {
     l = L-k+1;
     epsilon = 0.083333333;
     delta = 1.0;
-
-    hittingNumVector = new double[edgeNum];
+    hittingNumArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-
-    cout << "D initialized." << endl;
-    cout << "F initialized." << endl;
 	topologicalSort();
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
@@ -249,32 +231,32 @@ int graph::HittingRandomParallel(int L, string hittingFile) {
 	imaxHittingNum = calculateHittingNumberParallel(l);
 	pick = new bool[edgeNum];
 	for (int i = 0; i < edgeNum; i++) pick[i] = false;
-	double maxPtr = hittingNumVector[imaxHittingNum];
+	double maxPtr = hittingNumArray[imaxHittingNum];
 	stageOps(l, maxPtr);
 	hittingStream.open(hittingFile);
-	for (int j = 0; j < edgeNum; j++){
-    	if (pick[j] == true && edgeVector[j] == 0) {
+	for (int j = 0; j < edgeNum; j++) {
+    	if (pick[j] == true && edgeArray[j] == 0) {
     		string label = getLabel(j); 
     		hittingStream << label << "\n";
     		hittingCount++;
     	}
 	}
 	hittingStream.close();
-   	delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
+   	//delete [] *D;
+	//delete [] D;
+	//delete [] *F;
+	//delete [] F;
 
     topologicalSort();
 
-    delete [] used;
-    delete [] finished;
+    //delete [] used;
+    //delete [] finished;
 
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
 
-   	delete [] topoSort;
-    delete [] edgeVector;
-    delete [] hittingNumVector;
+   	//delete [] topoSort;
+    //delete [] edgeArray;
+    //delete [] hittingNumArray;
     return hittingCount;
 }
 
