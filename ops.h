@@ -140,6 +140,9 @@ vector<int> graph::getAdjacent(int v) {
 	}
 	return rc;
 }
+int findLog(double base, double x) {
+    return (int)(log(x) / log(base));
+}
 int* graph::findMaxAny(int x) {
 	for (int i = 0; i < edgeNum; i++){
 		int j = 0;
@@ -181,6 +184,7 @@ void graph::removeEdge(int i) {
 	}
 	edgeVector[i] = 0;
 }
+
 void graph::topologicalSort() {
 	for (int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
 	int index = 0;

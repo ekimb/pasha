@@ -77,6 +77,7 @@ class graph {
     int calculatePaths(int L);
     int calculatePathsAny();
     int* findMaxAny(int x);
+    int findLog(double base, double x);
     vector<int> getAdjacent(int v);
     int Hitting(int L, string hittingFile);
     int HittingAny(int L, int x, string hittingFile);
