@@ -15,6 +15,8 @@ class graph {
 	int ALPHABET_SIZE;
 	string ALPHABET;
 	int* edgeVector;
+    double* maxHittingNum;
+    int* imaxHittingNum;
     double* hittingNumVector;
     double* hittingNumAnyVector;
 	int* topoSort;
@@ -69,12 +71,12 @@ class graph {
     void calculateForEach(int i, int L);
     void calculateForEachAny(int i);
     int calculateHittingNumber(int L);
-    vector<int> calculateHittingNumberAny(int x);
+    int* calculateHittingNumberAny(int x);
     int calculateHittingNumberParallel(int L);
-    vector<int> calculateHittingNumberParallelAny(int x);
+    int* calculateHittingNumberParallelAny(int x);
     int calculatePaths(int L);
     int calculatePathsAny();
-    vector<int> findMaxAny(int x);
+    int* findMaxAny(int x);
     vector<int> getAdjacent(int v);
     int Hitting(int L, string hittingFile);
     int HittingAny(int L, int x, string hittingFile);

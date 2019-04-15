@@ -32,10 +32,9 @@ int graph::calculateHittingNumber(int L) {
     }
     return imaxHittingNum;
 }
-vector<int> graph::calculateHittingNumberAny(int x) {
-	vector<double> maxHittingNum (x);
-	vector<int> imaxHittingNum (x);
-	hittingNumAnyVector = new double[edgeNum];
+int* graph::calculateHittingNumberAny(int x) {
+	maxHittingNum = new double[x];
+	imaxHittingNum = new int[x];
     for (int i = 0; i < edgeNum; i++) {
         double hittingNum = 0;
         hittingNum = edgeVector[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
@@ -65,11 +64,10 @@ int graph::calculateHittingNumberParallel(int L) {
     //cout << imaxHittingNum << endl;
     return imaxHittingNum;
 }
-vector<int> graph::calculateHittingNumberParallelAny(int x) {
+int* graph::calculateHittingNumberParallelAny(int x) {
 	omp_set_dynamic(0);
-	vector<double> maxHittingNum (x);
-	vector<int> imaxHittingNum (x);
-	hittingNumAnyVector = new double[edgeNum];
+	maxHittingNum = new double[x];
+	imaxHittingNum = new int[x];
 	#pragma omp parallel for num_threads(16)
     for (int i = 0; i < edgeNum; i++) {
         calculateForEachAny(i);
@@ -142,16 +140,14 @@ vector<int> graph::getAdjacent(int v) {
 	}
 	return rc;
 }
-vector<int> graph::findMaxAny(int x) {
-	vector<double> max(x);
-	vector<int> imax(x);
+int* graph::findMaxAny(int x) {
 	for (int i = 0; i < edgeNum; i++){
 		int j = 0;
-		while (j < x && hittingNumAnyVector[i] <= max[j]) j++;
-		if (j < x && hittingNumAnyVector[i] > max[j]) {
-			max[j] = hittingNumAnyVector[i]; imax[j] = i;}
+		while (j < x && hittingNumAnyVector[i] <= maxHittingNum[j]) j++;
+		if (j < x && hittingNumAnyVector[i] > maxHittingNum[j]) {
+			maxHittingNum[j] = hittingNumAnyVector[i]; imaxHittingNum[j] = i;}
 	}
-	return imax;
+	return imaxHittingNum;
 }
 int graph::maxLength() {
 	vector<int> depth(vertexExp);
