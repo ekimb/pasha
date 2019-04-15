@@ -222,7 +222,7 @@ int graph::HittingParallelAny(int L, int x, string hittingFile) {
 	delete [] edgeVector;
     return hittingCount;
 }
-int graph::HittingRandom(int L, string hittingFile) {
+int graph::HittingRandomParallel(int L, string hittingFile) {
 	vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int imaxHittingNum = -1;
@@ -240,7 +240,7 @@ int graph::HittingRandom(int L, string hittingFile) {
     cout << "F initialized." << endl;
 
     hittingStream.open(hittingFile); 
-
+	topologicalSort();
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
@@ -248,23 +248,13 @@ int graph::HittingRandom(int L, string hittingFile) {
     double* Fpool = new double[(l+1)*vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
 	calculatePaths(l);
-	imaxHittingNum = calculateHittingNumber(l);
-	h = findLog((1.0+epsilon), hittingNumVector[imaxHittingNum]);
-	for (int i = h; i-- > 0;){
-    	calculatePaths(l);
-    	//cout << "in while" << endl;
-    	imaxHittingNum = calculateHittingNumber(l);
-    	if (imaxHittingNum < 0) break;
-    	double prob = delta/pow((1 + epsilon), l);
-    	stageOps(prob, l, hittingStream);
-    	//cout << imaxHittingNum << endl;
-        removeEdge(imaxHittingNum);
-        string label = getLabel(imaxHittingNum);
-        hittingStream << label << "\n";
-        hittingCount++;
-   	}
-   	hittingStream.close();
-
+	imaxHittingNum = calculateHittingNumberParallel(l);
+	pick = new bool[edgeNum];
+	double maxPtr = hittingNumVector[imaxHittingNum];
+	stageOps(l, hittingFile, maxPtr);
+	for (int j = 0; j < edgeNum; j++){
+    	if (pick[j] == true) hittingCount++;
+    }
    	delete [] *D;
 	delete [] D;
 	delete [] *F;

@@ -15,6 +15,7 @@ class graph {
 	int ALPHABET_SIZE;
 	string ALPHABET;
 	int* edgeVector;
+    int* stageVector;
     double* maxHittingNum;
     int* imaxHittingNum;
     double* hittingNumVector;
@@ -28,6 +29,7 @@ class graph {
     int vertexCount; 
     double** D;
     double** F;
+    bool* pick;
     bool* used;
     bool* finished;
     double epsilon;
@@ -83,12 +85,11 @@ class graph {
     int HittingAny(int L, int x, string hittingFile);
     int HittingParallel(int L, string hittingFile);
     int HittingParallelAny(int L, int x, string hittingFile);
-    int HittingParallelRandom(int L, string hittingFile);
+    int HittingRandomParallel(int L, string hittingFile);
     int HittingParallelRandomAny(int L, int x, string hittingFile);
-    int HittingRandom(int L, string hittingFile);
-    int HittingRandomAny(int L, int x, string hittingFile);
     int maxLength();
     void removeEdge(int i);
+    void stageOps(int l, string hittingFile, double maxPtr);
     void topologicalSort();
     private:
 	int depthFirstSearch(int index, int u);

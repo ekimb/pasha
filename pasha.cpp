@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
     else {
       if (parallel == true){
         if (randomized == true){
-          //num = HittingRandomParallel(newGraph, L, hittingFile);
+          hittingSize = newGraph.HittingRandomParallel(L, hittingFile);
         }
 
         else hittingSize = newGraph.HittingParallel(L, hittingFile);
