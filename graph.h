@@ -89,7 +89,7 @@ class graph {
     int HittingParallelRandomAny(int L, int x, string hittingFile);
     int maxLength();
     void removeEdge(int i);
-    void stageOps(int l, string hittingFile, double maxPtr);
+    void stageOps(int l, double maxPtr);
     void topologicalSort();
     private:
 	int depthFirstSearch(int index, int u);

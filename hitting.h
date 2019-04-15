@@ -238,8 +238,6 @@ int graph::HittingRandomParallel(int L, string hittingFile) {
 
     cout << "D initialized." << endl;
     cout << "F initialized." << endl;
-
-    hittingStream.open(hittingFile); 
 	topologicalSort();
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
@@ -250,11 +248,18 @@ int graph::HittingRandomParallel(int L, string hittingFile) {
 	calculatePaths(l);
 	imaxHittingNum = calculateHittingNumberParallel(l);
 	pick = new bool[edgeNum];
+	for (int i = 0; i < edgeNum; i++) pick[i] = false;
 	double maxPtr = hittingNumVector[imaxHittingNum];
-	stageOps(l, hittingFile, maxPtr);
+	stageOps(l, maxPtr);
+	hittingStream.open(hittingFile);
 	for (int j = 0; j < edgeNum; j++){
-    	if (pick[j] == true) hittingCount++;
-    }
+    	if (pick[j] == true && edgeVector[j] == 0) {
+    		string label = getLabel(j); 
+    		hittingStream << label << "\n";
+    		hittingCount++;
+    	}
+	}
+	hittingStream.close();
    	delete [] *D;
 	delete [] D;
 	delete [] *F;

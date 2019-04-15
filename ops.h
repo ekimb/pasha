@@ -175,11 +175,9 @@ void graph::removeEdge(int i) {
 	}
 	edgeVector[i] = 0;
 }
-void graph::stageOps(int l, string hittingFile, double maxPtr) {
+void graph::stageOps(int l, double maxPtr) {
 	int h = findLog((1.0+epsilon), maxPtr);
 	stageVector = new int[edgeNum];
-	ofstream hittingStream;
-	hittingStream.open(hittingFile); 
 	int imaxHittingNum = -1;
 	omp_set_dynamic(0);
 	for (int i = h; i-- > 0;){
@@ -190,28 +188,26 @@ void graph::stageOps(int l, string hittingFile, double maxPtr) {
 		calculatePaths(l);
     	imaxHittingNum = calculateHittingNumberParallel(l);
 		if (imaxHittingNum < 0) break;
-    	int total = 0;
-        for (int i = 0; i < edgeNum; i++) total += (hittingNumVector[i] * stageVector[i] * edgeVector[i]);
+    	double total = 0;
+        for (int i = 0; i < edgeNum; i++) total += (hittingNumVector[i] * stageVector[i]);
         for (int i = 0; i < edgeNum; i++){
             if ((stageVector[i]*edgeVector[i] != 0) && (hittingNumVector[i] > ((pow(delta, 3)/(1+epsilon)) * total))){
             	string label = getLabel(i);
                 stageVector[i] = 0;
 				pick[i] = true;
                 removeEdge(i);
-                hittingStream << label << "\n";
             }
         }
         if ((maxLength() < l)) break;
         double prob = delta/(pow((1.0+epsilon), l));
         #pragma omp parallel for num_threads(8)
         for (int i = 0; i < edgeNum; i++){
-        	if ((pick[i] != true) && ((stageVector[i] == 1)) && (edgeVector[i] == 1)){
-        		if (((double) rand() / (RAND_MAX)) <= prob){
+        	if ((pick[i] == false) && ((stageVector[i] == 1)) && (edgeVector[i] == 1)){
+        		if (rand() % 2 <= prob){
 	        		string label = getLabel(i);
 		          	stageVector[i] = 0;
 					pick[i] = true;
 		          	removeEdge(i);
-		          	hittingStream << label << "\n";
 				}
 			}
         }
@@ -219,7 +215,6 @@ void graph::stageOps(int l, string hittingFile, double maxPtr) {
 		topologicalSort();
         if ((maxLength() < l)) break;
    	}
-   	hittingStream.close();
 }
 void graph::topologicalSort() {
 	for (int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
