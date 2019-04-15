@@ -21,7 +21,6 @@ void graph::calculateForEachAny(int i){
 int graph::calculateHittingNumber(int L) {
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
-	hittingNumVector = new double[edgeNum];
 	//hittingNumVector.resize(edgeNum, 0);
     for (int i = 0; i < edgeNum; i++) {
         int hittingNum = 0;
@@ -113,22 +112,20 @@ int graph::calculatePathsAny() {
 	}
 int graph::depthFirstSearch(int index, int u) {
 	//cout << u << endl;
-	used[u] = 1;
+	used[u] = true;
 	bool cycle = false;
-	//cout << "here dfs" << endl;
 	for (int v : getAdjacent(u)) {
 		// Return true for cycle
-		if (used[v] == 1 && finished[v] == 0) {cycle = true;}
-		if (used[v] == 0) {
+		if (used[v] == true && finished[v] == false) {cycle = true;}
+		if (used[v] == false) {
 			index = depthFirstSearch(index, v);
 			cycle = cycle || (index == -1);
 		}
 	}
 	//cout << "dfs done" << endl;
-	finished[u] = 1;
+	finished[u] = true;
 	//cout << "finished assign" << endl;
-	res[index] = u;
-	//cout << "finished res" << endl;
+	topoSort[index] = u;
 	if (cycle){	/*cout << "dfs done cycle " << u << endl;*/ return -1;}
 	else { return index + 1;}
 }
@@ -158,6 +155,7 @@ vector<int> graph::findMaxAny(int x) {
 }
 int graph::maxLength() {
 	vector<int> depth(vertexExp);
+	//cout << vertexExp << endl;
 	int maxDepth = -1;
 	for (int i = 0; i < vertexExp; i++) {
 		int maxVertDepth = -1;
@@ -187,22 +185,18 @@ void graph::removeEdge(int i) {
 	}
 	edgeVector[i] = 0;
 }
-int* graph::topologicalSort() {
-	int n = vertexExp;
-	used.resize(n, 0);
-	finished.resize(n, 0);
-	res = new int[n];
+void graph::topologicalSort() {
+	for (int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
 	int index = 0;
-	for (int i = 0; i < n; i++) {
-		if (used[i] == 0) {
+	for (int i = 0; i < vertexExp; i++) {
+		if (used[i] == false) {
 			index = depthFirstSearch(index, i);
-			if (index == -1) {cout << "null return" << endl; return NULL;}
+			if (index == -1) {topoSort = NULL; return;}
 		}
 	}
-	int rc[n];
-	for (int i = 0; i < n; i++)
-		rc[i] = res[n-i-1];
-	return res;
+	int rc[vertexExp];
+	for (int i = 0; i < vertexExp; i++)
+		rc[i] = topoSort[vertexExp-i-1];
 }
 #endif
 
