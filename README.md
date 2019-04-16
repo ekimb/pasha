@@ -58,9 +58,9 @@ Before computing a decycling or hitting set, Pasha will report where the set wil
 `usr@usr:~/pasha$ ./pasha decycling -k 6`
 `Decycling set will be saved to: decycling_6.txt`
 
-`usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20`
-`Decycling set will be saved to: decycling_8.txt`
-`Hitting set will be saved to: 820r.txt`
+`usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20` 
+`Decycling set will be saved to: decycling_8.txt` 
+`Hitting set will be saved to: 820r.txt` 
 
 
 
