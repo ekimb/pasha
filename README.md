@@ -56,7 +56,7 @@ For help on either command, run `pasha <command>` without any options.
 
 ### Interpreting output
 
-Before computing a decycling or hitting set, Pasha will report where the set will be saved. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
+Before computing a decycling or hitting set, Pasha will create a directory named `pasha_<kmerlength>`, and report the filenames the sets will be saved in. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
 
 `usr@usr:~/pasha$ ./pasha decycling -k 6`<br>
 `Decycling set will be saved to: decycling_6.txt`
