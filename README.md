@@ -41,7 +41,7 @@ Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer le
 Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.<br> 
 Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.<br> 
 Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.<br>
-Example: `./pasha generate -a 625-p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length, removing the top 625 vertices at a time.<br> 
+Example: `./pasha generate -a 625 -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length, removing the top 625 vertices at a time.<br> 
 Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.
 
 To compare outputs in terms of CPU usage, memory usage, running time, and set size, use the command:
@@ -51,6 +51,8 @@ To compare outputs in terms of CPU usage, memory usage, running time, and set si
 Example: `./pasha benchmark -k 7 -l 60` will compute hitting sets for k-mer 7 and sequence length 60 with every method, and report CPU usage, memory usage, running time, and set size for each method.
 
 Currently, Pasha supports k-mer lengths of 5 to 12, and sequence lengths of 20 to 200. Randomization requires computing paths in parallel; hence, in order to use the flag `-r`, the flag `-p` must be included.
+
+For help on either command, run `pasha <command>` without any options.
 
 ### Interpreting output
 
