@@ -33,15 +33,15 @@ To compute the hitting set for a specified k-mer and sequence length, use the co
 
 `./pasha generate [-a][-p][-r] -k <kmerlength> -l <seqlength>`
 
-Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.
-Flag `-p` enables parallelization.
-Flag `-r` enables randomization.
+Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.<br> 
+Flag `-p` enables parallelization.<br>  
+Flag `-r` enables randomization.<br> 
 
-Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.
-Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.
-Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.
-Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.
-Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.
+Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.<br> 
+Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.<br> 
+Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.<br> 
+Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.<br> 
+Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.<br> 
 
 To compare outputs in terms of CPU usage, memory usage, running time, and set size, use the command:
 
