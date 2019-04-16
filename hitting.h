@@ -44,21 +44,12 @@ or randomization, counting L-k+1-long paths.
         hittingCount++;
    	}
    	hittingStream.close();
-    //delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
-
+   	delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
-
-    //delete [] used;
-    //delete [] finished;
-
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-
-   	//delete [] topoSort;
-    //delete [] edgeArray;
-    //delete [] hittingNumArray;
     return hittingCount;
 }
 int graph::HittingAny(int L, int x, string hittingFile) {
@@ -96,19 +87,12 @@ or randomization, counting paths of all length.
         }
    	}
    	hittingStream.close();
-   	//delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
-	//delete [] hittingNumAnyArray;
-	//delete [] imaxHittingNum;
+   	delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
-    //delete [] used;
-    //delete [] finished;
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-   	//delete [] topoSort;
-    //delete [] edgeArray;
-	//delete [] topoSort;
     return hittingCount;
 }
 int graph::HittingParallel(int L, string hittingFile) {
@@ -143,21 +127,12 @@ and without randomization, counting L-k+1-long paths.
         hittingCount++;
    	}
    	hittingStream.close();
-    //delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
-
+    delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
-
-    //delete [] used;
-    //delete [] finished;
-
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-
-   	//delete [] topoSort;
-    //delete [] edgeArray;
-    //delete [] hittingNumArray;
     return hittingCount;
 }
 int graph::HittingParallelAny(int L, int x, string hittingFile) {
@@ -195,15 +170,12 @@ without randomization, counting paths of all length.
         }
    	}
    	hittingStream.close();
-   	int* topoSort;
+   	delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-	//delete [] *D;
-	//delete [] D;
-	//for(int i = 0; i < vertexExp; i++) {delete [] F[i];}
-	//delete [] *F;
-	//delete [] F;
-	//delete [] edgeArray;
     return hittingCount;
 }
 int graph::HittingRandomParallel(int L, string hittingFile) {
@@ -214,9 +186,7 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
 	vertexExp = pow(ALPHABET_SIZE, k-1);
-    ofstream hittingStream;
     int imaxHittingNum = -1;
-    int hittingCount = 0;
     l = L-k+1;
     epsilon = 0.083333333;
     delta = 1.0;
@@ -235,31 +205,13 @@ and with randomization, counting L-k+1-long paths.
 	pick = new bool[edgeNum];
 	for (int i = 0; i < edgeNum; i++) pick[i] = false;
 	double maxPtr = hittingNumArray[imaxHittingNum];
-	stageOps(l, maxPtr);
-	hittingStream.open(hittingFile);
-	for (int j = 0; j < edgeNum; j++) {
-    	if (pick[j] == true && edgeArray[j] == 0) {
-    		string label = getLabel(j); 
-    		hittingStream << label << "\n";
-    		hittingCount++;
-    	}
-	}
-	hittingStream.close();
-   	//delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
-
+	int hittingCount = stageOps(l, maxPtr, hittingFile);
+   	delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
-
-    //delete [] used;
-    //delete [] finished;
-
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-
-   	//delete [] topoSort;
-    //delete [] edgeArray;
-    //delete [] hittingNumArray;
     return hittingCount;
 }
 
