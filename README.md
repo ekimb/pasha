@@ -13,9 +13,9 @@ Pasha is a tool for research and still under development. It is not presented as
 
 ### Installing the package
 
-Clone the repository to your local machine, and compile via `gcc` using the command:
+Clone the repository to your local machine, and compile via `g++` using the command:
 
-`gcc -O3 -o pasha pasha.cpp -fopenmp`
+`g++ -O3 -o pasha pasha.cpp -fopenmp`
 
 The `-O3` or `-Ofast` flag is necessary for efficient parallelization and optimization. The `-fopenmp` flag is needed to process parallelization via OpenMP.
 
