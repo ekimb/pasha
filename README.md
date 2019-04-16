@@ -58,16 +58,18 @@ For help on either command, run `pasha <command>` without any options.
 
 Before computing a decycling or hitting set, Pasha will create a directory named `pasha_<kmerlength>`, and report the filenames the sets will be saved in. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
 
-`usr@usr:~/pasha$ ./pasha decycling -k 6`<br>
-`Decycling set will be saved to: decycling_6.txt`
+`usr@usr:~/pasha$ ./pasha decycling -k 5`
+
+`Directory created.`<br> 
+`Decycling set will be saved to: pasha_5/d5.txt` <br> 
+`Decycling set size: 208`
 
 `usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20` <br>
-`Decycling set will be saved to: decycling_8.txt` <br>
-`Hitting set will be saved to: 820r.txt` 
-
-
-
-
+`Decycling set will be saved to: pasha_5/d5.txt` <br>
+`Hitting set will be saved to: pasha_5/520r.txt` <br>
+`Length of longest remaining path: 15` <br>
+`0.184839 seconds.` <br>
+`Hitting set size: 45`
 
 ## License
 
