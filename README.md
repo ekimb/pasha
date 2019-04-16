@@ -3,7 +3,6 @@
 </p>
 <h1><center>Pasha: Parallel Algorithms for Approximating Compact Universal Hitting Sets</center></h1>
 
-
 **Pasha** (Parallel Algorithms for Approximating Compact Universal Hitting Sets) is a tool for finding approximations for a small universal hitting set (a small set of k-mers that hits every sequence of length L). A detailed description of the functionality of Pasha, along with results in set size, runtime, memory usage and CPU utilization are provided in:
 
 > Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for approximating compact universal hitting sets. *19th International Workshop on Algorithms in Bioinformatics* (2019).
@@ -12,17 +11,60 @@ Pasha is a tool for research and still under development. It is not presented as
 
 ## Installation and setup
 
-Pasha takes a k-mer length k, a sequence length L, and approximation constants epsilon and delta as input, and outputs a compact universal hitting set of k-mers.
-
 ### Installing the package
 
-First clone the repository to your local machine, and compile via `gcc` using the command:
+Clone the repository to your local machine, and compile via `gcc` using the command:
 
 `gcc -O3 -o pasha pasha.cpp -fopenmp`
 
 The `-O3` or `-Ofast` flag is necessary for efficient parallelization and optimization. The `-fopenmp` flag is needed to process parallelization via OpenMP.
 
 ### Example commands
+
+Pasha offers several different options for the calculation of decycling and hitting sets.
+
+To compute the decycling set for a specified k-mer length, use the command:
+
+`./pasha decycling -k <kmerlength>`
+
+Example: `./pasha decycling -k 5` will compute the decycling set for a complete de Bruijn graph of order 5.
+
+To compute the hitting set for a specified k-mer and sequence length, use the command:
+
+`./pasha generate [-a][-p][-r] -k <kmerlength> -l <seqlength>`
+
+Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.
+Flag `-p` enables parallelization.
+Flag `-r` enables randomization.
+
+Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.
+Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.
+Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.
+Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.
+Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.
+
+To compare outputs in terms of CPU usage, memory usage, running time, and set size, use the command:
+
+`./pasha benchmark -k <kmerlength> -l <seqlength>`
+
+Example: `./pasha benchmark -k 7 -l 60` will compute hitting sets for k-mer 7 and sequence length 60 with every method, and report CPU usage, memory usage, running time, and set size for each method.
+
+Currently, Pasha supports k-mer lengths of 5 to 12, and sequence lengths of 20 to 200. Randomization requires computing paths in parallel; hence, in order to use the flag `-r`, the flag `-p` must be included.
+
+### Interpreting output
+
+Before computing a decycling or hitting set, Pasha will report where the set will be saved. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
+
+`usr@usr:~/pasha$ ./pasha decycling -k 6`
+`Decycling set will be saved to: decycling_6.txt`
+
+`usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20`
+`Decycling set will be saved to: decycling_8.txt`
+`Hitting set will be saved to: 820r.txt`
+
+
+
+
 
 ## License
 
