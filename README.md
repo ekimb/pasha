@@ -56,7 +56,11 @@ For help on either command, run `pasha <command>` without any options.
 
 ### Interpreting output
 
-Before computing a decycling or hitting set, Pasha will create a directory named `pasha_<kmerlength>`, and report the filenames the sets will be saved in. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
+Before computing a decycling or hitting set, Pasha will create a directory named `pasha_<kmerlength>`, and report the filenames the sets will be saved in.
+
+For `pasha decycling`, Pasha will report the size of the decycling set.
+
+For `pasha generate`, Pasha will report the length of the longest remaining path in the graph, the running time, and the size of the hitting set.
 
 `usr@usr:~/pasha$ ./pasha decycling -k 5`
 
