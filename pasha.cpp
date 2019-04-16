@@ -316,7 +316,7 @@ int main(int argc, char* argv[]) {
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "a625.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
-        hittingSize = newGraph.HittingAny(L, 625, (hittingFile + "a625.txt"));
+        hittingSize = newGraph.HittingAny(L, 50, (hittingFile + "a50.txt"));
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
@@ -334,7 +334,7 @@ int main(int argc, char* argv[]) {
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "ap625.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
-        hittingSize = newGraph.HittingParallelAny(L, 625, (hittingFile + "ap625.txt"));
+        hittingSize = newGraph.HittingParallelAny(L, 50, (hittingFile + "ap50.txt"));
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
