@@ -34,7 +34,7 @@ To compute the hitting set for a specified k-mer and sequence length, use the co
 `./pasha generate [-a][-p][-r] -k <kmerlength> -l <seqlength>`
 
 Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.<br> 
-Flag `-p` enables parallelization.<br>  
+Flag `-p` enables parallelization.  
 Flag `-r` enables randomization. 
 
 Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.<br> 
