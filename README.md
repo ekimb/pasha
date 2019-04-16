@@ -64,7 +64,7 @@ Before computing a decycling or hitting set, Pasha will create a directory named
 `Decycling set will be saved to: pasha_5/d5.txt` <br> 
 `Decycling set size: 208`
 
-`usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20`
+`usr@usr:~/pasha$ ./pasha generate -p -r -k 5 -l 20`
 
 `Decycling set will be saved to: pasha_5/d5.txt` <br>
 `Hitting set will be saved to: pasha_5/520r.txt` <br>
