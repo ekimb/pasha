@@ -40,13 +40,14 @@ Calculates hitting number of all edges, counting paths of length L-k+1.
 */	
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
+	hittingNumArray = new double[edgeNum];
     for (int i = 0; i < edgeNum; i++) {
-        int hittingNum = 0;
+        double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
         	hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
 			hittingNumArray[i] = hittingNum;
         }
-        if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
+    	if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
     }
     return imaxHittingNum;
 }
@@ -79,7 +80,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
 	hittingNumArray = new double[edgeNum];
-  	#pragma omp parallel for num_threads(16)
+  	#pragma omp parallel for num_threads(8)
     for (int i = 0; i < edgeNum; i++) calculateForEach(i, L);
     for (int i = 0; i < edgeNum; i++) {
     	if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;};
@@ -96,7 +97,7 @@ Calculates hitting number of all edges counting all paths, in parallel.
 	omp_set_dynamic(0);
 	maxHittingNum = new double[x];
 	imaxHittingNum = new int[x];
-	#pragma omp parallel for num_threads(16)
+	#pragma omp parallel for num_threads(8)
     for (int i = 0; i < edgeNum; i++) calculateForEachAny(i);
     imaxHittingNum = findMaxAny(x);
     return imaxHittingNum;
@@ -114,6 +115,7 @@ Calculates number of L-k+1 long paths for all vertices.
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
 	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
+		#pragma omp parallel for num_threads(8)
 		for (int i = 0; i < vertexExp; i++) {
 			int index = (i * 4);
             F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
@@ -238,18 +240,20 @@ Includes operations for randomized hitting set calculation for each stage.
 	int h = findLog((1.0+epsilon), maxPtr);
 	stageArray = new int[edgeNum];
 	int imaxHittingNum = -1;
+	double total = 0;
 	omp_set_dynamic(0);
 	for (int i = h; i-- > 0;){
-		for (int i = 0; i < edgeNum; i++) {
-			if (((hittingNumArray[i])*edgeArray[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i])*edgeArray[i] <= pow((1.0+epsilon), h))) stageArray[i] = 1;
-			else stageArray[i] = 0;
-		}
 		calculatePaths(l);
     	imaxHittingNum = calculateHittingNumberParallel(l);
 		if (imaxHittingNum < 0) break;
-    	double total = 0;
-        for (int i = 0; i < edgeNum; i++) total += (hittingNumArray[i] * stageArray[i]);
-        for (int i = 0; i < edgeNum; i++){
+		 #pragma omp parallel for num_threads(8)
+		for (int i = 0; i < edgeNum; i++) {
+			if (((hittingNumArray[i])*edgeArray[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i])*edgeArray[i] <= pow((1.0+epsilon), h))) stageArray[i] = 1;
+			else stageArray[i] = 0;
+			total += (hittingNumArray[i] * stageArray[i]);
+		}
+		#pragma omp parallel for num_threads(8)
+        for (int i = 0; i < edgeNum; i++) {
             if ((stageArray[i]*edgeArray[i] != 0) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))){
             	string label = getLabel(i);
                 stageArray[i] = 0;
@@ -257,7 +261,6 @@ Includes operations for randomized hitting set calculation for each stage.
                 removeEdge(i);
             }
         }
-        if ((maxLength() < l)) break;
         double prob = delta/(pow((1.0+epsilon), l));
         #pragma omp parallel for num_threads(8)
         for (int i = 0; i < edgeNum; i++){

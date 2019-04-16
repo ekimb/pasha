@@ -20,23 +20,23 @@ or randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
 	vertexExp = pow(ALPHABET_SIZE, k-1);
-    ofstream hittingStream;
     int imaxHittingNum = -1;
+    ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
     hittingNumArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-    hittingStream.open(hittingFile); 
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+	hittingStream.open(hittingFile); 
     F = new double*[l + 1];
-    double* Fpool = new double[(l+1)*vertexExp];
+    double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
     while (calculatePaths(l)) {
-    	imaxHittingNum = calculateHittingNumber(l);
+    	int imaxHittingNum = calculateHittingNumber(l);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
@@ -44,14 +44,18 @@ or randomization, counting L-k+1-long paths.
         hittingCount++;
    	}
    	hittingStream.close();
-   	//delete [] *D;
+    //delete [] *D;
 	//delete [] D;
 	//delete [] *F;
 	//delete [] F;
+
     topologicalSort();
+
     //delete [] used;
     //delete [] finished;
+
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
+
    	//delete [] topoSort;
     //delete [] edgeArray;
     //delete [] hittingNumArray;
@@ -220,7 +224,6 @@ and with randomization, counting L-k+1-long paths.
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-	topologicalSort();
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;

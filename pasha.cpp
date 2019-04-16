@@ -226,10 +226,10 @@ int main(int argc, char* argv[]) {
             if (seqLen == false) printBenchmarkHelp("Please provide a sequence length.");
         }
     }
-    graph newGraph = regenerateGraph(k, decyclingFile);
     int hittingSize = 0;
     if (mkdir(directory.c_str(), 0777) == -1) cout << strerror(errno) << "." << endl; 
     else cout << "Directory created." << endl; 
+    graph newGraph = regenerateGraph(k, decyclingFile);
     if (argFirst == DECYCLING) cout << "Decycling set will be saved to: " << decyclingFile << endl; 
     else if (argFirst == GENERATE) {
         struct timespec start, finish;
@@ -282,6 +282,7 @@ int main(int argc, char* argv[]) {
         cout << elapsed << " seconds." << endl;
     }
     else if (argFirst == BENCHMARK) {
+        hittingSize = 0;
         hittingFile = "pasha_" + to_string(k) + "/" + hittingFile;
         cout << "Decycling set will be saved to: " << decyclingFile << endl;
         cout << "Hitting sets will be saved to: " << hittingFile + "*.txt" << endl << endl;
@@ -295,6 +296,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "p.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -304,6 +306,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "a.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -313,6 +316,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "a625.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -322,6 +326,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "ap.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -331,6 +336,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "ap625.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -340,6 +346,7 @@ int main(int argc, char* argv[]) {
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout << elapsed << " seconds." << endl; 
         cout << "Hitting set size: " << hittingSize << endl << endl;
+
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "r.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
