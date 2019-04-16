@@ -16,6 +16,12 @@ Pasha takes a k-mer length k, a sequence length L, and approximation constants e
 
 ### Installing the package
 
+First clone the repository to your local machine, and compile via 'gcc' using the command:
+
+  gcc -O3 -o pasha pasha.cpp -fopenmp
+
+The '-O3' or '-Ofast' flag is necessary for efficient parallelization and optimization. The '-fopenmp' flag is needed to process parallelization via OpenMP.
+
 ### Example commands
 
 ## License
