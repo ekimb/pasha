@@ -21,6 +21,7 @@
 #include "hitting.h"
 #define DECYCLING  "decycling"
 #define GENERATE  "generate"
+#define BENCHMARK "benchmark"
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
@@ -35,7 +36,7 @@ Prints help log for decycling set.
 @param argError: Error message.
 */
     cout << "Usage: pasha " << DECYCLING << " -k <kmerlength>" << endl;
-    cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
+    cout << "-k <kmerlength [int 5-12]> K-mer length (required)." << endl;
     if (argError != "") {
         cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
         cout << "Please follow the specifications above." << endl << endl;
@@ -48,10 +49,24 @@ void printGenerateHelp(string argError) {
 Prints help log for hitting set.
 @param argError: Error message.
 */
-    cout << "Usage: pasha " << GENERATE << " [-a][-p][-r] -k <kmerlength>  -l <seqlength>" << endl;
-    cout << "-a calculate all paths (optional)." << endl;
-    cout << "-p parallelization (optional)." << endl;
-    cout << "-r randomized (optional)." << endl;
+    cout << "Usage: pasha " << GENERATE << " [-a[<vcount>]][-p][-r] -k <kmerlength> -l <seqlength>" << endl;
+    cout << "-a [<vertexcount [int 1-625]>] Calculate all paths (optional), optionally specify number of vertices to remove at a time." << endl;
+    cout << "-p Parallelization (optional, required with randomization)." << endl;
+    cout << "-r Randomization (optional)." << endl;
+    cout << "-k <kmerlength [int 5-12]> K-mer length (required)." << endl;
+    cout << "-l <seqlength [int 20-200]> Sequence length (required)." << endl;
+    if (argError != "") {
+        cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
+        cout << "Please follow the specifications above." << endl << endl;
+    }
+    exit(0);
+}
+void printBenchmarkHelp(string argError) {
+/**
+Prints help log for benchmarks.
+@param argError: Error message.
+*/
+    cout << "Usage: pasha " << BENCHMARK << " -k <kmerlength> -l <seqlength>" << endl;
     cout << "-k <kmerlength [int 5-12]> k-mer length (required)." << endl;
     cout << "-l <seqlength [int 20-200]> sequence length (required)." << endl;
     if (argError != "") {
@@ -61,15 +76,18 @@ Prints help log for hitting set.
     exit(0);
 }
 
+
 int main(int argc, char* argv[]) {
-    int k;
-    int L;
+    int k = 0;
+    int L = 0;
     int x;
     string decyclingFile;
     string hittingFile;
     bool parallel = false;
     bool randomized = false;
     bool any = false;
+    bool seqLen = false;
+    bool kmerLen = false;
     const int ALPHABET_SIZE = 4;
     const double PI = 3.14159;
     string directory;
@@ -90,67 +108,90 @@ int main(int argc, char* argv[]) {
         else {
             for (int i = 2; i < argc;) {
                 string argNext = string(argv[i]);
-                if (argNext[0] == '-' && argc < i+2) printDecyclingHelp("Missing parameter for argument" + argNext + ".");
-                if (argNext == "-k") {
+                if (argc != 4) printDecyclingHelp("Incorrect number of arguments or values.");
+                else if (argNext == "-k") {
+                    char *end;
+                    k = strtol(argv[i+1], &end, 10);
+                    if (*end != '\0') printDecyclingHelp("Non-integer or unspecified k-mer length.");
                     directory = "pasha_" + string(argv[i+1]);
-                    k = atoi(argv[i+1]);
                     decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
-                    if (k < 5 || k > 12){
-                        printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
-                        i += 3;
-                    }
+                    if (k < 5 || k > 12) printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
                     i += 2;
                 }
-                else {
-                    if (argNext[0] == '-') printDecyclingHelp("Incorrect argument " + argNext+ ".");
-                    if (argc != i+1) printDecyclingHelp("Too many arguments.");
-                }  
-              i += 1;
+                else printDecyclingHelp("Incorrect argument or value " + argNext+ "."); 
             }
-          }
+        }
     }
     else if (argFirst == GENERATE) {
         if (argc <= 2 || string(argv[2]) == "--help" || string(argv[2]) == "help" || string(argv[2]) == "-h") printGenerateHelp("");
         else {
             for (int i = 2; i < argc;) {
                 string argNext = string(argv[i]);
-                if (argNext == "-a"){
+                if (argc < 6 || argc > 10) printGenerateHelp("Incorrect number of arguments or values.");
+                else if (argNext == "-a") {
                     any = true;
                     x = 1;
-                    if (string(argv[i+1]) != "-p" && string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k") {
-                        x = atoi(argv[i+1]);
+                    if (string(argv[i+1]) != "-p" && string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k" && string(argv[i+1]) != "-l") {
+                        char *end;
+                        x = strtol(argv[i+1], &end, 10);
+                        if (*end != '\0' || x <= 0) printGenerateHelp("Negative, 0, or non-integer number of vertices to remove.");
                         i += 2;
                     }
                     else i += 1;
                 }
                 else if (argNext == "-p" || argNext == "-r") {
                     if (argNext == "-p") parallel = true;
-                    else if (argNext == "-r") randomized = true;
+                    else if (argNext == "-r") {
+                        if (any == true) printGenerateHelp("Pasha requires calculating paths of L-k+1 for randomization. Do not use -a when using -r.");
+                        if (parallel == false) printGenerateHelp("Pasha requires parallelization for randomization. Use -p before using -r.");
+                        randomized = true;
+                    }
                     i += 1;
+                }
+                else if (argNext == "-k") {
+                    kmerLen = true;
+                    char *end;
+                    k = strtol(argv[i+1], &end, 10);
+                    if (*end != '\0') printGenerateHelp("Non-integer or unspecified k-mer length.");
+                    directory = "pasha_" + string(argv[i+1]);
+                    decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
+                    if (k < 5 || k > 12) printGenerateHelp("Pasha only supports k-mer lengths between 5 and 12.");
+                    i += 2;
+                } 
+                else if (argNext == "-l") {
+                    seqLen = true;
+                    char *end;
+                    L = strtol(argv[i+1], &end, 10);
+                    if (*end != '\0') printGenerateHelp("Non-integer or unspecified sequence length.");
+                    directory = "pasha_" + string(argv[i+1]);
+                    decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
+                    if (L < 20 || L > 200) printGenerateHelp("Pasha only supports sequence lengths between 20 and 200.");
+                    i += 2;
+                }
+                else printGenerateHelp("Incorrect argument or value " + argNext+ ".");      
+            }
+            if (kmerLen == false) printGenerateHelp("Please provide a k-mer length.");
+            if (seqLen == false) printGenerateHelp("Please provide a sequence length.");
+        }
+    }
+    else if (argFirst == BENCHMARK) {
+        if (argc <= 2 || string(argv[2]) == "--help" || string(argv[2]) == "help" || string(argv[2]) == "-h") printBenchmarkHelp("");
+        else {
+            for (int i = 2; i < argc;) {
+                string argNext = string(argv[i]);
+                if (argNext == "-k") {
+                    directory = "pasha_" + string(argv[i+1]);
+                    k = atoi(argv[i+1]);
+                    if (k < 5 || k > 12) printBenchmarkHelp("Pasha only supports k-mer lengths between 5 and 12.");
+                    i += 2;
                 }
                 else if (argNext == "-l") {
                     L = atoi(argv[i+1]);
                     hittingFile =  to_string(k) + string(argv[i+1]);
-                    if (L < 20 || L > 200){
-                        printGenerateHelp("Pasha only supports sequence lengths between 20 and 200.");
-                        i += 100;
-                    }
+                    if (L < 20 || L > 200) printBenchmarkHelp("Pasha only supports sequence lengths between 20 and 200.");
                     i += 2;
                 }
-                else if (argNext[0] == '-' && argc < i+2) printDecyclingHelp("Missing parameter for argument" + argNext + ".");  
-                else if (argNext == "-k") {
-                    directory = "pasha_" + string(argv[i+1]);
-                    k = atoi(argv[i+1]);
-                    decyclingFile = "d" + string(argv[i+1]) + ".txt";
-                    if (k < 5 || k > 12) printGenerateHelp("Pasha only supports k-mer lengths between 5 and 12.");    
-                    if (string(argv[i+2]) != "-l") printGenerateHelp("Wrong order of arguments.");     
-                    i += 2;
-                } 
-                else {
-                    if (argNext[0] == '-') {
-                        printGenerateHelp("Incorrect argument " + argNext+ ".");
-                    }
-                }
+                else printDecyclingHelp("Incorrect argument or value " + argNext+ ".");
             }
         }
     }
