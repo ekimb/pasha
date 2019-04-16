@@ -149,8 +149,6 @@ int main(int argc, char* argv[]) {
             }
           }
         }
-        cout << "Decycling set will be saved to: " << decyclingFile << endl;
-        cout << "Hitting set will be saved to: " << hittingFile << endl;
         }
         graph newGraph = graph(k);
         decycling newDecycling;
@@ -162,7 +160,6 @@ int main(int argc, char* argv[]) {
             decyclingStream << label << "\n";
         }
         int decyclingSize = decyclingSet.size();
-        cout << "Completed writing decycling set of size " << decyclingSize << endl;
         decyclingStream.close();
         int hittingSize = 0;
         struct timespec start, finish;
@@ -174,7 +171,11 @@ int main(int argc, char* argv[]) {
                     if (randomized == true) {
                         //hittingSize = HittingRandomParallelAny(newGraph, L, x, hittingFile);
                     }
-                    else hittingSize = newGraph.HittingParallelAny(L, x, hittingFile);
+                    else {
+                        cout << "Decycling set will be saved to: " << decyclingFile << endl;
+                        cout << "Hitting set will be saved to: " << hittingFile + "p" << endl;
+                        hittingSize = newGraph.HittingParallelAny(L, x, hittingFile);
+                    }
                 }
                 else hittingSize = newGraph.HittingAny(L, x, hittingFile);
             }
