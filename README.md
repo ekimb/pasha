@@ -35,13 +35,13 @@ To compute the hitting set for a specified k-mer and sequence length, use the co
 
 Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.<br> 
 Flag `-p` enables parallelization.<br>  
-Flag `-r` enables randomization.<br> 
+Flag `-r` enables randomization. 
 
 Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.<br> 
 Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.<br> 
 Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.<br> 
 Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.<br> 
-Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.<br> 
+Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.
 
 To compare outputs in terms of CPU usage, memory usage, running time, and set size, use the command:
 
@@ -55,11 +55,11 @@ Currently, Pasha supports k-mer lengths of 5 to 12, and sequence lengths of 20 t
 
 Before computing a decycling or hitting set, Pasha will report where the set will be saved. If `pasha generate` or `pasha benchmark` was run, Pasha will report running times:
 
-`usr@usr:~/pasha$ ./pasha decycling -k 6`
+`usr@usr:~/pasha$ ./pasha decycling -k 6`<br>
 `Decycling set will be saved to: decycling_6.txt`
 
 `usr@usr:~/pasha$ ./pasha generate -p -r -k 8 -l 20` <br>
-`Decycling set will be saved to: decycling_8.txt` 
+`Decycling set will be saved to: decycling_8.txt` <br>
 `Hitting set will be saved to: 820r.txt` 
 
 
