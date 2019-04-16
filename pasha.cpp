@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) {
         cout << "Hitting set size: " << hittingSize << endl << endl;
 
         newGraph = regenerateGraph(k, decyclingFile);
-        cout << hittingFile + "a625.txt:" << endl;
+        cout << hittingFile + "a50.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
         hittingSize = newGraph.HittingAny(L, 50, (hittingFile + "a50.txt"));
         clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -338,7 +338,7 @@ int main(int argc, char* argv[]) {
         cout << "Hitting set size: " << hittingSize << endl << endl;
 
         newGraph = regenerateGraph(k, decyclingFile);
-        cout << hittingFile + "ap625.txt:" << endl;
+        cout << hittingFile + "ap50.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
         hittingSize = newGraph.HittingParallelAny(L, 50, (hittingFile + "ap50.txt"));
         clock_gettime(CLOCK_MONOTONIC, &finish);
