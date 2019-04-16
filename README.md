@@ -85,7 +85,7 @@ If you find Pasha useful, please cite the following papers:
 
 ## Contributors
 
-Development of Pasha is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University.
+Development of Pasha is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University of the Negev (BGU).
 
 ## Contact
 
