@@ -10,8 +10,11 @@
 #include <sys/resource.h> 
 #include <sys/time.h> 
 #include <unistd.h> 
-#include<stdio.h> 
+#include <stdio.h> 
 #include <time.h>
+#include <bits/stdc++.h> 
+#include <sys/stat.h> 
+#include <sys/types.h> 
 #include "decycling.h"
 #include "graph.h"
 #include "ops.h"
@@ -69,6 +72,7 @@ int main(int argc, char* argv[]) {
     bool any = false;
     const int ALPHABET_SIZE = 4;
     const double PI = 3.14159;
+    string directory;
     const string ALPHABET = "ACGT";
     ofstream decyclingStream;
     ofstream hittingStream;
@@ -88,8 +92,9 @@ int main(int argc, char* argv[]) {
                 string argNext = string(argv[i]);
                 if (argNext[0] == '-' && argc < i+2) printDecyclingHelp("Missing parameter for argument" + argNext + ".");
                 if (argNext == "-k") {
+                    directory = "pasha_" + string(argv[i+1]);
                     k = atoi(argv[i+1]);
-                    decyclingFile = "d" + string(argv[i+1]) + ".txt";
+                    decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
                     if (k < 5 || k > 12){
                         printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
                         i += 3;
@@ -102,7 +107,6 @@ int main(int argc, char* argv[]) {
                 }  
               i += 1;
             }
-            cout << "Decycling set will be saved to: " << decyclingFile << endl;
           }
     }
     else if (argFirst == GENERATE) {
@@ -135,6 +139,7 @@ int main(int argc, char* argv[]) {
                 }
                 else if (argNext[0] == '-' && argc < i+2) printDecyclingHelp("Missing parameter for argument" + argNext + ".");  
                 else if (argNext == "-k") {
+                    directory = "pasha_" + string(argv[i+1]);
                     k = atoi(argv[i+1]);
                     decyclingFile = "d" + string(argv[i+1]) + ".txt";
                     if (k < 5 || k > 12) printGenerateHelp("Pasha only supports k-mer lengths between 5 and 12.");    
@@ -149,9 +154,14 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+
+    if (mkdir(directory.c_str(), 0777) == -1) cout << strerror(errno) << "." << endl; 
+    else cout << "Directory created." << endl; 
+    if (argFirst == DECYCLING) cout << "Decycling set will be saved to: " << decyclingFile << endl; 
     graph newGraph = graph(k);
     decycling newDecycling;
     vector<int> decyclingSet = newDecycling.computeDecyclingSet(k);
+    decyclingFile = "pasha_" + to_string(k) + "/" + decyclingFile;
     decyclingStream.open(decyclingFile);
     for (int i = 0; i < decyclingSet.size(); i++) {
         string label = newGraph.getLabel(decyclingSet[i]);
@@ -171,14 +181,14 @@ int main(int argc, char* argv[]) {
                     //hittingSize = HittingRandomParallelAny(newGraph, L, x, hittingFile);
                 }
                 else {
-                    hittingFile = hittingFile + "ap.txt";
+                    hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "ap.txt";
                     cout << "Decycling set will be saved to: " << decyclingFile << endl;
                     cout << "Hitting set will be saved to: " << hittingFile << endl;
                     hittingSize = newGraph.HittingParallelAny(L, x, hittingFile);
                 }
             }
             else {
-                hittingFile = hittingFile + "a.txt";
+                hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "a.txt";
                 cout << "Decycling set will be saved to: " << decyclingFile << endl;
                 cout << "Hitting set will be saved to: " << hittingFile << endl;
                 hittingSize = newGraph.HittingAny(L, x, hittingFile);
@@ -187,20 +197,20 @@ int main(int argc, char* argv[]) {
         else {
             if (parallel == true) {
                 if (randomized == true) {
-                    hittingFile = hittingFile + "r.txt";
+                    hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "r.txt";
                     cout << "Decycling set will be saved to: " << decyclingFile << endl;
                     cout << "Hitting set will be saved to: " << hittingFile << endl;
                     hittingSize = newGraph.HittingRandomParallel(L, hittingFile);
                 }
                 else { 
-                    hittingFile = hittingFile + "p.txt";
+                    hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "p.txt";
                     cout << "Decycling set will be saved to: " << decyclingFile << endl;
                     cout << "Hitting set will be saved to: " << hittingFile << endl;
                     hittingSize = newGraph.HittingParallel(L, hittingFile);
                 }
             }
             else {
-                hittingFile = hittingFile + ".txt";
+                hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + ".txt";
                 cout << "Decycling set will be saved to: " << decyclingFile << endl;
                 cout << "Hitting set will be saved to: " << hittingFile << endl;
                 hittingSize = newGraph.Hitting(L, hittingFile);
