@@ -31,7 +31,7 @@ Example: `./pasha decycling -k 5` will compute the decycling set for a complete 
 
 To compute the hitting set for a specified k-mer and sequence length, use the command:
 
-`./pasha generate [-a][-p][-r] -k <kmerlength> -l <seqlength>`
+`./pasha generate [-a[<vcount>]][-p][-r] -k <kmerlength> -l <seqlength>`
 
 Flag `-a` enables the calculation of paths of any length going through a vertex, as opposed to paths of length L-k+1.<br> 
 Flag `-p` enables parallelization.  
@@ -40,7 +40,8 @@ Flag `-r` enables randomization.
 Example: `./pasha generate -k 7 -l 40` will compute the hitting set for k-mer length 7 and sequence length 40, counting paths of length 34.<br> 
 Example: `./pasha generate -p -k 6 -l 20` will compute the hitting set for k-mer length 6 and sequence length 20 in parallel, counting paths of length 15.<br> 
 Example: `./pasha generate -a -k 8 -l 60` will compute the hitting set for k-mer length 8 and sequence length 60, counting paths of any length.<br> 
-Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.<br> 
+Example: `./pasha generate -a -p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length.<br>
+Example: `./pasha generate -a 625-p -k 10 -l 50` will compute the hitting set for k-mer length 10 and sequence length 50 in parallel, counting paths of any length, removing the top 625 vertices at a time.<br> 
 Example: `./pasha generate -p -r -k 9 -l 30` will compute the hitting set for k-mer length 9 and sequence length 30 in parallel and using randomization, counting paths of length 22.
 
 To compare outputs in terms of CPU usage, memory usage, running time, and set size, use the command:
