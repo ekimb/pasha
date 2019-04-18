@@ -108,6 +108,7 @@ and without randomization, counting L-k+1-long paths.
     int hittingCount = 0;
     l = L-k+1;
     hittingNumArray = new double[edgeNum];
+    stageArray = new int[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
@@ -119,7 +120,7 @@ and without randomization, counting L-k+1-long paths.
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
     while (calculatePaths(l)) {
-    	int imaxHittingNum = calculateHittingNumberParallel(l);
+    	int imaxHittingNum = calculateHittingNumberParallel(l, false);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
@@ -185,28 +186,59 @@ and with randomization, counting L-k+1-long paths.
 @param L: Sequence length, hittingFile: Output file destination.
 @return hittingCount: Size of hitting set.
 */
-	vertexExp = pow(ALPHABET_SIZE, k-1);
-    int imaxHittingNum = -1;
+    epsilon = 0.0833;
+    delta = 0.1;
+    vertexExp = pow(ALPHABET_SIZE, k-1);
+    ofstream hittingStream;
+    int hittingCount = 0;
     l = L-k+1;
-    epsilon = 0.083333333;
-    delta = 1.0;
+    total = 0;
     hittingNumArray = new double[edgeNum];
+    stageArray = new int[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
+	pick = new bool[edgeNum];
 	topoSort = new int[vertexExp];
     D = new double*[l + 1];
     double* Dpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+	hittingStream.open(hittingFile); 
     F = new double*[l + 1];
-    double* Fpool = new double[(l+1)*vertexExp];
+    double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
 	calculatePaths(l);
-	imaxHittingNum = calculateHittingNumberParallel(l);
-	pick = new bool[edgeNum];
-	for (int i = 0; i < edgeNum; i++) pick[i] = false;
-	double maxPtr = hittingNumArray[imaxHittingNum];
-	int hittingCount = stageOps(l, maxPtr, hittingFile);
-   	delete [] *D;
+	int imaxHittingNum = calculateHittingNumberParallel(l, false);
+	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
+    double prob = delta/(pow((1.0+epsilon), l));
+    while (calculatePaths(l)) {
+    	imaxHittingNum = calculateHittingNumberParallel(l, true);
+		if (imaxHittingNum < 0) break;
+    	#pragma omp parallel for num_threads(8)
+		for (int i = 0; i < edgeNum; i++) {
+			total += hittingNumArray[i] * stageArray[i];
+        	if ((stageArray[i] == 1) && (edgeArray[i] == 1) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
+            	string label = getLabel(i);
+                stageArray[i] = 0;
+				pick[i] = true;
+                removeEdge(i);
+                hittingStream << label << "\n";
+    			hittingCount++;
+    		}
+        	else if ((pick[i] == false) && ((stageArray[i] == 1)) && (edgeArray[i] == 1)) {
+        		if (rand() % 2 <= prob) {
+	        		string label = getLabel(i);
+		          	stageArray[i] = 0;
+					pick[i] = true;
+		          	removeEdge(i);
+		          	hittingStream << label << "\n";
+    				hittingCount++;
+				}
+			}
+        }
+        h--;
+   	}
+   	hittingStream.close();
+    delete [] *D;
 	delete [] D;
 	delete [] *F;
 	delete [] F;

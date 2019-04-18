@@ -18,8 +18,8 @@ sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
 	double hittingNum = 0;
-    for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
-    hittingNumArray[i] = hittingNum;
+	for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
+	hittingNumArray[i] = hittingNum;
 }
 
 void graph::calculateForEachAny(int i) {
@@ -69,7 +69,7 @@ Calculates hitting number of all edges, counting all paths.
     }
     return imaxHittingNum;
 }
-int graph::calculateHittingNumberParallel(int L) {
+int graph::calculateHittingNumberParallel(int L, bool random) {
 /**
 Calculates hitting number of all edges, counting paths of length L-k+1, in parallel.
 @param L: Sequence length.
@@ -79,10 +79,17 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
   	#pragma omp parallel for num_threads(8)
-    for (int i = 0; i < edgeNum; i++) calculateForEach(i, L);
     for (int i = 0; i < edgeNum; i++) {
-    	if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;};
+		if (random == true) {
+			if (((hittingNumArray[i])*edgeArray[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i])*edgeArray[i] <= pow((1.0+epsilon), h))) stageArray[i] = 1;
+			else stageArray[i] = 0;
+			calculateForEach(i, L);
+		}
+		else {
+			calculateForEach(i, L);
+		}
     }
+    for (int i = 0; i < edgeNum; i++) if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
     return imaxHittingNum;
 }
 
@@ -228,59 +235,6 @@ Removes an edge from the graph.
 */
 	if (edgeArray[i] == 1) edgeCount--;
 	edgeArray[i] = 0;
-}
-
-int graph::stageOps(int l, double maxPtr, string hittingFile) {
-/**
-Includes operations for randomized hitting set calculation for each stage.
-@param l: Path length, maxPtr: Maximum hitting number value.
-*/
-	int h = findLog((1.0+epsilon), maxPtr);
-	stageArray = new int[edgeNum];
-	ofstream hittingStream;
-	int imaxHittingNum = -1;
-	int hittingCount = 0;
-	double total = 0;
-	for (int i = h; i > 0; i--) {
-		calculatePaths(l);
-    	imaxHittingNum = calculateHittingNumberParallel(l);
-		#pragma omp parallel for num_threads(8)
-		for (int i = 0; i < edgeNum; i++) {
-			if (((hittingNumArray[i])*edgeArray[i] >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i])*edgeArray[i] <= pow((1.0+epsilon), h))) stageArray[i] = 1;
-			else stageArray[i] = 0;
-			total += (hittingNumArray[i] * stageArray[i]);
-		}
-		hittingStream.open(hittingFile);
-		#pragma omp parallel for num_threads(8)
-        for (int i = 0; i < edgeNum; i++) {
-            if ((stageArray[i]*edgeArray[i] != 0) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
-            	string label = getLabel(i);
-                stageArray[i] = 0;
-				pick[i] = true;
-                removeEdge(i);
-                hittingStream << label << "\n";
-    			hittingCount++;
-    		}
-        }
-        double prob = delta/(pow((1.0+epsilon), l));
-        #pragma omp parallel for num_threads(8)
-        for (int i = 0; i < edgeNum; i++) {
-        	if ((pick[i] == false) && ((stageArray[i] == 1)) && (edgeArray[i] == 1)) {
-        		if (rand() % 2 <= prob) {
-	        		string label = getLabel(i);
-		          	stageArray[i] = 0;
-					pick[i] = true;
-		          	removeEdge(i);
-		          	hittingStream << label << "\n";
-    				hittingCount++;
-				}
-			}
-        }
-		h--;
-		topologicalSort();
-   	}
-hittingStream.close();
-return hittingCount;
 }
 
 void graph::topologicalSort() {

@@ -38,6 +38,8 @@ class graph {
     int edgeNum;
     int k;
     int l;
+    int h;
+    int total;
     int vertexCount; 
     int vertexExp;
     int vertexExp2;
@@ -104,7 +106,7 @@ class graph {
     void calculateForEachAny(int i);
     int calculateHittingNumber(int L);
     int* calculateHittingNumberAny(int x);
-    int calculateHittingNumberParallel(int L);
+    int calculateHittingNumberParallel(int L, bool random);
     int* calculateHittingNumberParallelAny(int x);
     int calculatePaths(int L);
     int calculatePathsAny();
