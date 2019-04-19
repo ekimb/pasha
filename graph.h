@@ -26,6 +26,7 @@ class graph {
     bool* finished;
     bool* pick;
     bool* used;
+    bool* tried;
     double delta;
 	double epsilon;
     double* hittingNumAnyArray;
@@ -39,6 +40,7 @@ class graph {
     int k;
     int l;
     int h;
+    int tries;
     int total;
     int vertexCount; 
     int vertexExp;
