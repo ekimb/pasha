@@ -186,14 +186,14 @@ and with randomization, counting L-k+1-long paths.
 @param L: Sequence length, hittingFile: Output file destination.
 @return hittingCount: Size of hitting set.
 */
-    epsilon = 0.05;
-    delta = 0.1;
+    epsilon = 0.08333;
+    delta = 0.115;
+    double alpha = 1 - 6*delta - 2*epsilon;
+    cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    total = 0;
-    tries = 0;
     int i;
     int j;
     hittingNumArray = new double[edgeNum];
@@ -216,6 +216,7 @@ and with randomization, counting L-k+1-long paths.
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/(pow((1.0+epsilon), l));
     while (calculatePaths(l)) {
+    	total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
