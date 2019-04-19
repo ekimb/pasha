@@ -1,0 +1,1 @@
+First set size with just L-k+1: 36, Second set size with counting any paths and removing top 50 vertices: 150, Third set size with randomization: 61
