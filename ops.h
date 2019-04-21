@@ -78,12 +78,15 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 	omp_set_dynamic(0);
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
+	int count = 0;
   	#pragma omp parallel for num_threads(8)
     for (int i = 0; i < edgeNum; i++) {
 		if (random == true) {
 			if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
 				stageArray[i] = 1;
 				pick[i] = false;
+				total += hittingNumArray[i] * stageArray[i];
+				count++;
 			}
 			else {
 				stageArray[i] = 0;
@@ -95,8 +98,19 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 			calculateForEach(i, L);
 		}
     }
-    for (int i = 0; i < edgeNum; i++) if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
+    for (int i = 0; i < edgeNum; i++) {
+    	if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
+    }
     return imaxHittingNum;
+}
+vector<int> graph::pushBackVector() {
+	vector<int> stageVertices;
+    for (int i = 0; i < edgeNum; i++) {
+		if (stageArray[i] == 1) {
+			stageVertices.push_back(i);
+		}
+    }
+    return stageVertices;
 }
 
 int* graph::calculateHittingNumberParallelAny(int x) {
