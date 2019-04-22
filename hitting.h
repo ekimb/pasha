@@ -187,8 +187,8 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
-    epsilon = 0.08333;
-    delta = 0.1;
+    epsilon = 0.1;
+    delta = 0.05;
     double alpha = 1 - 6*delta - 2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
@@ -273,10 +273,10 @@ and with randomization, counting L-k+1-long paths.
         }
    	}
    	hittingStream.close();
-    //delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
+    delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
