@@ -221,6 +221,7 @@ and with randomization, counting L-k+1-long paths.
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
     	imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
+        calculatePaths(l, threads);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
         #pragma omp parallel num_threads(threads)
