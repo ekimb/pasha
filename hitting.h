@@ -223,7 +223,7 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(8)
+        #pragma omp parallel num_threads(16)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
