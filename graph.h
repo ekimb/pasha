@@ -111,7 +111,7 @@ class graph {
     int* calculateHittingNumberAny(int x);
     int calculateHittingNumberParallel(int L, bool random, int threads);
     int* calculateHittingNumberParallelAny(int x, int threads);
-    int calculatePaths(int L);
+    int calculatePaths(int L, int threads);
     int calculatePathsAny();
     int* findMaxAny(int x);
     int findLog(double base, double x);
