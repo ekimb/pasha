@@ -237,26 +237,23 @@ and with randomization, counting L-k+1-long paths.
     	}
         #pragma omp parallel num_threads(8)
     	for (int i : stageVertices) {
-    		for (int j : stageVertices) {
-    			if (pick[i] == true) break;
-				if ((pick[i] == false) && (pick[j] == false) && (i != j)) {
-		    		if (((double) rand() / (RAND_MAX)) <= (prob * prob)) {
-		        		//string label = getLabel(v1);
-			          	stageArray[i] = 0;
-						pick[i] = true;
-			          	//removeEdge(i);
-			          	//string label2 = getLabel(v2);
-			          	stageArray[j] = 0;
-						pick[j] = true;
-			          	//removeEdge(j);
-			          	//hittingStream << label << "\n" << label2 << "\n";
-						hittingCountStage += 2;
-						pathCountStage += hittingNumArray[i];
-    					pathCountStage += hittingNumArray[j];
+			if ((pick[i] == false)) {
+	    		if (((double) rand() / (RAND_MAX)) <= prob) {
+	        		//string label = getLabel(v1);
+		          	stageArray[i] = 0;
+					pick[i] = true;
+		          	//removeEdge(i);
+		          	//string label2 = getLabel(v2);
+		          	//stageArray[j] = 0;
+					//pick[j] = true;
+		          	//removeEdge(j);
+		          	//hittingStream << label << "\n" << label2 << "\n";
+					hittingCountStage += 1;
+					pathCountStage += hittingNumArray[i];
+					//pathCountStage += hittingNumArray[j];
 
 
 
-					}
 				}
 			}
         }
