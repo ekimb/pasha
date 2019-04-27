@@ -188,8 +188,13 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
+<<<<<<< HEAD
     epsilon = 0.0766666;
     delta = 0.03;
+=======
+    epsilon = 0.04666667;
+    delta = 0.04;
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
     double alpha = 1 - 6*delta - 2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
@@ -215,7 +220,10 @@ and with randomization, counting L-k+1-long paths.
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
+<<<<<<< HEAD
     j = findLog((1.0+epsilon), L);
+=======
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
     double prob = delta/l;
     while (calculatePaths(l)) {
     	total = 0;
@@ -224,23 +232,38 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
+<<<<<<< HEAD
     	#pragma omp parallel num_threads(4)
+=======
+        #pragma omp parallel num_threads(48)
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
+<<<<<<< HEAD
                 //removeEdge(i);
+=======
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
                 //hittingStream << label << "\n";
     			hittingCountStage++;
     			pathCountStage += hittingNumArray[i];
     		}
     	}
+<<<<<<< HEAD
 	#pragma omp parallel num_threads(4)
+=======
+        #pragma omp parallel num_threads(48)
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
     	for (int i : stageVertices) {
     		for (int j : stageVertices) {
     			if (pick[i] == true) break;
 				if ((pick[i] == false) && (pick[j] == false) && (i != j)) {
+<<<<<<< HEAD
 		    		if (((double) rand() / (RAND_MAX)) <= (prob * prob)) {
+=======
+		    		if (rand() % 2 <= (prob * prob)) {
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
 		        		//string label = getLabel(v1);
 			          	stageArray[i] = 0;
 						pick[i] = true;
@@ -272,6 +295,10 @@ and with randomization, counting L-k+1-long paths.
         	h--;
         }
         else hittingCount -= hittingCountStage;
+<<<<<<< HEAD
+=======
+
+>>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
    	}
    	hittingStream.close();
     delete [] *D;
