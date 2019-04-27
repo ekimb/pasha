@@ -104,7 +104,7 @@ Regenerates graph and removes the decycling set for benchmarking purposes.
 int main(int argc, char* argv[]) {
     int k = 0;
     int L = 0;
-    int threads = 0;
+    int threads = 1;
     int x;
     string decyclingFile;
     string hittingFile;
@@ -167,9 +167,9 @@ int main(int argc, char* argv[]) {
                         parallel = true;
                         threads = 1;
                         if (string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k" && string(argv[i+1]) != "-l") {
-                            char *end;
-                            threads = strtol(argv[i+1], &end, 10);
-                            if (*end != '\0' || x < 1 || x > 48) printGenerateHelp("Number of threads must be between 1 and 48.");
+                            char *end2;
+                            threads = strtol(argv[i+1], &end2, 10);
+                            if (*end2 != '\0' || x < 1 || x > 48) printGenerateHelp("Number of threads must be between 1 and 48.");
                             i += 2;
                         }
                         else i += 1;
