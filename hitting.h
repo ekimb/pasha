@@ -222,7 +222,7 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-        #pragma omp parallel for num_threads(48)
+        #pragma omp parallel num_threads(48)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
@@ -232,7 +232,7 @@ and with randomization, counting L-k+1-long paths.
     			pathCountStage += hittingNumArray[i];
     		}
     	}
-        #pragma omp parallel for num_threads(48)
+        #pragma omp parallel num_threads(48)
     	for (int i : stageVertices) {
     		for (int j : stageVertices) {
     			if (pick[i] == true) break;
@@ -241,11 +241,11 @@ and with randomization, counting L-k+1-long paths.
 		        		//string label = getLabel(v1);
 			          	stageArray[i] = 0;
 						pick[i] = true;
-			          	removeEdge(i);
+			          	//removeEdge(i);
 			          	//string label2 = getLabel(v2);
 			          	stageArray[j] = 0;
 						pick[j] = true;
-			          	removeEdge(j);
+			          	//removeEdge(j);
 			          	//hittingStream << label << "\n" << label2 << "\n";
 						hittingCountStage += 2;
 						pathCountStage += hittingNumArray[i];
