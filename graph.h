@@ -41,7 +41,7 @@ class graph {
     int l;
     int h;
     int tries;
-    int total;
+    double total;
     int vertexCount; 
     int vertexExp;
     int vertexExp2;

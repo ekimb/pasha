@@ -11,6 +11,7 @@
 #include "graph.h"
 #include <cstdlib>
 #include <iomanip>
+#include <algorithm>
 #include <omp.h>
 int graph::Hitting(int L, string hittingFile) {
 /**
@@ -187,8 +188,8 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
-    epsilon = 0.08333;
-    delta = 0.1;
+    epsilon = 0.0766666;
+    delta = 0.03;
     double alpha = 1 - 6*delta - 2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
@@ -214,7 +215,8 @@ and with randomization, counting L-k+1-long paths.
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
-    double prob = delta/(pow((1.0+epsilon), l));
+    j = findLog((1.0+epsilon), L);
+    double prob = delta/l;
     while (calculatePaths(l)) {
     	total = 0;
     	int hittingCountStage = 0;
@@ -222,35 +224,32 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-    	#pragma omp parallel num_threads(8)
+    	#pragma omp parallel num_threads(4)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
-                removeEdge(i);
+                //removeEdge(i);
                 //hittingStream << label << "\n";
-    			hittingCount++;
     			hittingCountStage++;
     			pathCountStage += hittingNumArray[i];
     		}
     	}
-    	#pragma omp parallel num_threads(8)
+	#pragma omp parallel num_threads(4)
     	for (int i : stageVertices) {
     		for (int j : stageVertices) {
     			if (pick[i] == true) break;
-    			if (pick[j] == true) j++;
-				if ((pick[i] == false) && (pick[i] == false) && (i != j)) {
-		    		if (rand() % 2 <= (prob * prob)) {
+				if ((pick[i] == false) && (pick[j] == false) && (i != j)) {
+		    		if (((double) rand() / (RAND_MAX)) <= (prob * prob)) {
 		        		//string label = getLabel(v1);
 			          	stageArray[i] = 0;
 						pick[i] = true;
-			          	removeEdge(i);
+			          	//removeEdge(i);
 			          	//string label2 = getLabel(v2);
 			          	stageArray[j] = 0;
 						pick[j] = true;
-			          	removeEdge(j);
+			          	//removeEdge(j);
 			          	//hittingStream << label << "\n" << label2 << "\n";
-						hittingCount += 2;
 						hittingCountStage += 2;
 						pathCountStage += hittingNumArray[i];
     					pathCountStage += hittingNumArray[j];
@@ -261,22 +260,24 @@ and with randomization, counting L-k+1-long paths.
 				}
 			}
         }
+        hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
             for (int i : stageVertices){
-                if (pick[i] == false) i++;
-                else {
+                if (pick[i] == true) {
+                    removeEdge(i);
                     string label = getLabel(i);
                     hittingStream << label << "\n";
                 }
             }
         	h--;
         }
+        else hittingCount -= hittingCountStage;
    	}
    	hittingStream.close();
-    //delete [] *D;
-	//delete [] D;
-	//delete [] *F;
-	//delete [] F;
+    delete [] *D;
+	delete [] D;
+	delete [] *F;
+	delete [] F;
     topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
