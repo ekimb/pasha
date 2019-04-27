@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
                         else i += 1;
 
                     }
-                    else if (argNext == "-r") {
+                    if (argNext == "-r") {
                         if (any == true) printGenerateHelp("Pasha requires calculating paths of L-k+1 for randomization. Do not use -a when using -r.");
                         if (parallel == false) printGenerateHelp("Pasha requires parallelization for randomization. Use -p before using -r.");
                         randomized = true;
