@@ -170,10 +170,8 @@ int main(int argc, char* argv[]) {
                             char *end2;
                             threads = strtol(argv[i+1], &end2, 10);
                             if (*end2 != '\0' || x <= 0) printGenerateHelp("Number of threads must be between 1 and 48.");
-                            i += 2;
                         }
-                        else i += 1;
-
+                        i += 1;
                     }
                     if (argNext == "-r") {
                         if (any == true) printGenerateHelp("Pasha requires calculating paths of L-k+1 for randomization. Do not use -a when using -r.");
