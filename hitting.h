@@ -214,7 +214,7 @@ and with randomization, counting L-k+1-long paths.
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
-    double prob = delta/(pow((1.0+epsilon), l));
+    double prob = delta/l;
     while (calculatePaths(l)) {
     	total = 0;
     	int hittingCountStage = 0;
@@ -222,24 +222,21 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-    	#pragma omp parallel num_threads(8)
+        #pragma omp parallel for num_threads(48)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
-                removeEdge(i);
                 //hittingStream << label << "\n";
-    			hittingCount++;
     			hittingCountStage++;
     			pathCountStage += hittingNumArray[i];
     		}
     	}
-    	#pragma omp parallel num_threads(8)
+        #pragma omp parallel for num_threads(48)
     	for (int i : stageVertices) {
     		for (int j : stageVertices) {
     			if (pick[i] == true) break;
-    			if (pick[j] == true) j++;
-				if ((pick[i] == false) && (pick[i] == false) && (i != j)) {
+				if ((pick[i] == false) && (pick[j] == false) && (i != j)) {
 		    		if (rand() % 2 <= (prob * prob)) {
 		        		//string label = getLabel(v1);
 			          	stageArray[i] = 0;
@@ -250,7 +247,6 @@ and with randomization, counting L-k+1-long paths.
 						pick[j] = true;
 			          	removeEdge(j);
 			          	//hittingStream << label << "\n" << label2 << "\n";
-						hittingCount += 2;
 						hittingCountStage += 2;
 						pathCountStage += hittingNumArray[i];
     					pathCountStage += hittingNumArray[j];
@@ -261,16 +257,19 @@ and with randomization, counting L-k+1-long paths.
 				}
 			}
         }
+        hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
             for (int i : stageVertices){
-                if (pick[i] == false) i++;
-                else {
+                if (pick[i] == true) {
+                    removeEdge(i);
                     string label = getLabel(i);
                     hittingStream << label << "\n";
                 }
             }
         	h--;
         }
+        else hittingCount -= hittingCountStage;
+
    	}
    	hittingStream.close();
     //delete [] *D;
