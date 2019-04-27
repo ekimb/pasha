@@ -215,7 +215,6 @@ and with randomization, counting L-k+1-long paths.
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
-    j = findLog((1.0+epsilon), L);
     double prob = delta/l;
     while (calculatePaths(l)) {
     	total = 0;
@@ -234,29 +233,26 @@ and with randomization, counting L-k+1-long paths.
     			hittingCountStage++;
     			pathCountStage += hittingNumArray[i];
     		}
+            else if ((pick[i] == false)) {
+                if (((double) rand() / (RAND_MAX)) <= prob) {
+                    //string label = getLabel(v1);
+                    stageArray[i] = 0;
+                    pick[i] = true;
+                    //removeEdge(i);
+                    //string label2 = getLabel(v2);
+                    //stageArray[j] = 0;
+                    //pick[j] = true;
+                    //removeEdge(j);
+                    //hittingStream << label << "\n" << label2 << "\n";
+                    hittingCountStage += 1;
+                    pathCountStage += hittingNumArray[i];
+                    //pathCountStage += hittingNumArray[j];
+
+
+
+                }
+            }
     	}
-        #pragma omp parallel num_threads(8)
-    	for (int i : stageVertices) {
-			if ((pick[i] == false)) {
-	    		if (((double) rand() / (RAND_MAX)) <= prob) {
-	        		//string label = getLabel(v1);
-		          	stageArray[i] = 0;
-					pick[i] = true;
-		          	//removeEdge(i);
-		          	//string label2 = getLabel(v2);
-		          	//stageArray[j] = 0;
-					//pick[j] = true;
-		          	//removeEdge(j);
-		          	//hittingStream << label << "\n" << label2 << "\n";
-					hittingCountStage += 1;
-					pathCountStage += hittingNumArray[i];
-					//pathCountStage += hittingNumArray[j];
-
-
-
-				}
-			}
-        }
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
             #pragma omp parallel num_threads(8)
