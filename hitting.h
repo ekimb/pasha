@@ -188,8 +188,8 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
-    epsilon = 0.0466666;
-    delta = 0.04;
+    epsilon = 0.0699;
+    delta = 0.0599;
     double alpha = 1 - 6*delta - 2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
