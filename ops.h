@@ -69,7 +69,7 @@ Calculates hitting number of all edges, counting all paths.
     }
     return imaxHittingNum;
 }
-int graph::calculateHittingNumberParallel(int L, bool random) {
+int graph::calculateHittingNumberParallel(int L, bool random, int threads) {
 /**
 Calculates hitting number of all edges, counting paths of length L-k+1, in parallel.
 @param L: Sequence length.
@@ -79,7 +79,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
 	int count = 0;
-  	#pragma omp parallel for num_threads(8)
+  	#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < edgeNum; i++) {
 		if (random == true) {
 			if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
@@ -113,7 +113,7 @@ vector<int> graph::pushBackVector() {
     return stageVertices;
 }
 
-int* graph::calculateHittingNumberParallelAny(int x) {
+int* graph::calculateHittingNumberParallelAny(int x, int threads) {
 /**
 Calculates hitting number of all edges counting all paths, in parallel.
 @param x: Top x vertices to be considered for removal.
@@ -122,13 +122,13 @@ Calculates hitting number of all edges counting all paths, in parallel.
 	omp_set_dynamic(0);
 	maxHittingNum = new double[x];
 	imaxHittingNum = new int[x];
-	#pragma omp parallel for num_threads(8)
+	#pragma omp parallel for num_threads(threads)
     for (int i = 0; i < edgeNum; i++) calculateForEachAny(i);
     imaxHittingNum = findMaxAny(x);
     return imaxHittingNum;
 }
 
-int graph::calculatePaths(int L) {
+int graph::calculatePaths(int L, int threads) {
 /**
 Calculates number of L-k+1 long paths for all vertices.
 @param L: Sequence length.
@@ -140,7 +140,7 @@ Calculates number of L-k+1 long paths for all vertices.
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
 	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
-		#pragma omp parallel for num_threads(8)
+		#pragma omp parallel for num_threads(threads)
 		for (int i = 0; i < vertexExp; i++) {
 			int index = (i * 4);
             F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
