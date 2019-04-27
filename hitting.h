@@ -188,8 +188,8 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
-    epsilon = 0.0766666;
-    delta = 0.03;
+    epsilon = 0.0466666;
+    delta = 0.04;
     double alpha = 1 - 6*delta - 2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
@@ -224,7 +224,7 @@ and with randomization, counting L-k+1-long paths.
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(48)
+        #pragma omp parallel num_threads(24)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
@@ -235,7 +235,7 @@ and with randomization, counting L-k+1-long paths.
     			pathCountStage += hittingNumArray[i];
     		}
     	}
-        #pragma omp parallel num_threads(48)
+        #pragma omp parallel num_threads(24)
     	for (int i : stageVertices) {
     		for (int j : stageVertices) {
     			if (pick[i] == true) break;
