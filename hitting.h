@@ -262,6 +262,7 @@ and with randomization, counting L-k+1-long paths.
         }
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
+            #pragma omp parallel num_threads(8)
             for (int i : stageVertices){
                 if (pick[i] == true) {
                     removeEdge(i);
