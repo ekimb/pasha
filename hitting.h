@@ -216,11 +216,11 @@ and with randomization, counting L-k+1-long paths.
 	int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
-    for (int u = h; u > 0; u--){
+    while (calculateHittingNumberParallel(l, true, threads) > 0){
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
-    	imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
+    	//imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
         calculatePaths(l, threads);
         vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
