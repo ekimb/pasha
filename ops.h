@@ -79,11 +79,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 	double maxHittingNum = 0;
 	int imaxHittingNum = -1;
 	int count = 0;
-<<<<<<< HEAD
-  	#pragma omp parallel for num_threads(4)
-=======
   	#pragma omp parallel for num_threads(48)
->>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
     for (int i = 0; i < edgeNum; i++) {
 		if (random == true) {
 			if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
@@ -109,7 +105,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 }
 vector<int> graph::pushBackVector() {
 	vector<int> stageVertices;
-	#pragma omp parallel for num_threads(4)
     for (int i = 0; i < edgeNum; i++) {
 		if (stageArray[i] == 1) {
 			stageVertices.push_back(i);
@@ -127,7 +122,7 @@ Calculates hitting number of all edges counting all paths, in parallel.
 	omp_set_dynamic(0);
 	maxHittingNum = new double[x];
 	imaxHittingNum = new int[x];
-	#pragma omp parallel for num_threads(4)
+	#pragma omp parallel for num_threads(48)
     for (int i = 0; i < edgeNum; i++) calculateForEachAny(i);
     imaxHittingNum = findMaxAny(x);
     return imaxHittingNum;
@@ -145,11 +140,7 @@ Calculates number of L-k+1 long paths for all vertices.
     vertexExp_1 = pow(ALPHABET_SIZE, k-2);
 	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
 	for (int j = 1; j <= L; j++) {
-<<<<<<< HEAD
-		#pragma omp parallel for num_threads(4)
-=======
 		#pragma omp parallel for num_threads(48)
->>>>>>> fb57c2136c8d749515ce50c7d842e2c2437f5e3c
 		for (int i = 0; i < vertexExp; i++) {
 			int index = (i * 4);
             F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
