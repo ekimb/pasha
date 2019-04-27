@@ -105,7 +105,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 }
 vector<int> graph::pushBackVector() {
 	vector<int> stageVertices;
-	#pragma omp parallel for num_threads(48)
     for (int i = 0; i < edgeNum; i++) {
 		if (stageArray[i] == 1) {
 			stageVertices.push_back(i);
