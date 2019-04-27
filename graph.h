@@ -116,8 +116,8 @@ class graph {
     int* findMaxAny(int x);
     int findLog(double base, double x);
     vector<int> getAdjacent(int v);
-    int Hitting(int L, string hittingFile);
-    int HittingAny(int L, int x, string hittingFile, int threads);
+    int Hitting(int L, string hittingFile, int threads);
+    int HittingAny(int L, int x, string hittingFile);
     int HittingParallel(int L, string hittingFile, int threads);
     int HittingParallelAny(int L, int x, string hittingFile, int threads);
     int HittingRandomParallel(int L, string hittingFile, int threads);

@@ -283,7 +283,7 @@ int main(int argc, char* argv[]) {
                 hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + ".txt";
                 cout << "Decycling set will be saved to: " << decyclingFile << endl;
                 cout << "Hitting set will be saved to: " << hittingFile << endl;
-                hittingSize = newGraph.Hitting(L, hittingFile);
+                hittingSize = newGraph.Hitting(L, hittingFile, threads);
             }
         }
         clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
         double elapsed;
         cout << hittingFile + ".txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
-        hittingSize = newGraph.Hitting(L, (hittingFile + ".txt"));
+        hittingSize = newGraph.Hitting(L, (hittingFile + ".txt"), threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;

@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <omp.h>
-int graph::Hitting(int L, string hittingFile) {
+int graph::Hitting(int L, string hittingFile, int threads) {
 /**
 Performs hitting set calculations without parallelization
 or randomization, counting L-k+1-long paths.
@@ -36,7 +36,7 @@ or randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while (calculatePaths(l)) {
+    while (calculatePaths(l, 1)) {
     	int imaxHittingNum = calculateHittingNumber(l);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
