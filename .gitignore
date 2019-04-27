@@ -36,5 +36,9 @@ results_k5
 .__afsCBF9
 minimizers/
 *.sh
+<<<<<<< HEAD
 *.py
 *.csv
+=======
+>>>>>>> parent of 8037b68... gitignore, changing epsilon and delta for exps
+.__afs7417
