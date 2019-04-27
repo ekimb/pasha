@@ -169,9 +169,11 @@ int main(int argc, char* argv[]) {
                         if (string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k" && string(argv[i+1]) != "-l") {
                             char *end;
                             threads = strtol(argv[i+1], &end, 10);
-                            if (*end != '\0' || x <= 1 || x >= 48) printGenerateHelp("Number of threads must be between 1 and 48.");
+                            if (*end != '\0' || x < 1 || x > 48) printGenerateHelp("Number of threads must be between 1 and 48.");
                             i += 2;
                         }
+                        else i += 1;
+
                     }
                     else if (argNext == "-r") {
                         if (any == true) printGenerateHelp("Pasha requires calculating paths of L-k+1 for randomization. Do not use -a when using -r.");
