@@ -13,11 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <omp.h>
-<<<<<<< HEAD
 int graph::Hitting(int L, string hittingFile) {
-=======
-int graph::Hitting(int L, string hittingFile, int threads) {
->>>>>>> parent of a5b06f2... Update hitting.h
 /**
 Performs hitting set calculations without parallelization
 or randomization, counting L-k+1-long paths.
@@ -100,7 +96,7 @@ or randomization, counting paths of all length.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingParallel(int L, string hittingFile, int threads) {
+int graph::HittingParallel(int L, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization
 and without randomization, counting L-k+1-long paths.
@@ -124,13 +120,8 @@ and without randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-<<<<<<< HEAD
     while (calculatePaths(l)) {
     	int imaxHittingNum = calculateHittingNumberParallel(l, false);
-=======
-    while (calculatePaths(l, threads)) {
-    	int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
->>>>>>> parent of a5b06f2... Update hitting.h
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
@@ -146,7 +137,7 @@ and without randomization, counting L-k+1-long paths.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingParallelAny(int L, int x, string hittingFile, int threads) {
+int graph::HittingParallelAny(int L, int x, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization and
 without randomization, counting paths of all length.
@@ -172,11 +163,7 @@ without randomization, counting paths of all length.
     while(maxLength() >= l) { 
     	calculatePathsAny();
     	int* imaxHittingNum;
-<<<<<<< HEAD
     	imaxHittingNum = calculateHittingNumberParallelAny(x);
-=======
-    	imaxHittingNum = calculateHittingNumberParallelAny(x, threads);
->>>>>>> parent of a5b06f2... Update hitting.h
     	for (int i = 0; i < x; i++) {
         	string label = getLabel(imaxHittingNum[i]);
         	removeEdge(imaxHittingNum[i]);
@@ -193,7 +180,7 @@ without randomization, counting paths of all length.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingRandomParallel(int L, string hittingFile, int threads) {
+int graph::HittingRandomParallel(int L, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization
 and with randomization, counting L-k+1-long paths.
@@ -201,6 +188,7 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
+    int threads = 8;
     epsilon = 0.0699;
     delta = 0.0599;
     double alpha = 1 - 6*delta - 2*epsilon;
@@ -225,104 +213,77 @@ and with randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-<<<<<<< HEAD
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
-    while (imaxHittingNum > 0){
-        total = 0;
-    	int hittingCountStage = 0;
-    	double pathCountStage = 0;
-        calculatePaths(l);
-        #pragma omp barrier
-    	imaxHittingNum = calculateHittingNumberParallel(l, true);
-        int ctr = pushBackVector();
-        int* stage = new int[ctr];
-        int idx = 0;
-        for (int i = 0; i < edgeNum; i++) {
-            if (stageArray[i] == 1) {
-                stage[idx] = i;
-                idx++;
-            }
-        }
-        #pragma omp barrier
-        //stageVertices.shrink_to_fit();
-        #pragma omp parallel num_threads(4)
-		for (int i = 0; i < ctr; i++) {
-        	if ((pick[stage[i]] == false) && (hittingNumArray[stage[i]] > ((pow(delta, 3)/(1+epsilon)) * total))) {
-                stageArray[stage[i]] = 0;
-				pick[stage[i]] = true;
-=======
-	calculatePaths(l, threads);
-	int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
-	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
-    double prob = delta/l;
-    while (calculateHittingNumberParallel(l, true, threads) > 0){
+    while (h > 0) {
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
     	//imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
-        calculatePaths(l, threads);
+        calculatePaths(l);
+        if (calculateHittingNumberParallel(l, true) < 0) break;
         stageVertices = pushBackVector();
-		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(threads)
-		for (int i : stageVertices) {
+        #pragma omp parallel for num_threads(8)
+		for (int it = 0; it < stageVertices.size(); it++) {
+            i = stageVertices[it];
+            #pragma omp critical
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
->>>>>>> parent of a5b06f2... Update hitting.h
                 //removeEdge(i);
                 //hittingStream << label << "\n";
     			hittingCountStage++;
-    			pathCountStage += hittingNumArray[stage[i]];
+    			pathCountStage += hittingNumArray[i];
     		}
         }
-        #pragma omp barrier
-        #pragma omp parallel num_threads(4)
-        for (int i = 0; i < ctr; i++) {
-            if ((pick[stage[i]] == false)) {
-                if (((double) rand() / (RAND_MAX)) <= prob) {
-                    //string label = getLabel(v1);
-                    stageArray[stage[i]] = 0;
-                    pick[stage[i]] = true;
-                    //removeEdge(i);
-                    //string label2 = getLabel(v2);
-                    //stageArray[j] = 0;
-                    //pick[j] = true;
-                    //removeEdge(j);
-                    //hittingStream << label << "\n" << label2 << "\n";
-                    hittingCountStage += 1;
-                    pathCountStage += hittingNumArray[stage[i]];
-                    //pathCountStage += hittingNumArray[j];
-
-
-
+        #pragma omp parallel for collapse (2) num_threads(8) 
+        for (int it = 0; it < stageVertices.size(); it++) {
+            for (int jt = 0; jt < stageVertices.size(); jt++) {
+                i = stageVertices[it];
+                #pragma omp critical
+                if ((pick[i] == false)) {
+                    if (((double) rand() / (RAND_MAX)) <= prob) {
+                        //string label = getLabel(v1);
+                        stageArray[i] = 0;
+                        pick[i] = true;
+                        //removeEdge(i);
+                        //string label2 = getLabel(v2);
+                        //stageArray[j] = 0;
+                        //pick[j] = true;
+                        //removeEdge(j);
+                        //hittingStream << label << "\n" << label2 << "\n";
+                        hittingCountStage += 1;
+                        pathCountStage += hittingNumArray[i];
+                        //pathCountStage += hittingNumArray[j];
+                    }
+                    j = stageVertices[jt];
+                    if ((pick[j] == false)) {
+                        if (((double) rand() / (RAND_MAX)) <= prob) {
+                            stageArray[j] = 0;
+                            pick[j] = true;
+                            hittingCountStage += 1;
+                            pathCountStage += hittingNumArray[j];
+                        }
+                    }
                 }
             }
     	}
-        #pragma omp barrier
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
-<<<<<<< HEAD
-            #pragma omp parallel num_threads(4)
-            for (int i = 0; i < ctr; i++) {
-                if (pick[stage[i]] == true) {
-                    removeEdge(stage[i]);
-                    string label = getLabel(stage[i]);
-=======
-            #pragma omp parallel num_threads(threads)
-            for (int i : stageVertices){
+            for (int it = 0; it < stageVertices.size(); it++) {
+                i = stageVertices[it];
                 if (pick[i] == true) {
                     removeEdge(i);
                     string label = getLabel(i);
->>>>>>> parent of a5b06f2... Update hitting.h
                     hittingStream << label << "\n";
                 }
             }
         	h--;
         }
         else hittingCount -= hittingCountStage;
+            
         //stageVertices.clear();
         //stageVertices.shrink_to_fit();
    	}
