@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <omp.h>
-int graph::Hitting(int L, string hittingFile, int threads) {
+int graph::Hitting(int L, string hittingFile, int 40) {
 /**
 Performs hitting set calculations without parallelization
 or randomization, counting L-k+1-long paths.
@@ -96,7 +96,7 @@ or randomization, counting paths of all length.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingParallel(int L, string hittingFile, int threads) {
+int graph::HittingParallel(int L, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization
 and without randomization, counting L-k+1-long paths.
@@ -120,8 +120,8 @@ and without randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while (calculatePaths(l, threads)) {
-    	int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+    while (calculatePaths(l, 40)) {
+    	int imaxHittingNum = calculateHittingNumberParallel(l, false);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
         string label = getLabel(imaxHittingNum);
@@ -137,7 +137,7 @@ and without randomization, counting L-k+1-long paths.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingParallelAny(int L, int x, string hittingFile, int threads) {
+int graph::HittingParallelAny(int L, int x, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization and
 without randomization, counting paths of all length.
@@ -163,7 +163,7 @@ without randomization, counting paths of all length.
     while(maxLength() >= l) { 
     	calculatePathsAny();
     	int* imaxHittingNum;
-    	imaxHittingNum = calculateHittingNumberParallelAny(x, threads);
+    	imaxHittingNum = calculateHittingNumberParallelAny(x, 40);
     	for (int i = 0; i < x; i++) {
         	string label = getLabel(imaxHittingNum[i]);
         	removeEdge(imaxHittingNum[i]);
@@ -180,7 +180,7 @@ without randomization, counting paths of all length.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingRandomParallel(int L, string hittingFile, int threads) {
+int graph::HittingRandomParallel(int L, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization
 and with randomization, counting L-k+1-long paths.
@@ -213,19 +213,19 @@ and with randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-	calculatePaths(l, threads);
-	int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+	calculatePaths(l, 40);
+	int imaxHittingNum = calculateHittingNumberParallel(l, false, 40);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
-    while (calculateHittingNumberParallel(l, true, threads) > 0){
+    while (calculateHittingNumberParallel(l, true, 40) > 0){
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
-    	//imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
-        calculatePaths(l, threads);
+    	//imaxHittingNum = calculateHittingNumberParallel(l, true, 40);
+        calculatePaths(l, 40);
         stageVertices = pushBackVector();
-		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(threads)
+		//if (imaxHittingNum < 0) break;
+        #pragma omp parallel num_threads(40)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
@@ -257,7 +257,7 @@ and with randomization, counting L-k+1-long paths.
     	}
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
-            #pragma omp parallel num_threads(threads)
+            #pragma omp parallel num_threads(40)
             for (int i : stageVertices){
                 if (pick[i] == true) {
                     removeEdge(i);
@@ -270,10 +270,10 @@ and with randomization, counting L-k+1-long paths.
         else hittingCount -= hittingCountStage;
    	}
    	hittingStream.close();
-    delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
+    //delete [] *D;
+	//delete [] D;
+	//delete [] *F;
+	//delete [] F;
     topologicalSort();
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
