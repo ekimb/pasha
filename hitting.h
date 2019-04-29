@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <omp.h>
-int graph::Hitting(int L, string hittingFile, int 40) {
+int graph::Hitting(int L, string hittingFile) {
 /**
 Performs hitting set calculations without parallelization
 or randomization, counting L-k+1-long paths.
@@ -36,7 +36,7 @@ or randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while (calculatePaths(l, 1)) {
+    while (calculatePaths(l)) {
     	int imaxHittingNum = calculateHittingNumber(l);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
@@ -120,7 +120,7 @@ and without randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    while (calculatePaths(l, 40)) {
+    while (calculatePaths(l)) {
     	int imaxHittingNum = calculateHittingNumberParallel(l, false);
     	if (imaxHittingNum < 0) break;
         removeEdge(imaxHittingNum);
@@ -163,7 +163,7 @@ without randomization, counting paths of all length.
     while(maxLength() >= l) { 
     	calculatePathsAny();
     	int* imaxHittingNum;
-    	imaxHittingNum = calculateHittingNumberParallelAny(x, 40);
+    	imaxHittingNum = calculateHittingNumberParallelAny(x);
     	for (int i = 0; i < x; i++) {
         	string label = getLabel(imaxHittingNum[i]);
         	removeEdge(imaxHittingNum[i]);
@@ -214,25 +214,19 @@ and with randomization, counting L-k+1-long paths.
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
 	calculatePaths(l, 40);
-	int imaxHittingNum = calculateHittingNumberParallel(l, false, 40);
+	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
-    while (calculateHittingNumberParallel(l, true, 40) > 0){
+    while (calculatePaths(l)){
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
-<<<<<<< HEAD
-    	//imaxHittingNum = calculateHittingNumberParallel(l, true, 40);
-        calculatePaths(l, 40);
         stageVertices = pushBackVector();
-		//if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(40)
-=======
-    	imaxHittingNum = calculateHittingNumberParallel(l, true);
-        vector <int> stageVertices = pushBackVector();
 		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(8)
->>>>>>> parent of 53905cd... threads
+    	imaxHittingNum = calculateHittingNumberParallel(l, true);
+        stageVertices = pushBackVector();
+		if (imaxHittingNum < 0) break;
+        #pragma omp parallel num_threads(40)
 		for (int i : stageVertices) {
         	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[i] = 0;
