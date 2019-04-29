@@ -221,6 +221,7 @@ and with randomization, counting L-k+1-long paths.
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
         calculatePaths(l);
+        #pragma omp barrier
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
         int ctr = pushBackVector();
         int* stage = new int[ctr];
@@ -231,8 +232,9 @@ and with randomization, counting L-k+1-long paths.
                 idx++;
             }
         }
+        #pragma omp barrier
         //stageVertices.shrink_to_fit();
-        #pragma omp parallel num_threads(8)
+        #pragma omp parallel num_threads(4)
 		for (int i = 0; i < ctr; i++) {
         	if ((pick[stage[i]] == false) && (hittingNumArray[stage[i]] > ((pow(delta, 3)/(1+epsilon)) * total))) {
                 stageArray[stage[i]] = 0;
@@ -243,7 +245,8 @@ and with randomization, counting L-k+1-long paths.
     			pathCountStage += hittingNumArray[stage[i]];
     		}
         }
-        #pragma omp parallel num_threads(8)
+        #pragma omp barrier
+        #pragma omp parallel num_threads(4)
         for (int i = 0; i < ctr; i++) {
             if ((pick[stage[i]] == false)) {
                 if (((double) rand() / (RAND_MAX)) <= prob) {
@@ -265,9 +268,10 @@ and with randomization, counting L-k+1-long paths.
                 }
             }
     	}
+        #pragma omp barrier
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
-            #pragma omp parallel num_threads(8)
+            #pragma omp parallel num_threads(4)
             for (int i = 0; i < ctr; i++) {
                 if (pick[stage[i]] == true) {
                     removeEdge(stage[i]);
