@@ -165,7 +165,6 @@ int main(int argc, char* argv[]) {
                 else if (argNext == "-p" || argNext == "-r") {
                     if (argNext == "-p") {
                         parallel = true;
-                        i += 1;
                     }
                     if (argNext == "-r") {
                         if (any == true) printGenerateHelp("Pasha requires calculating paths of L-k+1 for randomization. Do not use -a when using -r.");

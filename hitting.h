@@ -198,7 +198,6 @@ and with randomization, counting L-k+1-long paths.
     l = L-k+1;
     int i;
     int j;
-    vector <int> stageVertices;
     hittingNumArray = new double[edgeNum];
     stageArray = new int[edgeNum];
     used = new bool[vertexExp];
@@ -217,30 +216,40 @@ and with randomization, counting L-k+1-long paths.
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
-    while (calculatePaths(l)){
+    while (imaxHittingNum > 0){
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
-        stageVertices = pushBackVector();
-		if (imaxHittingNum < 0) break;
+        calculatePaths(l);
     	imaxHittingNum = calculateHittingNumberParallel(l, true);
-        stageVertices = pushBackVector();
-		if (imaxHittingNum < 0) break;
-        #pragma omp parallel num_threads(40)
-		for (int i : stageVertices) {
-        	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
-                stageArray[i] = 0;
-				pick[i] = true;
+        int ctr = pushBackVector();
+        int* stage = new int[ctr];
+        int idx = 0;
+        for (int i = 0; i < edgeNum; i++) {
+            if (stageArray[i] == 1) {
+                stage[idx] = i;
+                idx++;
+            }
+        }
+        //stageVertices.shrink_to_fit();
+        #pragma omp parallel num_threads(8)
+		for (int i = 0; i < ctr; i++) {
+        	if ((pick[stage[i]] == false) && (hittingNumArray[stage[i]] > ((pow(delta, 3)/(1+epsilon)) * total))) {
+                stageArray[stage[i]] = 0;
+				pick[stage[i]] = true;
                 //removeEdge(i);
                 //hittingStream << label << "\n";
     			hittingCountStage++;
-    			pathCountStage += hittingNumArray[i];
+    			pathCountStage += hittingNumArray[stage[i]];
     		}
-            else if ((pick[i] == false)) {
+        }
+        #pragma omp parallel num_threads(8)
+        for (int i = 0; i < ctr; i++) {
+            if ((pick[stage[i]] == false)) {
                 if (((double) rand() / (RAND_MAX)) <= prob) {
                     //string label = getLabel(v1);
-                    stageArray[i] = 0;
-                    pick[i] = true;
+                    stageArray[stage[i]] = 0;
+                    pick[stage[i]] = true;
                     //removeEdge(i);
                     //string label2 = getLabel(v2);
                     //stageArray[j] = 0;
@@ -248,7 +257,7 @@ and with randomization, counting L-k+1-long paths.
                     //removeEdge(j);
                     //hittingStream << label << "\n" << label2 << "\n";
                     hittingCountStage += 1;
-                    pathCountStage += hittingNumArray[i];
+                    pathCountStage += hittingNumArray[stage[i]];
                     //pathCountStage += hittingNumArray[j];
 
 
@@ -258,17 +267,19 @@ and with randomization, counting L-k+1-long paths.
     	}
         hittingCount += hittingCountStage;
         if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
-            #pragma omp parallel num_threads(40)
-            for (int i : stageVertices){
-                if (pick[i] == true) {
-                    removeEdge(i);
-                    string label = getLabel(i);
+            #pragma omp parallel num_threads(8)
+            for (int i = 0; i < ctr; i++) {
+                if (pick[stage[i]] == true) {
+                    removeEdge(stage[i]);
+                    string label = getLabel(stage[i]);
                     hittingStream << label << "\n";
                 }
             }
         	h--;
         }
         else hittingCount -= hittingCountStage;
+        //stageVertices.clear();
+        //stageVertices.shrink_to_fit();
    	}
    	hittingStream.close();
     //delete [] *D;

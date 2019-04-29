@@ -122,7 +122,7 @@ class graph {
     int HittingParallelAny(int L, int x, string hittingFile);
     int HittingRandomParallel(int L, string hittingFile);
     int maxLength();
-    vector<int> pushBackVector();
+    int pushBackVector();
     void removeEdge(int i);
     int stageOps(int l, double maxPtr, string hittingFile);
     void topologicalSort();
