@@ -165,12 +165,6 @@ int main(int argc, char* argv[]) {
                 else if (argNext == "-p" || argNext == "-r") {
                     if (argNext == "-p") {
                         parallel = true;
-                        threads = 1;
-                        if (string(argv[i+1]) != "-r" && string(argv[i+1]) != "-k" && string(argv[i+1]) != "-l") {
-                            char *end2;
-                            threads = strtol(argv[i+1], &end2, 10);
-                            if (*end2 != '\0' || x <= 0) printGenerateHelp("Number of threads must be between 1 and 48.");
-                        }
                         i += 1;
                     }
                     if (argNext == "-r") {

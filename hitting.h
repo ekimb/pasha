@@ -213,7 +213,7 @@ and with randomization, counting L-k+1-long paths.
     F = new double*[l + 1];
     double* Fpool = new double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-	calculatePaths(l, 40);
+	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
     double prob = delta/l;
