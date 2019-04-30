@@ -189,14 +189,16 @@ and with randomization, counting L-k+1-long paths.
 */
     omp_set_dynamic(0);
     int threads = 8;
-    epsilon = 0.0699;
-    delta = 0.0599;
-    double alpha = 1 - 6*delta - 2*epsilon;
-    cout << "Alpha: " << 1/alpha << endl;
     vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
+    epsilon = 0.0833333;
+    delta = (1/(double)l);
+    double alpha = 1 - 4*delta -2*epsilon;
+    cout << "Alpha: " << 1/alpha << endl;
+    cout << "Delta: " << delta << endl;
+    cout << "Epsilon: " << epsilon << endl;
     int i;
     int j;
     hittingNumArray = new double[edgeNum];
@@ -229,7 +231,7 @@ and with randomization, counting L-k+1-long paths.
 		for (int it = 0; it < stageVertices.size(); it++) {
             i = stageVertices[it];
             #pragma omp critical
-        	if ((pick[i] == false) && (hittingNumArray[i] > ((pow(delta, 3)/(1+epsilon)) * total))) {
+        	if ((pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
                 //removeEdge(i);
