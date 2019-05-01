@@ -193,9 +193,11 @@ and with randomization, counting L-k+1-long paths.
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    epsilon = 0.0833333;
+    epsilon = 0.2;
     delta = 1/(double)l;
     double alpha = 1 - 4*delta -2*epsilon;
+    if (1/alpha > 2.0) delta = 0.025;
+    alpha = 1 - 4*delta -2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     cout << "Delta: " << delta << endl;
     cout << "Epsilon: " << epsilon << endl;
