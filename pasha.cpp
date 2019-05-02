@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
                     char *end;
                     k = strtol(argv[i+1], &end, 10);
                     if (*end != '\0') printDecyclingHelp("Non-integer or unspecified k-mer length.");
-                    if (k < 5 || k > 12) printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 12.");
+                    if (k < 5 || k > 13) printDecyclingHelp("Pasha only supports k-mer lengths between 5 and 13.");
                     directory = "pasha_" + string(argv[i+1]);
                     decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
                     i += 2;
@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
                     char *end;
                     k = strtol(argv[i+1], &end, 10);
                     if (*end != '\0') printGenerateHelp("Non-integer or unspecified k-mer length.");
-                    if (k < 5 || k > 12) printGenerateHelp("Pasha only supports k-mer lengths between 5 and 12.");
+                    if (k < 5 || k > 13) printGenerateHelp("Pasha only supports k-mer lengths between 5 and 13.");
                     directory = "pasha_" + string(argv[i+1]);
                     decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
                     i += 2;
@@ -209,7 +209,7 @@ int main(int argc, char* argv[]) {
                     char *end;
                     k = strtol(argv[i+1], &end, 10);
                     if (*end != '\0') printBenchmarkHelp("Non-integer or unspecified k-mer length.");
-                    if (k < 5 || k > 12) printBenchmarkHelp("Pasha only supports k-mer lengths between 5 and 12.");
+                    if (k < 5 || k > 13) printBenchmarkHelp("Pasha only supports k-mer lengths between 5 and 13.");
                     directory = "pasha_" + string(argv[i+1]);
                     decyclingFile = "pasha_" + string(argv[i+1]) + "/d" + string(argv[i+1]) + ".txt";
                     i += 2;
