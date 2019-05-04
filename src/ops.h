@@ -145,6 +145,27 @@ Calculates number of L-k+1 long paths for all vertices.
 	}
 	return 1;
 }
+int graph::calculatePathsSeq(int L) {
+/**
+Calculates number of L-k+1 long paths for all vertices.
+@param L: Sequence length.
+@return 1: True if path calculation completes.
+*/
+	omp_set_dynamic(0);
+	vertexExp2 = vertexExp * 2;
+    vertexExp3 = vertexExp * 3;
+    vertexExpMask = vertexExp - 1;
+    vertexExp_1 = pow(ALPHABET_SIZE, k-2);
+	for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
+	for (int j = 1; j <= L; j++) {
+		for (int i = 0; i < vertexExp; i++) {
+			int index = (i * 4);
+            F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
+            D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+        }
+	}
+	return 1;
+}
 int graph::calculatePathsAny() {
 /**
 Calculates number of paths of any length for all vertices.

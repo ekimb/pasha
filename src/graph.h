@@ -112,6 +112,7 @@ class graph {
     int calculateHittingNumberParallel(int L, bool random);
     int* calculateHittingNumberParallelAny(int x);
     int calculatePaths(int L);
+    int calculatePathsSeq(int L);
     int calculatePathsAny();
     int* findMaxAny(int x);
     int findLog(double base, double x);
