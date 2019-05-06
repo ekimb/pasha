@@ -35,8 +35,8 @@ class graph {
     double** D;
     double** F;
     int ALPHABET_SIZE;
-	static int edgeCount;
-    static int edgeNum;
+	int edgeCount;
+    int edgeNum;
     int k;
     int l;
     int h;
@@ -99,7 +99,7 @@ class graph {
 		ALPHABET_SIZE = 4;
 		k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new static int[edgeNum];
+        edgeArray = new int[edgeNum];
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
