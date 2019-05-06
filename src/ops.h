@@ -108,20 +108,6 @@ vector<int> graph::pushBackVector() {
     return stageVertices;
 }
 
-int* graph::calculateHittingNumberParallelAny(int x) {
-/**
-Calculates hitting number of all edges counting all paths, in parallel.
-@param x: Top x vertices to be considered for removal.
-@return imaxHittingNum: Array of index of x edges with maximum hitting number.
-*/
-	omp_set_dynamic(0);
-	maxHittingNum = new double[x];
-	imaxHittingNum = new int[x];
-  	#pragma omp parallel for num_threads(8)
-    for (int i = 0; i < edgeNum; i++) calculateForEachAny(i);
-    imaxHittingNum = findMaxAny(x);
-    return imaxHittingNum;
-}
 
 int graph::calculatePaths(int L) {
 /**

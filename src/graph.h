@@ -35,8 +35,8 @@ class graph {
     double** D;
     double** F;
     int ALPHABET_SIZE;
-	int edgeCount;
-    int edgeNum;
+	static int edgeCount;
+    static int edgeNum;
     int k;
     int l;
     int h;
@@ -99,7 +99,7 @@ class graph {
 		ALPHABET_SIZE = 4;
 		k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new int[edgeNum];
+        edgeArray = new static int[edgeNum];
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
@@ -110,7 +110,6 @@ class graph {
     int calculateHittingNumber(int L);
     int* calculateHittingNumberAny(int x);
     int calculateHittingNumberParallel(int L, bool random);
-    int* calculateHittingNumberParallelAny(int x);
     int calculatePaths(int L);
     int calculatePathsSeq(int L);
     int calculatePathsAny();
@@ -120,7 +119,6 @@ class graph {
     int Hitting(int L, string hittingFile);
     int HittingAny(int L, int x, string hittingFile);
     int HittingParallel(int L, string hittingFile);
-    int HittingParallelAny(int L, int x, string hittingFile);
     int HittingRandomParallel(int L, string hittingFile);
     int maxLength();
     vector<int> pushBackVector();

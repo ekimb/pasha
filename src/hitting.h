@@ -137,49 +137,6 @@ and without randomization, counting L-k+1-long paths.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-int graph::HittingParallelAny(int L, int x, string hittingFile) {
-/**
-Performs hitting set calculations with parallelization and
-without randomization, counting paths of all length.
-@param L: Sequence length, x: Number of vertices, hittingFile: Output file destination.
-@return hittingCount: Size of hitting set.
-*/
-	vertexExp = pow(ALPHABET_SIZE, k-1);
-    ofstream hittingStream;
-    int hittingCount = 0;
-    l = L-k+1;
-    hittingNumAnyArray = new double[edgeNum];
-    used = new bool[vertexExp];
-	finished = new bool[vertexExp];
-	topoSort = new int[vertexExp];
-   	topologicalSort();
-    D = new double*[1];
-    double* Dpool = new double[(1)* vertexExp];
-	for(int i = 0; i < 1; i++, Dpool += vertexExp) D[i] = Dpool;
-    F = new double*[1];
-    double* Fpool = new double[(1)* vertexExp];
-	for(int i = 0; i < 1; i++, Fpool += vertexExp) F[i] = Fpool;
-    hittingStream.open(hittingFile);
-    while(maxLength() >= l) { 
-    	calculatePathsAny();
-    	int* imaxHittingNum;
-    	imaxHittingNum = calculateHittingNumberParallelAny(x);
-    	for (int i = 0; i < x; i++) {
-        	string label = getLabel(imaxHittingNum[i]);
-        	removeEdge(imaxHittingNum[i]);
-        	hittingStream << label << "\n";
-	    	hittingCount++;
-        }
-   	}
-   	hittingStream.close();
-   	delete [] *D;
-	delete [] D;
-	delete [] *F;
-	delete [] F;
-    topologicalSort();
-	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
-    return hittingCount;
-}
 int graph::HittingRandomParallel(int L, string hittingFile) {
 /**
 Performs hitting set calculations with parallelization
@@ -193,11 +150,11 @@ and with randomization, counting L-k+1-long paths.
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    epsilon = 0.2;
+    epsilon = 0.1;
     delta = 1/(double)l;
     double alpha = 1 - 4*delta -2*epsilon;
-    if (1/alpha > 2.0) delta = 0.025;
-    alpha = 1 - 4*delta -2*epsilon;
+    //if (1/alpha > 2.0) delta = 0.025;
+    //alpha = 1 - 4*delta -2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     cout << "Delta: " << delta << endl;
     cout << "Epsilon: " << epsilon << endl;
