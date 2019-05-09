@@ -32,8 +32,8 @@ class graph {
     double* hittingNumAnyArray;
     double* hittingNumArray;
     double* maxHittingNum;
-    double** D;
-    double** F;
+    long double** D;
+    long double** F;
     int ALPHABET_SIZE;
 	int edgeCount;
     int edgeNum;
@@ -43,11 +43,11 @@ class graph {
     int tries;
     double total;
     int vertexCount; 
-    int vertexExp;
-    int vertexExp2;
-    int vertexExp3;
-    int vertexExpMask;
-    int vertexExp_1;
+    unsigned long long vertexExp;
+    unsigned long long vertexExp2;
+    unsigned long long vertexExp3;
+    unsigned long long vertexExpMask;
+    unsigned long long vertexExp_1;
     int* edgeArray;
     int* imaxHittingNum;
     int* stageArray;

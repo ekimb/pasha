@@ -29,13 +29,13 @@ or randomization, counting L-k+1-long paths.
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-    D = new double*[l + 1];
-    double* Dpool = new double[(l+1)* vertexExp];
-	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-	hittingStream.open(hittingFile); 
-    F = new double*[l + 1];
-    double* Fpool = new double[(l+1)* vertexExp];
-	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
+    D = new long double*[l + 1];
+    long double* Dpool = new long double[(l+1)* vertexExp];
+    for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+    hittingStream.open(hittingFile); 
+    F = new long double*[l + 1];
+    long double* Fpool = new long double[(l+1)* vertexExp];
+    for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
     while (calculatePathsSeq(l)) {
     	int imaxHittingNum = calculateHittingNumber(l);
     	if (imaxHittingNum < 0) break;
@@ -71,11 +71,11 @@ or randomization, counting paths of all length.
 	topoSort = new int[vertexExp];
     hittingStream.open(hittingFile); 
    	topologicalSort();
-    D = new double*[1];
-    double* Dpool = new double[(1)* vertexExp];
+    D = new long double*[1];
+    long double* Dpool = new long double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Dpool += vertexExp) D[i] = Dpool;
-    F = new double*[1];
-    double* Fpool = new double[(1)* vertexExp];
+    F = new long double*[1];
+    long double* Fpool = new long double[(1)* vertexExp];
 	for(int i = 0; i < 1; i++, Fpool += vertexExp) F[i] = Fpool;
     while (maxLength() >= l) { 
     	calculatePathsAny();
@@ -113,13 +113,13 @@ and without randomization, counting L-k+1-long paths.
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new int[vertexExp];
-    D = new double*[l + 1];
-    double* Dpool = new double[(l+1)* vertexExp];
-	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-	hittingStream.open(hittingFile); 
-    F = new double*[l + 1];
-    double* Fpool = new double[(l+1)* vertexExp];
-	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
+    D = new long double*[l + 1];
+    long double* Dpool = new long double[(l+1)* vertexExp];
+    for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+    hittingStream.open(hittingFile); 
+    F = new long double*[l + 1];
+    long double* Fpool = new long double[(l+1)* vertexExp];
+    for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
     while (calculatePaths(l)) {
     	int imaxHittingNum = calculateHittingNumberParallel(l, false);
     	if (imaxHittingNum < 0) break;
@@ -152,6 +152,10 @@ and with randomization, counting L-k+1-long paths.
     l = L-k+1;
     epsilon = 0.1;
     delta = 1/(double)l;
+    if (l <= 19) {
+        delta = 0.025;
+        epsilon = 0.083333;
+    }
     double alpha = 1 - 4*delta -2*epsilon;
     //if (1/alpha > 2.0) delta = 0.025;
     //alpha = 1 - 4*delta -2*epsilon;
@@ -165,15 +169,19 @@ and with randomization, counting L-k+1-long paths.
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	pick = new bool[edgeNum];
-	tried = new bool[edgeNum];
 	topoSort = new int[vertexExp];
-    D = new double*[l + 1];
-    double* Dpool = new double[(l+1)* vertexExp];
+    cout << "Arrays except D and F done" << endl;
+    cout << (l+1)* vertexExp << endl;
+    cout << DBL_MAX << endl;
+    D = new long double*[l + 1];
+    long double* Dpool = new long double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
 	hittingStream.open(hittingFile); 
-    F = new double*[l + 1];
-    double* Fpool = new double[(l+1)* vertexExp];
+    cout << "D done" << endl;
+    F = new long double*[l + 1];
+    long double* Fpool = new long double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
+    cout << "F done" << endl;
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
