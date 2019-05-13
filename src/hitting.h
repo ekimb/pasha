@@ -157,8 +157,6 @@ and with randomization, counting L-k+1-long paths.
         epsilon = 0.05;
     }
     double alpha = 1 - 4*delta -2*epsilon;
-    //if (1/alpha > 2.0) delta = 0.025;
-    //alpha = 1 - 4*delta -2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
     cout << "Delta: " << delta << endl;
     cout << "Epsilon: " << epsilon << endl;
@@ -170,18 +168,13 @@ and with randomization, counting L-k+1-long paths.
 	finished = new bool[vertexExp];
 	pick = new bool[edgeNum];
 	topoSort = new int[vertexExp];
-    cout << "Arrays except D and F done" << endl;
-    cout << (l+1)* vertexExp << endl;
-    cout << DBL_MAX << endl;
     D = new long double*[l + 1];
     long double* Dpool = new long double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
 	hittingStream.open(hittingFile); 
-    cout << "D done" << endl;
     F = new long double*[l + 1];
     long double* Fpool = new long double[(l+1)* vertexExp];
 	for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-    cout << "F done" << endl;
 	calculatePaths(l);
 	int imaxHittingNum = calculateHittingNumberParallel(l, false);
 	h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
@@ -190,7 +183,6 @@ and with randomization, counting L-k+1-long paths.
         total = 0;
     	int hittingCountStage = 0;
     	double pathCountStage = 0;
-    	//imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
         calculatePaths(l);
         if (calculateHittingNumberParallel(l, true) < 0) break;
         stageVertices = pushBackVector();
@@ -201,8 +193,6 @@ and with randomization, counting L-k+1-long paths.
         	if ((pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
                 stageArray[i] = 0;
 				pick[i] = true;
-                //removeEdge(i);
-                //hittingStream << label << "\n";
     			hittingCountStage++;
     			pathCountStage += hittingNumArray[i];
     		}
@@ -214,18 +204,10 @@ and with randomization, counting L-k+1-long paths.
                 #pragma omp critical
                 if ((pick[i] == false)) {
                     if (((double) rand() / (RAND_MAX)) <= prob) {
-                        //string label = getLabel(v1);
                         stageArray[i] = 0;
                         pick[i] = true;
-                        //removeEdge(i);
-                        //string label2 = getLabel(v2);
-                        //stageArray[j] = 0;
-                        //pick[j] = true;
-                        //removeEdge(j);
-                        //hittingStream << label << "\n" << label2 << "\n";
                         hittingCountStage += 1;
                         pathCountStage += hittingNumArray[i];
-                        //pathCountStage += hittingNumArray[j];
                     }
                     j = stageVertices[jt];
                     if ((pick[j] == false)) {
@@ -252,9 +234,6 @@ and with randomization, counting L-k+1-long paths.
         	h--;
         }
         else hittingCount -= hittingCountStage;
-            
-        //stageVertices.clear();
-        //stageVertices.shrink_to_fit();
    	}
    	hittingStream.close();
     delete [] *D;
@@ -265,5 +244,4 @@ and with randomization, counting L-k+1-long paths.
 	cout << "Length of longest remaining path: " <<  maxLength() << "\n";
     return hittingCount;
 }
-
 #endif
