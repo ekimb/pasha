@@ -7,14 +7,15 @@
 
 > Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for approximating compact universal hitting sets. *19th International Workshop on Algorithms in Bioinformatics* (2019).
 
-Pasha is a tool for research and still under development. It is not presented as accurate or free of any errors, and is provided "AS IS", without warranty of any kind.
+PASHA is a tool for research and still under development. It is not presented as accurate or free of any errors, and is provided "AS IS", without warranty of any kind.
 
 ## Installation and setup
 
 ### Installing the package
 
-Clone the repository to your local machine, and compile via `g++` using the command:
+Clone the repository to your local machine, and compile via `g++` using the commands:
 
+`cd src`
 `g++ -O3 -o pasha pasha.cpp -fopenmp`
 
 The `-O3` or `-Ofast` flag is necessary for efficient parallelization and optimization. The `-fopenmp` flag is needed to process parallelization via OpenMP.
