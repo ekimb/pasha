@@ -81,11 +81,11 @@ For `pasha benchmark`, PASHA will report the length of the longest remaining pat
 
 ## License
 
-Pasha is freely available under the [MIT License](https://opensource.org/licenses/MIT).
+PASHA is freely available under the [MIT License](https://opensource.org/licenses/MIT).
 
 ## References
 
-If you find Pasha useful, please cite the following papers:
+If you find PASHA useful, please cite the following papers:
 
 - Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for approximating compact universal hitting sets. *19th International Workshop on Algorithms in Bioinformatics* (2019).
 
@@ -95,7 +95,7 @@ If you find Pasha useful, please cite the following papers:
 
 ## Contributors
 
-Development of Pasha is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University of the Negev (BGU).
+Development of PASHA is led by [Barış Ekim](http://people.csail.mit.edu/ekim/), collaboratively in the labs of [Bonnie Berger](http://people.csail.mit.edu/bab/) at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at Massachusetts Institute of Technology (MIT), and [Yaron Orenstein](http://wwwee.ee.bgu.ac.il/~yaronore/) at the Department of Electrical and Computer Engineering at Ben-Gurion University of the Negev (BGU).
 
 ## Contact
 
