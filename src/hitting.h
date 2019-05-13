@@ -153,8 +153,8 @@ and with randomization, counting L-k+1-long paths.
     epsilon = 0.1;
     delta = 1/(double)l;
     if (l <= 19) {
-        delta = 0.025;
-        epsilon = 0.083333;
+        delta = 0.01;
+        epsilon = 0.05;
     }
     double alpha = 1 - 4*delta -2*epsilon;
     //if (1/alpha > 2.0) delta = 0.025;
