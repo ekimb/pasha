@@ -3,7 +3,7 @@
 </p>
 <h1><center>PASHA: Parallel Algorithms for Small Hitting Set Approximations</center></h1>
 
-**PASHA** (Parallel Algorithms for Approximating Compact Universal Hitting Sets) is a tool for finding approximations for a small universal hitting set (a small set of k-mers that hits every sequence of length L). A detailed description of the functionality of PASHA, along with results in set size, running time, memory usage and CPU utilization are provided in:
+**PASHA** (Parallel Algorithms for Small Hitting Set Approximations) is a tool for finding approximations for a small universal hitting set (a small set of k-mers that hits every sequence of length L). A detailed description of the functionality of PASHA, along with results in set size, running time, memory usage and CPU utilization are provided in:
 
 > Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for approximating compact universal hitting sets. *bioRxiv* (2019).
 
