@@ -12,6 +12,7 @@ outputting hitting sets.
 #include <unistd.h> 
 #include <stdio.h> 
 #include <time.h>
+#include<bits/stdc++.h>
 #include <sys/stat.h> 
 #include <sys/types.h> 
 #include "decycling.h"
