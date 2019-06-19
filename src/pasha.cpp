@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
         }
     }
     int hittingSize = 0;
-    if (mkdir(directory.c_str(), 0777) == -1) cout << strerror(errno) << "." << endl; 
+    if (mkdir(directory.c_str(), 0777) == -1) cout << perror(errno) << "." << endl; 
     else cout << "Directory created." << endl; 
     graph newGraph = regenerateGraph(k, decyclingFile);
     if (argFirst == DECYCLING) cout << "Decycling set will be saved to: " << decyclingFile << endl; 
