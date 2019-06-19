@@ -70,6 +70,7 @@ Prints help log for hitting set.
     cout << "-r Randomization (optional)." << endl;
     cout << "-k <kmerlength [int 5-12]> K-mer length (required)." << endl;
     cout << "-l <seqlength [int 20-200]> Sequence length (required)." << endl;
+    cout << "-t <threads> Number of threads." << endl
     if (argError != "") {
         cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
         cout << "Please follow the specifications above." << endl << endl;
@@ -150,7 +151,7 @@ int main(int argc, char* argv[]) {
         else {
             for (int i = 2; i < argc;) {
                 string argNext = string(argv[i]);
-                if (argc < 6 || argc > 10) printGenerateHelp("Incorrect number of arguments or values.");
+                if (argc < 7 || argc > 11) printGenerateHelp("Incorrect number of arguments or values.");
                 else if (argNext == "-a") {
                     any = true;
                     x = 1;
@@ -192,6 +193,12 @@ int main(int argc, char* argv[]) {
                     hittingFile =  to_string(k) + string(argv[i+1]);
                     i += 2;
                 }
+                else if (argNext == "-t") {
+                    char *end;
+                    threads = strtol(argv[i+1], &end, 10);
+                    if (*end != '\0') printGenerateHelp("Non-integer or unspecified number of threads.");
+                    i += 2;
+                }
                 else printGenerateHelp("Incorrect argument or value " + argNext+ ".");      
             }
             if (kmerLen == false) printGenerateHelp("Please provide a k-mer length.");
@@ -203,7 +210,7 @@ int main(int argc, char* argv[]) {
         else {
             for (int i = 2; i < argc;) {
                 string argNext = string(argv[i]);
-                if (argc != 6) printBenchmarkHelp("Incorrect number of arguments or values.");
+                if (argc != 7) printBenchmarkHelp("Incorrect number of arguments or values.");
                 else if (argNext == "-k") {
                     kmerLen = true;
                     char *end;
@@ -221,6 +228,12 @@ int main(int argc, char* argv[]) {
                     if (*end != '\0') printBenchmarkHelp("Non-integer or unspecified sequence length.");
                     if (L < 20 || L > 200) printBenchmarkHelp("Pasha only supports sequence lengths between 20 and 200.");
                     hittingFile =  to_string(k) + string(argv[i+1]);
+                    i += 2;
+                }
+                else if (argNext == "-t") {
+                    char *end;
+                    threads = strtol(argv[i+1], &end, 10);
+                    if (*end != '\0') printGenerateHelp("Non-integer or unspecified number of threads.");
                     i += 2;
                 }
                 else printBenchmarkHelp("Incorrect argument or value " + argNext+ ".");      
@@ -250,13 +263,13 @@ int main(int argc, char* argv[]) {
                     hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "r.txt";
                     cout << "Decycling set will be saved to: " << decyclingFile << endl;
                     cout << "Hitting set will be saved to: " << hittingFile << endl;
-                    hittingSize = newGraph.HittingRandomParallel(L, hittingFile);
+                    hittingSize = newGraph.HittingRandomParallel(L, hittingFile, threads);
                 }
                 else { 
                     hittingFile = "pasha_" + to_string(k) + "/" + hittingFile + "p.txt";
                     cout << "Decycling set will be saved to: " << decyclingFile << endl;
                     cout << "Hitting set will be saved to: " << hittingFile << endl;
-                    hittingSize = newGraph.HittingParallel(L, hittingFile);
+                    hittingSize = newGraph.HittingParallel(L, hittingFile, threads);
                 }
             }
             else {
@@ -290,7 +303,7 @@ int main(int argc, char* argv[]) {
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "p.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
-        hittingSize = newGraph.HittingParallel(L, (hittingFile + "p.txt"));
+        hittingSize = newGraph.HittingParallel(L, (hittingFile + "p.txt"), threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
@@ -321,7 +334,7 @@ int main(int argc, char* argv[]) {
         newGraph = regenerateGraph(k, decyclingFile);
         cout << hittingFile + "r.txt:" << endl;
         clock_gettime(CLOCK_MONOTONIC, &start);
-        hittingSize = newGraph.HittingRandomParallel(L, (hittingFile + "r.txt"));
+        hittingSize = newGraph.HittingRandomParallel(L, (hittingFile + "r.txt"), threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
