@@ -109,8 +109,8 @@ class graph {
     void calculateForEachAny(int i);
     int calculateHittingNumber(int L);
     int* calculateHittingNumberAny(int x);
-    int calculateHittingNumberParallel(int L, bool random);
-    int calculatePaths(int L);
+    int calculateHittingNumberParallel(int L, bool random, int threads);
+    int calculatePaths(int L, int threads);
     int calculatePathsSeq(int L);
     int calculatePathsAny();
     int* findMaxAny(int x);
@@ -118,8 +118,8 @@ class graph {
     vector<int> getAdjacent(int v);
     int Hitting(int L, string hittingFile);
     int HittingAny(int L, int x, string hittingFile);
-    int HittingParallel(int L, string hittingFile);
-    int HittingRandomParallel(int L, string hittingFile);
+    int HittingParallel(int L, string hittingFile, int threads);
+    int HittingRandomParallel(int L, string hittingFile, int threads);
     int maxLength();
     vector<int> pushBackVector();
     void removeEdge(int i);

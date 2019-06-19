@@ -145,7 +145,6 @@ and with randomization, counting L-k+1-long paths.
 @return hittingCount: Size of hitting set.
 */
     omp_set_dynamic(0);
-    int threads = 8;
     vertexExp = pow(ALPHABET_SIZE, k-1);
     ofstream hittingStream;
     int hittingCount = 0;
@@ -202,7 +201,7 @@ and with randomization, counting L-k+1-long paths.
             for (int jt = 0; jt < stageVertices.size(); jt++) {
                 i = stageVertices[it];
                 #pragma omp critical
-                if ((pick[i] == false)) {
+                if (pick[i] == false) {
                     if (((double) rand() / (RAND_MAX)) <= prob) {
                         stageArray[i] = 0;
                         pick[i] = true;
@@ -210,7 +209,7 @@ and with randomization, counting L-k+1-long paths.
                         pathCountStage += hittingNumArray[i];
                     }
                     j = stageVertices[jt];
-                    if ((pick[j] == false)) {
+                    if (pick[j] == false) {
                         if (((double) rand() / (RAND_MAX)) <= prob) {
                             stageArray[j] = 0;
                             pick[j] = true;

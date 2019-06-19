@@ -12,7 +12,6 @@ outputting hitting sets.
 #include <unistd.h> 
 #include <stdio.h> 
 #include <time.h>
-#include <bits/stdc++.h> 
 #include <sys/stat.h> 
 #include <sys/types.h> 
 #include "decycling.h"
@@ -70,7 +69,7 @@ Prints help log for hitting set.
     cout << "-r Randomization (optional)." << endl;
     cout << "-k <kmerlength [int 5-12]> K-mer length (required)." << endl;
     cout << "-l <seqlength [int 20-200]> Sequence length (required)." << endl;
-    cout << "-t <threads> Number of threads." << endl
+    cout << "-t <threads> Number of threads." << endl;
     if (argError != "") {
         cout << "Input Error: "; printf(ANSI_COLOR_RED "%s" ANSI_COLOR_RESET "\n", argError.c_str());
         cout << "Please follow the specifications above." << endl << endl;
