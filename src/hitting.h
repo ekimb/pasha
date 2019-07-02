@@ -25,7 +25,7 @@ or randomization, counting L-k+1-long paths.
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    hittingNumArray = new byte[edgeNum];
+    hittingNumArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new byte[vertexExp];
@@ -65,7 +65,7 @@ or randomization, counting paths of all length.
     byte* imaxHittingNum;
     int hittingCount = 0;
     l = L-k+1;
-    hittingNumAnyArray = new byte[edgeNum];
+    hittingNumAnyArray = new double[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
 	topoSort = new byte[vertexExp];
@@ -108,7 +108,7 @@ and without randomization, counting L-k+1-long paths.
     ofstream hittingStream;
     int hittingCount = 0;
     l = L-k+1;
-    hittingNumArray = new byte[edgeNum];
+    hittingNumArray = new double[edgeNum];
     stageArray = new byte[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];
@@ -161,7 +161,7 @@ and with randomization, counting L-k+1-long paths.
     cout << "Epsilon: " << epsilon << endl;
     int i;
     int j;
-    hittingNumArray = new byte[edgeNum];
+    hittingNumArray = new double[edgeNum];
     stageArray = new byte[edgeNum];
     used = new bool[vertexExp];
 	finished = new bool[vertexExp];

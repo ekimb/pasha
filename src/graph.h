@@ -17,7 +17,7 @@
 #include <map>
 #include <cstdlib>
 #include <iomanip>
-#include <stdint.h>
+#include <cstdint>
 #include <omp.h>
 using namespace std;
 using byte = uint8_t;
@@ -31,9 +31,9 @@ class graph {
     bool* tried;
     double delta;
 	double epsilon;
-    byte* hittingNumAnyArray;
-    byte* hittingNumArray;
-    byte* maxHittingNum;
+    double* hittingNumAnyArray;
+    double* hittingNumArray;
+    double* maxHittingNum;
     long double** D;
     long double** F;
     int ALPHABET_SIZE;

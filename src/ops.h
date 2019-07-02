@@ -57,7 +57,7 @@ Calculates hitting number of all edges, counting all paths.
 @param x: Number of vertices to consider.
 @return imaxHittingNum: Array of index of x edges with maximum hitting number.
 */
-	maxHittingNum = new byte[x];
+	maxHittingNum = new double[x];
 	imaxHittingNum = new byte[x];
     for (int i = 0; i < edgeNum; i++) {
         double hittingNum = 0;
