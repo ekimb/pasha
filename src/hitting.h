@@ -152,8 +152,8 @@ and with randomization, counting L-k+1-long paths.
     epsilon = 0.1;
     delta = 1/(double)l;
     if (l <= 200) {
-        delta = 0.01;
-        epsilon = 0.05;
+        delta = 0.1;
+        epsilon = 0.1;
     }
     double alpha = 1 - 4*delta -2*epsilon;
     cout << "Alpha: " << 1/alpha << endl;
