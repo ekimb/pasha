@@ -31,11 +31,11 @@ class graph {
     byte* tried;
     double delta;
 	double epsilon;
-    double* hittingNumAnyArray;
-    double* hittingNumArray;
-    double* maxHittingNum;
-    long double** D;
-    long double** F;
+    float* hittingNumAnyArray;
+    float* hittingNumArray;
+    float* maxHittingNum;
+    float** D;
+    float** F;
     int ALPHABET_SIZE;
 	float edgeCount;
     float edgeNum;
