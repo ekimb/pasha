@@ -17,7 +17,6 @@ class PASHA {
     public:
         byte* finished;
         byte* pick;
-        byte* tried;
         byte* used;
         double delta;
         double epsilon;
@@ -187,19 +186,14 @@ class PASHA {
         ofstream hittingStream;
         int hittingCount = 0;
         l = L-k+1;
-        epsilon = 0.1;
+        epsilon = 0.08333;
         delta = 1/(double)l;
-        if (l <= 200) {
-            delta = 0.1;
-            epsilon = 0.1;
-        }
         double alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
         cout << "Epsilon: " << epsilon << endl;
         int i;
         int j;
-        int h;
         hittingNumArray = new float[(int)edgeNum];
         stageArray = new byte[(int)edgeNum];
         used = new byte[vertexExp];
@@ -220,7 +214,7 @@ class PASHA {
         while (h > 0) {
             total = 0;
             int hittingCountStage = 0;
-            double pathCountStage = 0;
+            float pathCountStage = 0;
             calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             stageVertices = pushBackVector();
@@ -254,6 +248,7 @@ class PASHA {
                                 pick[j] = true;
                                 hittingCountStage += 1;
                                 pathCountStage += hittingNumArray[j];
+
                             }
                         }
                     }
@@ -301,6 +296,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         omp_set_dynamic(0);
         float maxHittingNum = 0;
         int imaxHittingNum = -1;
+        int count = 0;
         #pragma omp parallel for num_threads(threads)
         for (int i = 0; i < (int)edgeNum; i++) {
             calculateForEach(i, L);
@@ -315,6 +311,11 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                     stageArray[i] = 0;
                     pick[i] = false;
                 }   
+            }
+        }
+        for (int i = 0; i < (int)edgeNum; i++) {
+            if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {
+                maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;
             }
         }
         return imaxHittingNum;
@@ -339,11 +340,12 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 int index = (i * 4);
                 F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
                 D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+
             }
         }
         return 1;
     }
-    int findLog(double base, double x) {
+    int findLog(double base, float x) {
     /**
     Finds the logarithm of a given number with respect to a given base.
     @param base: Base of logartihm, x: Input number.
@@ -353,7 +355,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
     }
     vector<int> pushBackVector() {
         vector<int> stageVertices;
-        for(int i = 0; i < edgeNum; i++) {
+        for(int i = 0; i < (int)edgeNum; i++) {
             if (stageArray[i] == 1) stageVertices.push_back(i);
         }
         return stageVertices;
