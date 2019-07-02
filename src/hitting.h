@@ -151,7 +151,7 @@ and with randomization, counting L-k+1-long paths.
     l = L-k+1;
     epsilon = 0.1;
     delta = 1/(double)l;
-    if (l <= 19) {
+    if (l <= 200) {
         delta = 0.01;
         epsilon = 0.05;
     }
