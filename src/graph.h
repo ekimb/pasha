@@ -25,10 +25,10 @@ using byte = uint8_t;
 class graph {
 
 	public:
-    bool* finished;
-    bool* pick;
-    bool* used;
-    bool* tried;
+    byte* finished;
+    byte* pick;
+    byte* used;
+    byte* tried;
     double delta;
 	double epsilon;
     double* hittingNumAnyArray;
@@ -37,19 +37,19 @@ class graph {
     long double** D;
     long double** F;
     int ALPHABET_SIZE;
-	int edgeCount;
-    int edgeNum;
+	float edgeCount;
+    float edgeNum;
     int k;
     int l;
     int h;
     int tries;
-    double total;
+    int total;
     int vertexCount; 
-    unsigned long long vertexExp;
-    unsigned long long vertexExp2;
-    unsigned long long vertexExp3;
-    unsigned long long vertexExpMask;
-    unsigned long long vertexExp_1;
+    int vertexExp;
+    int vertexExp2;
+    int vertexExp3;
+    int vertexExpMask;
+    int vertexExp_1;
     byte* edgeArray;
     byte* imaxHittingNum;
     byte* stageArray;
@@ -101,7 +101,7 @@ class graph {
 		ALPHABET_SIZE = 4;
 		k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new byte[edgeNum];
+        edgeArray = new byte[(int)edgeNum];
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));

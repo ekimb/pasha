@@ -19,6 +19,7 @@ outputting hitting sets.
 #include "graph.h"
 #include "ops.h"
 #include "hitting.h"
+#include "pdocks.h"
 #define DECYCLING  "decycling"
 #define GENERATE  "generate"
 #define BENCHMARK "benchmark"
