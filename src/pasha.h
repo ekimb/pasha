@@ -211,12 +211,12 @@ class PASHA {
         int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/l;
-        while ((h > 0) && (calculatePaths(l, threads))){
+        while (h > 0) {
             total = 0;
             int hittingCountStage = 0;
             float pathCountStage = 0;
-            imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
-            if (imaxHittingNum < 0) break;
+            calculatePaths(l, threads);
+            if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             stageVertices = pushBackVector();
             #pragma omp parallel for num_threads(threads)
             for (int it = 0; it < stageVertices.size(); it++) {
