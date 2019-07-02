@@ -216,7 +216,8 @@ class PASHA {
             total = 0;
             int hittingCountStage = 0;
             float pathCountStage = 0;
-            if (calculateHittingNumberParallel(l, true, threads) < 0) break;
+            int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+            if (imaxHittingNum < 0) break;
             stageVertices = pushBackVector();
             #pragma omp parallel for num_threads(threads)
             for (int it = 0; it < stageVertices.size(); it++) {
