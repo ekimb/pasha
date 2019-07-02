@@ -19,6 +19,8 @@ class PASHA {
         byte* pick;
         byte* tried;
         byte* used;
+        double delta;
+        double epsilon;
         float* hittingNumArray;
         float** D;
         float** F;
@@ -27,6 +29,8 @@ class PASHA {
         float edgeNum;
         int k;
         int l;
+        int h;
+        float count;
         int total;
         int vertexCount; 
         int vertexExp;
@@ -171,7 +175,7 @@ class PASHA {
         return rc;
     }
 
-    int graph::HittingRandomParallel(int L, string hittingFile, int threads) {
+    int HittingRandomParallel(int L, string hittingFile, int threads) {
     /**
     Performs hitting set calculations with parallelization
     and with randomization, counting L-k+1-long paths.
@@ -198,9 +202,9 @@ class PASHA {
         int h;
         hittingNumArray = new float[(int)edgeNum];
         stageArray = new byte[(int)edgeNum];
-        used = new bool[vertexExp];
-        finished = new bool[vertexExp];
-        pick = new bool[edgeNum];
+        used = new byte[vertexExp];
+        finished = new byte[vertexExp];
+        pick = new byte[(int)edgeNum];
         topoSort = new byte[vertexExp];
         D = new float*[l + 1];
         float* Dpool = new float[(l+1)* vertexExp];
@@ -347,7 +351,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
     */
         return (int)(log(x) / log(base));
     }
-    vector<int> graph::pushBackVector() {
+    vector<int> pushBackVector() {
         vector<int> stageVertices;
         for(int i = 0; i < edgeNum; i++) {
             if (stageArray[i] == 1) stageVertices.push_back(i);
