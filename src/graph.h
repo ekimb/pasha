@@ -17,8 +17,10 @@
 #include <map>
 #include <cstdlib>
 #include <iomanip>
+#include <stdint.h>
 #include <omp.h>
 using namespace std;
+using byte = uint8_t;
 
 class graph {
 
@@ -29,9 +31,9 @@ class graph {
     bool* tried;
     double delta;
 	double epsilon;
-    double* hittingNumAnyArray;
-    double* hittingNumArray;
-    double* maxHittingNum;
+    byte* hittingNumAnyArray;
+    byte* hittingNumArray;
+    byte* maxHittingNum;
     long double** D;
     long double** F;
     int ALPHABET_SIZE;
@@ -48,10 +50,10 @@ class graph {
     unsigned long long vertexExp3;
     unsigned long long vertexExpMask;
     unsigned long long vertexExp_1;
-    int* edgeArray;
-    int* imaxHittingNum;
-    int* stageArray;
-    int* topoSort;
+    byte* edgeArray;
+    byte* imaxHittingNum;
+    byte* stageArray;
+    byte* topoSort;
     static map<char, int> alphabetMap;
     string ALPHABET;
     vector<int> stageVertices;
@@ -99,7 +101,7 @@ class graph {
 		ALPHABET_SIZE = 4;
 		k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new int[edgeNum];
+        edgeArray = new byte[edgeNum];
 		generateGraph(k);
 		map<char, int> alphabetMap;
 		for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
@@ -108,12 +110,12 @@ class graph {
     void calculateForEach(int i, int L);
     void calculateForEachAny(int i);
     int calculateHittingNumber(int L);
-    int* calculateHittingNumberAny(int x);
+    byte* calculateHittingNumberAny(int x);
     int calculateHittingNumberParallel(int L, bool random, int threads);
     int calculatePaths(int L, int threads);
     int calculatePathsSeq(int L);
     int calculatePathsAny();
-    int* findMaxAny(int x);
+    byte* findMaxAny(int x);
     int findLog(double base, double x);
     vector<int> getAdjacent(int v);
     int Hitting(int L, string hittingFile);

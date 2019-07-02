@@ -51,14 +51,14 @@ Calculates hitting number of all edges, counting paths of length L-k+1.
     return imaxHittingNum;
 }
 
-int* graph::calculateHittingNumberAny(int x) {
+byte* graph::calculateHittingNumberAny(int x) {
 /**
 Calculates hitting number of all edges, counting all paths.
 @param x: Number of vertices to consider.
 @return imaxHittingNum: Array of index of x edges with maximum hitting number.
 */
-	maxHittingNum = new double[x];
-	imaxHittingNum = new int[x];
+	maxHittingNum = new byte[x];
+	imaxHittingNum = new byte[x];
     for (int i = 0; i < edgeNum; i++) {
         double hittingNum = 0;
         hittingNum = edgeArray[i] * F[0][i % vertexExp] * D[0][i / ALPHABET_SIZE];
@@ -217,7 +217,7 @@ Finds the logarithm of a given number with respect to a given base.
     return (int)(log(x) / log(base));
 }
 
-int* graph::findMaxAny(int x) {
+byte* graph::findMaxAny(int x) {
 /**
 Finds the x vertices with maximum hitting number.
 @param x: Number of vertices to consider.
