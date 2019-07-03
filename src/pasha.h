@@ -174,7 +174,7 @@ class PASHA {
         return rc;
     }
 
-    int HittingRandomParallel(int L, string hittingFile, int threads) {
+    int HittingRandomParallel(int L, const char *hittingPath, int threads) {
     /**
     Performs hitting set calculations with parallelization
     and with randomization, counting L-k+1-long paths.
@@ -183,7 +183,7 @@ class PASHA {
     */
         omp_set_dynamic(0);
         vertexExp = pow(ALPHABET_SIZE, k-1);
-        ofstream hittingStream;
+        ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
         epsilon = 0.08333;
@@ -203,7 +203,7 @@ class PASHA {
         D = new float*[l + 1];
         float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-        hittingStream.open(hittingFile); 
+        //hittingStream.open(hittingFile); 
         F = new float*[l + 1];
         float* Fpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;

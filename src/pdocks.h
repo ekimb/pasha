@@ -167,7 +167,7 @@ class PDOCKS {
         return rc;
     }
 
-    int HittingParallel(int L, string hittingFile, int threads) {
+    int HittingParallel(int L, const char *hittingPath, int threads) {
     /**
     Performs hitting set calculations with parallelization
     and without randomization, counting L-k+1-long paths.
@@ -176,7 +176,7 @@ class PDOCKS {
     */
         vertexExp = pow(ALPHABET_SIZE, k-1);
         int imaxHittingNum = -1;
-        ofstream hittingStream;
+        ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
         hittingNumArray = new float[(int)edgeNum];
@@ -186,7 +186,6 @@ class PDOCKS {
         D = new float*[l + 1];
         float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-        hittingStream.open(hittingFile); 
         F = new float*[l + 1];
         float* Fpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
