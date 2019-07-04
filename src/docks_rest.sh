@@ -1,4 +1,5 @@
 #!/bin/sh
+touch ../bench/PDOCKSbench$1.txt
 command time -v ./pdocks $1 20 24 decyc$1.txt PDOCKS$1_20.txt 2>&1 | tee -a ../bench/PDOCKSbench$1.txt
 command time -v ./pdocks $1 30 24 decyc$1.txt PDOCKS$1_30.txt 2>&1 | tee -a ../bench/PDOCKSbench$1.txt
 command time -v ./pdocks $1 40 24 decyc$1.txt PDOCKS$1_40.txt 2>&1 | tee -a ../bench/PDOCKSbench$1.txt
