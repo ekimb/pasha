@@ -19,9 +19,6 @@
         int threads = stoi(argv[3], &pos);
         const char *decyclingPath = argv[4];
         const char *hittingPath = argv[5];
-        float epsilon = atof(argv[6]);
-        float delta = atof(argv[7]);
-
         string decyclingFile;
         string hittingFile;
         const double PI = 3.14159;
@@ -39,7 +36,7 @@
         cout << "Decycling set size: " << decyclingSize << endl;
         decyclingStream.close();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads, epsilon, delta);
+        int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
