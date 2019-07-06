@@ -187,7 +187,7 @@ class PASHA {
         int hittingCount = 0;
         l = L-k+1;
         delta = 1/(float)l;
-        epsilon = (2-12*(delta))/6;
+        epsilon = 0.25;
         float alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
