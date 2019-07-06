@@ -212,11 +212,11 @@ class PASHA {
         cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         cout << "Number of stages:" << h << endl;
-        double prob = delta/l;
+        double prob = delta/(double)l;
         while (h > 0) {
             total = 0;
             int hittingCountStage = 0;
-            float pathCountStage = 0;
+            long double pathCountStage = 0;
             calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             stageVertices = pushBackVector();
