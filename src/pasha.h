@@ -345,7 +345,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         }
         return 1;
     }
-    int findLog(float base, long double x) {
+    int findLog(float base, float x) {
     /**
     Finds the logarithm of a given number with respect to a given base.
     @param base: Base of logartihm, x: Input number.
