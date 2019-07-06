@@ -20,7 +20,7 @@ class PASHA {
         byte* used;
         float delta;
         float epsilon;
-        float* hittingNumArray;
+        long double* hittingNumArray;
         float** D;
         float** F;
         int ALPHABET_SIZE;
@@ -192,7 +192,7 @@ class PASHA {
         cout << "Epsilon: " << epsilon << endl;
         int i;
         int j;
-        hittingNumArray = new float[(int)edgeNum];
+        hittingNumArray = new long double[(int)edgeNum];
         stageArray = new byte[(int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
@@ -283,7 +283,7 @@ Calculates hitting number for an edge of specified index with respect to a speci
 sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
-        float hittingNum = 0;
+        long double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         hittingNumArray[i] = hittingNum;
     }
@@ -294,7 +294,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 @return imaxHittingNum: Index of vertex with maximum hitting number.
 */  
         omp_set_dynamic(0);
-        float maxHittingNum = 0;
+        long double maxHittingNum = 0;
         int imaxHittingNum = -1;
         int count = 0;
         #pragma omp parallel for num_threads(threads)
