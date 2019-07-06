@@ -186,9 +186,9 @@ class PASHA {
         ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
-        double alpha = 1 - 4*delta -2*epsilon;
         double delta = 1/(double)l;
         double epsilon = (1-8*delta)/4;
+        double alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
         cout << "Epsilon: " << epsilon << endl;
