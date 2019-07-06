@@ -21,8 +21,8 @@ class PASHA {
         float delta;
         float epsilon;
         long double* hittingNumArray;
-        long double** D;
-        long double** F;
+        float** D;
+        float** F;
         int ALPHABET_SIZE;
         float edgeCount;
         float edgeNum;
@@ -198,12 +198,12 @@ class PASHA {
         finished = new byte[vertexExp];
         pick = new byte[(int)edgeNum];
         topoSort = new byte[vertexExp];
-        D = new long double*[l + 1];
-        long double* Dpool = new long double[(l+1)* vertexExp];
+        D = new float*[l + 1];
+        float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
         //hittingStream.open(hittingFile); 
-        F = new long double*[l + 1];
-        long double* Fpool = new long double[(l+1)* vertexExp];
+        F = new float*[l + 1];
+        float* Fpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
         int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
