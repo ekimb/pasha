@@ -174,7 +174,7 @@ class PASHA {
         return rc;
     }
 
-    int HittingRandomParallel(int L, const char *hittingPath, int threads) {
+    int HittingRandomParallel(int L, const char *hittingPath, int threads, float epsilon, float delta) {
     /**
     Performs hitting set calculations with parallelization
     and with randomization, counting L-k+1-long paths.
@@ -187,8 +187,6 @@ class PASHA {
         int hittingCount = 0;
         l = L-k+1;
         float alpha = 1 - 4*delta -2*epsilon;
-        float delta = 1/l;
-        float epsilon = (1-8*delta)/4;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
         cout << "Epsilon: " << epsilon << endl;
