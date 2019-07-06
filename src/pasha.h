@@ -18,8 +18,8 @@ class PASHA {
         byte* finished;
         byte* pick;
         byte* used;
-        float delta;
-        float epsilon;
+        double delta;
+        double epsilon;
         float* hittingNumArray;
         float** D;
         float** F;
@@ -186,9 +186,9 @@ class PASHA {
         ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
-        delta = 1/(float)l;
-        epsilon = (2-12*(delta))/6;
-        float alpha = 1 - 4*delta -2*epsilon;
+        delta = 1/(double)l;
+        epsilon = (3-12*(delta)-2)/6;
+        double alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
         cout << "Epsilon: " << epsilon << endl;
