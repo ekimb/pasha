@@ -209,7 +209,9 @@ class PASHA {
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
         int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+        cout << "Max hitting number: " << imaxHittingNum << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
+        cout << "Number of stages:" << h << endl;
         double prob = delta/l;
         while (h > 0) {
             total = 0;
