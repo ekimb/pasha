@@ -174,7 +174,7 @@ class PASHA {
         return rc;
     }
 
-    int HittingRandomParallel(int L, const char *hittingPath, int threads) {
+    int HittingRandomParallel(int L, const char *hittingPath, int threads, float epsilon, float delta) {
     /**
     Performs hitting set calculations with parallelization
     and with randomization, counting L-k+1-long paths.
