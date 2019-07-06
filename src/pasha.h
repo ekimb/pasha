@@ -186,8 +186,6 @@ class PASHA {
         ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
-        delta = 1/(float)l;
-        epsilon = 0.25;
         float alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
@@ -347,7 +345,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         }
         return 1;
     }
-    int findLog(double base, float x) {
+    int findLog(float base, float x) {
     /**
     Finds the logarithm of a given number with respect to a given base.
     @param base: Base of logartihm, x: Input number.
