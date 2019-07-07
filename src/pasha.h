@@ -24,12 +24,12 @@ class PASHA {
         double** D;
         double** F;
         int ALPHABET_SIZE;
-        float edgeCount;
-        float edgeNum;
+        double edgeCount;
+        double edgeNum;
         int k;
         int l;
         int h;
-        float count;
+        double count;
         int total;
         int vertexCount; 
         int vertexExp;
@@ -215,7 +215,7 @@ class PASHA {
         while (h > 0) {
             total = 0;
             int hittingCountStage = 0;
-            float pathCountStage = 0;
+            double pathCountStage = 0;
             calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             stageVertices = pushBackVector();
