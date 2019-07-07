@@ -20,9 +20,9 @@ class PASHA {
         byte* used;
         double delta;
         double epsilon;
-        long double* hittingNumArray;
-        long double** D;
-        long double** F;
+        double* hittingNumArray;
+        double** D;
+        double** F;
         int ALPHABET_SIZE;
         float edgeCount;
         float edgeNum;
@@ -194,21 +194,22 @@ class PASHA {
         cout << "Epsilon: " << epsilon << endl;
         int i;
         int j;
-        hittingNumArray = new long double[(int)edgeNum];
+        hittingNumArray = new double[(int)edgeNum];
         stageArray = new byte[(int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         pick = new byte[(int)edgeNum];
         topoSort = new byte[vertexExp];
-        D = new long double*[l + 1];
-        long double* Dpool = new long double[(l+1)* vertexExp];
+        D = new double*[l + 1];
+        double* Dpool = new double[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
         //hittingStream.open(hittingFile); 
-        F = new long double*[l + 1];
-        long double* Fpool = new long double[(l+1)* vertexExp];
+        F = new double*[l + 1];
+        double* Fpool = new double[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
         int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+        cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
         while (h > 0) {
@@ -283,7 +284,7 @@ Calculates hitting number for an edge of specified index with respect to a speci
 sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
-        float hittingNum = 0;
+        double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         hittingNumArray[i] = hittingNum;
     }
@@ -294,7 +295,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 @return imaxHittingNum: Index of vertex with maximum hitting number.
 */  
         omp_set_dynamic(0);
-        float maxHittingNum = 0;
+        double maxHittingNum = 0;
         int imaxHittingNum = -1;
         int count = 0;
         #pragma omp parallel for num_threads(threads)
@@ -345,7 +346,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         }
         return 1;
     }
-    int findLog(double base, float x) {
+    int findLog(double base, double x) {
     /**
     Finds the logarithm of a given number with respect to a given base.
     @param base: Base of logartihm, x: Input number.
