@@ -210,7 +210,11 @@ sequence length, counting paths of length L-k+1.
 */
         double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
-            F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
+            int index = (i * 4);
+            #pragma omp parallel for num_threads(threads)
+            for (int i = 0; i < vertexExp; i++) {
+                F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
+            }
             hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         } 
         hittingNumArray[i] = hittingNum;
@@ -248,7 +252,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         for (int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
-                int index = (i * 4);
                 D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
             }
         }
