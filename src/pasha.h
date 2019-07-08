@@ -216,7 +216,7 @@ class PASHA {
         cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
-        while (calculatePaths(l, threads)) {
+        while (h > 0) {
             total = 0;
             int hittingCountStage = 0;
             double pathCountStage = 0;
