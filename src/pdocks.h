@@ -254,6 +254,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
             }
         }
+        #pragma omp parallel for num_threads(threads)
         for (int i = 0; i < (int)edgeNum; i++) hittingNumArray[i] = 0;
         while (curr <= L) {
             #pragma omp parallel for num_threads(threads)
