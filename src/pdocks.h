@@ -229,7 +229,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         double maxHittingNum = 0;
         int imaxHittingNum = -1;
         #pragma omp parallel for num_threads(threads)
-        for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L, threads);
+        for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L);
         for (int i = 0; i < (int)edgeNum; i++) {
             if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
         }
