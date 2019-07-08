@@ -220,7 +220,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         omp_set_dynamic(0);
         double maxHittingNum = 0;
         int imaxHittingNum = -1;
-        for (int curr = 1; curr <= L; j++) {
+        for (int curr = 1; curr <= L; curr++) {
             int prev = curr - 1;
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
@@ -228,7 +228,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 F[curr][i] = edgeArray[index]*F[prev][index & vertexExpMask] + edgeArray[index + 1]*F[prev][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[prev][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[prev][(index + 3) & vertexExpMask];
             }
             #pragma omp parallel for num_threads(threads)
-            for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L);
+            for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L, curr);
         }
         for (int i = 0; i < (int)edgeNum; i++) {
             if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
