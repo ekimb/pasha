@@ -232,7 +232,7 @@ class PASHA {
                     pathCountStage += hittingNumArray[i];
                 }
             }
-            #pragma omp parallel for collapse (2) num_threads(threads) 
+            #pragma omp parallel for num_threads(threads) 
             for (int i = 0; i < (int)edgeNum; i++) {
                 //#pragma omp critical
                 if (pick[i] == false && (stageArray[i] = 1)) {
