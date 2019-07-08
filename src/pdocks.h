@@ -210,7 +210,7 @@ sequence length, counting paths of length L-k+1.
 */
         omp_set_dynamic(0);
         double hittingNum = 0;
-        for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
+        for (int j = 1; j < L; j++) {
             int index = (i * 4);
             for (int i = 0; i < vertexExp; i++) {
                 F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
