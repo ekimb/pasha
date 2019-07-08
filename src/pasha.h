@@ -22,17 +22,17 @@ class PASHA {
         double epsilon;
         double* hittingNumArray;
         float** D;
-        float* Fprev;
         float* Fcurr;
+        float* Fprev;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
         int k;
         int l;
-        int curr;
         int h;
         double count;
         int total;
+        int curr;
         int vertexCount; 
         int vertexExp;
         int vertexExp2;
@@ -210,7 +210,7 @@ class PASHA {
         Fcurr = new float[vertexExp];
         Fprev = new float[vertexExp];
         //double* Fpool = new double[(l+1)* vertexExp];
-        //for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
+       // for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
         int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
         cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
@@ -220,33 +220,49 @@ class PASHA {
             total = 0;
             int hittingCountStage = 0;
             double pathCountStage = 0;
-            //calculatePaths(l, threads);
+            calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
+            stageVertices = pushBackVector();
             #pragma omp parallel for num_threads(threads)
-            for (int i = 0; i < (int)edgeNum; i++) {
+            for (int it = 0; it < stageVertices.size(); it++) {
+                i = stageVertices[it];
                 #pragma omp critical
-                if ((stageArray[i] == 1) && (pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
+                if ((pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
                     stageArray[i] = 0;
                     pick[i] = true;
                     hittingCountStage++;
                     pathCountStage += hittingNumArray[i];
                 }
             }
-            #pragma omp parallel for num_threads(threads) 
-            for (int i = 0; i < (int)edgeNum; i++) {
-                #pragma omp critical
-                if (pick[i] == false && (stageArray[i] == 1)) {
-                    if (((double) rand() / (RAND_MAX)) <= prob) {
+            #pragma omp parallel for collapse (2) num_threads(threads) 
+            for (int it = 0; it < stageVertices.size(); it++) {
+                for (int jt = 0; jt < stageVertices.size(); jt++) {
+                    i = stageVertices[it];
+                    #pragma omp critical
+                    if (pick[i] == false) {
+                        if (((double) rand() / (RAND_MAX)) <= prob) {
                             stageArray[i] = 0;
                             pick[i] = true;
                             hittingCountStage += 1;
                             pathCountStage += hittingNumArray[i];
+                        }
+                        j = stageVertices[jt];
+                        if (pick[j] == false) {
+                            if (((double) rand() / (RAND_MAX)) <= prob) {
+                                stageArray[j] = 0;
+                                pick[j] = true;
+                                hittingCountStage += 1;
+                                pathCountStage += hittingNumArray[j];
+
+                            }
+                        }
                     }
                 }
             }
             hittingCount += hittingCountStage;
-            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 4*delta - 2*epsilon)) {
-                for (int i = 0; i < (int)edgeNum; i++) {
+            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
+                for (int it = 0; it < stageVertices.size(); it++) {
+                    i = stageVertices[it];
                     if (pick[i] == true) {
                         removeEdge(i);
                         string label = getLabel(i);
@@ -268,7 +284,7 @@ Calculates hitting number for an edge of specified index with respect to a speci
 sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
-        //double hittingNum = 0;
+       // double hittingNum = 0;
        // for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         //hittingNumArray[i] = hittingNum;
     //}
@@ -284,6 +300,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         int count = 0;
         #pragma omp parallel for num_threads(threads)
         for (int i = 0; i < (int)edgeNum; i++) {
+          //  calculateForEach(i, L);
             if (random == true) {
                 if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
                     stageArray[i] = 1;
@@ -304,7 +321,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         }
         return imaxHittingNum;
     }
-
 
     int calculatePaths(int L, int threads) {
     /**
@@ -351,6 +367,13 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
     @return (int)(log(x) / log(base)): Integer logarithm of the number and the given base.
     */
         return (int)(log(x) / log(base));
+    }
+    vector<int> pushBackVector() {
+        vector<int> stageVertices;
+        for(int i = 0; i < (int)edgeNum; i++) {
+            if (stageArray[i] == 1) stageVertices.push_back(i);
+        }
+        return stageVertices;
     }
 };
 #endif
