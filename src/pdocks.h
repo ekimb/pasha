@@ -25,8 +25,6 @@ class PDOCKS {
         double edgeNum;
         int k;
         int l;
-        int curr;
-        int prev;
         int total;
         int vertexCount; 
         int vertexExp;
@@ -177,10 +175,9 @@ class PDOCKS {
     @return hittingCount: Size of hitting set.
     */
         vertexExp = pow(ALPHABET_SIZE, k-1);
-        int imaxHittingNum = 0;
+        int imaxHittingNum = -1;
         ofstream hittingStream(hittingPath);
         int hittingCount = 0;
-        curr = 1;
         l = L-k+1;
         hittingNumArray = new double[(int)edgeNum];
         used = new byte[vertexExp];
@@ -192,21 +189,13 @@ class PDOCKS {
         F = new float*[l + 1];
         float* Fpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
-        while (imaxHittingNum >= 0) {
-            while (curr <= l) {
-                calculatePaths(l, threads);
-                imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
-                curr++;
-                //cout << curr << endl;
-            }
-            //cout << "hereif" << endl;
+        while (calculatePaths(l, threads)) {
+            int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+            if (imaxHittingNum < 0) break;
             removeEdge(imaxHittingNum);
             string label = getLabel(imaxHittingNum);
             hittingStream << label << "\n";
-            cout << label << endl;
             hittingCount++;
-            curr = 1;
-            //cout << "here" << endl;
         }
         hittingStream.close();
         topologicalSort();
@@ -219,10 +208,8 @@ Calculates hitting number for an edge of specified index with respect to a speci
 sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
-        prev = curr - 1;
-        if (edgeArray[i] == 1) hittingNumArray[i] += (F[prev][i % vertexExp] * D[L-curr][i / ALPHABET_SIZE]);
-        else hittingNumArray[i] = 0;
-        //cout << curr << " " << hittingNumArray[i] << endl;
+        int prev = curr - 1;
+        hittingNumArray[i] += (F[prev][i % vertexExp] * D[L-curr][i / ALPHABET_SIZE]) * edgeArray[i];
     }
     int calculateHittingNumberParallel(int L, bool random, int threads) {
 /**
@@ -233,9 +220,16 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         omp_set_dynamic(0);
         double maxHittingNum = 0;
         int imaxHittingNum = -1;
-        #pragma omp parallel for num_threads(threads)
-        for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L, curr);
-        #pragma omp barrier for num_threads(threads)
+        for (int curr = 1; curr <= L; curr++) {
+            int prev = curr - 1;
+            #pragma omp parallel for num_threads(threads)
+            for (int i = 0; i < vertexExp; i++) {
+                int index = (i * 4);
+                F[curr][i] = edgeArray[index]*F[prev][index & vertexExpMask] + edgeArray[index + 1]*F[prev][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[prev][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[prev][(index + 3) & vertexExpMask];
+            }
+            #pragma omp parallel for num_threads(threads)
+            for (int i = 0; i < (int)edgeNum; i++) calculateForEach(i, L, curr);
+        }
         for (int i = 0; i < (int)edgeNum; i++) {
             if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;}
         }
@@ -250,7 +244,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
     @return 1: True if path calculation completes.
     */
         omp_set_dynamic(0);
-        prev = curr - 1;
         vertexExp2 = vertexExp * 2;
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
@@ -262,11 +255,6 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
             }
         }
-            #pragma omp parallel for num_threads(threads)
-            for (int i = 0; i < vertexExp; i++) {
-                   int index = (i * 4);
-                   F[curr][i] = edgeArray[index]*F[prev][index & vertexExpMask] + edgeArray[index + 1]*F[prev][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[prev][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[prev][(index + 3) & vertexExpMask];
-            }
         return 1;
     }
 };
