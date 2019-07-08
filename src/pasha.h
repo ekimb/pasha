@@ -260,7 +260,7 @@ class PASHA {
                 }
             }
             hittingCount += hittingCountStage;
-            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
+            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 4*delta - 2*epsilon)) {
                 for (int it = 0; it < stageVertices.size(); it++) {
                     i = stageVertices[it];
                     if (pick[i] == true) {
