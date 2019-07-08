@@ -208,6 +208,7 @@ Calculates hitting number for an edge of specified index with respect to a speci
 sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
+        omp_set_dynamic(0);
         double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
             int index = (i * 4);
