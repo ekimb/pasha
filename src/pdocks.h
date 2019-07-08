@@ -209,7 +209,6 @@ sequence length, counting paths of length L-k+1.
 @param i: Index of edge, L: Sequence length.
 */
         double hittingNum = 0;
-        hittingNum = (hittingNum + F[0][i % vertexExp] * D[L-1][i / ALPHABET_SIZE]) * edgeArray[i];
         for (int j = 1; j <= L; j++) {
             for (int i = 0; i < vertexExp; i++) {
                 int index = (i * 4);
