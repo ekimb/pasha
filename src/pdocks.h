@@ -202,7 +202,7 @@ class PDOCKS {
         cout << "Length of longest remaining path: " <<  maxLength() << "\n";
         return hittingCount;
     }
-    void calculateForEach(int i, int L, int threads) {
+    void calculateForEach(int i, int L) {
 /**
 Calculates hitting number for an edge of specified index with respect to a specified
 sequence length, counting paths of length L-k+1.
@@ -212,7 +212,6 @@ sequence length, counting paths of length L-k+1.
         double hittingNum = 0;
         for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
             int index = (i * 4);
-            #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
                 F[j][i] = edgeArray[index]*F[j-1][index & vertexExpMask] + edgeArray[index + 1]*F[j-1][(index + 1) & vertexExpMask] + edgeArray[index + 2]*F[j-1][(index + 2) & vertexExpMask] + edgeArray[index + 3]*F[j-1][(index + 3) & vertexExpMask];
             }
