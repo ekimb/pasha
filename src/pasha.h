@@ -216,16 +216,16 @@ class PASHA {
         cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
-        while (h > 0) {
+        while (calculatePaths(l, threads)) {
             total = 0;
             int hittingCountStage = 0;
             double pathCountStage = 0;
-            calculatePaths(l, threads);
+            //calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < (int)edgeNum; i++) {
-                //#pragma omp critical
-                if ((stageArray[i] = 1) && (pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
+                #pragma omp critical
+                if ((stageArray[i] == 1) && (pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
                     stageArray[i] = 0;
                     pick[i] = true;
                     hittingCountStage++;
@@ -234,8 +234,8 @@ class PASHA {
             }
             #pragma omp parallel for num_threads(threads) 
             for (int i = 0; i < (int)edgeNum; i++) {
-                //#pragma omp critical
-                if (pick[i] == false && (stageArray[i] = 1)) {
+                #pragma omp critical
+                if (pick[i] == false && (stageArray[i] == 1)) {
                     if (((double) rand() / (RAND_MAX)) <= prob) {
                             stageArray[i] = 0;
                             pick[i] = true;
@@ -245,7 +245,7 @@ class PASHA {
                 }
             }
             hittingCount += hittingCountStage;
-            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 6*delta - 2*epsilon)) {
+            if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 4*delta - 2*epsilon)) {
                 for (int i = 0; i < (int)edgeNum; i++) {
                     if (pick[i] == true) {
                         removeEdge(i);
