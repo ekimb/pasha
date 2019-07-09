@@ -49,3 +49,5 @@ minimizers/
 src/.__afs126C
 .DS_Store
 src/TERM_PROGRAM=Apple_Terminal
+src/revcomp
+src/revcomp.cpp
