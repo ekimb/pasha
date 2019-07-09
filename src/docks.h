@@ -1,5 +1,5 @@
-#ifndef PDOCKS_H
-#define PDOCKS_H
+#ifndef DOCKS_H
+#define DOCKS_H
 #include <iostream>
 #include <fstream>
 #include <cmath>
