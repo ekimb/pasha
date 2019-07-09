@@ -41,7 +41,7 @@ class PASHA {
         int vertexExp_1;
         byte* edgeArray;
         byte* stageArray;
-        byte* topoSort;
+        int* topoSort;
         static map<char, int> alphabetMap;
         string ALPHABET;
         vector<int> stageVertices;
@@ -202,7 +202,7 @@ class PASHA {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         pick = new byte[(int)edgeNum];
-        topoSort = new byte[vertexExp];
+        topoSort = new int[vertexExp];
         D = new float*[l + 1];
         float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;

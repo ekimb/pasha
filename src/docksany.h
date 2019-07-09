@@ -15,8 +15,8 @@ using namespace std;
 using byte = uint8_t;
 class DOCKSany {
     public:
-        bool* finished;
-        bool* used;
+        byte* finished;
+        byte* used;
         double* hittingNumArray;
         double* maxHittingNum;
         int* imaxHittingNum;
@@ -36,7 +36,7 @@ class DOCKSany {
         int vertexExpMask;
         int vertexExp_1;
         byte* edgeArray;
-        byte* topoSort;
+        int* topoSort;
         static map<char, int> alphabetMap;
         string ALPHABET;
     DOCKSany (int argK) {
@@ -181,9 +181,9 @@ class DOCKSany {
         int hittingCount = 0;
         l = L-k+1;
         hittingNumArray = new double[(int)edgeNum];
-        used = new bool[vertexExp];
-        finished = new bool[vertexExp];
-        topoSort = new byte[vertexExp];
+        used = new byte[vertexExp];
+        finished = new byte[vertexExp];
+        topoSort = new int[vertexExp];
         hittingStream.open(hittingPath); 
         topologicalSort();
         D = new float*[1];

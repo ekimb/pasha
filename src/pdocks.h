@@ -35,7 +35,7 @@ class PDOCKS {
         int vertexExpMask;
         int vertexExp_1;
         byte* edgeArray;
-        byte* topoSort;
+        int* topoSort;
         static map<char, int> alphabetMap;
         string ALPHABET;
     PDOCKS (int argK) {
@@ -184,7 +184,7 @@ class PDOCKS {
         hittingNumArray = new double[(int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
-        topoSort = new byte[vertexExp];
+        topoSort = new int[vertexExp];
         D = new float*[l + 1];
         float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
