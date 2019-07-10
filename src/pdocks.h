@@ -18,9 +18,9 @@ class PDOCKS {
         byte* finished;
         byte* used;
         double* hittingNumArray;
-        float** D;
-        float* Fcurr;
-        float* Fprev;
+        double** D;
+        double* Fcurr;
+        double* Fprev;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -185,11 +185,11 @@ class PDOCKS {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
-        D = new float*[l + 1];
-        float* Dpool = new float[(l+1)* vertexExp];
+        D = new double*[l + 1];
+        double* Dpool = new double[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-        Fcurr = new float[vertexExp];
-        Fprev = new float[vertexExp];
+        Fcurr = new double[vertexExp];
+        Fprev = new double[vertexExp];
         //for(int i = 0; i < l+1; i++, Fcurrpool += vertexExp) Fcurr[i] = Fcurrpool;
         //for(int i = 0; i < l+1; i++, Fprevpool += vertexExp) Fprev[i] = Fprevpool;
         while (calculatePaths(l, threads)) {

@@ -20,8 +20,8 @@ class DOCKSany {
         double* hittingNumArray;
         double* maxHittingNum;
         int* imaxHittingNum;
-        float** D;
-        float** F;
+        double** D;
+        double** F;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -186,11 +186,11 @@ class DOCKSany {
         topoSort = new int[vertexExp];
         hittingStream.open(hittingPath); 
         topologicalSort();
-        D = new float*[1];
-        float* Dpool = new float[(1)* vertexExp];
+        D = new double*[1];
+        double* Dpool = new double[(1)* vertexExp];
         for(int i = 0; i < 1; i++, Dpool += vertexExp) D[i] = Dpool;
-        F = new float*[1];
-        float* Fpool = new float[(1)* vertexExp];
+        F = new double*[1];
+        double* Fpool = new double[(1)* vertexExp];
         for(int i = 0; i < 1; i++, Fpool += vertexExp) F[i] = Fpool;
         while (maxLength() >= l) { 
             calculatePathsAny();

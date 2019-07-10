@@ -18,8 +18,8 @@ class DOCKS {
         byte* finished;
         byte* used;
         double* hittingNumArray;
-        float** D;
-        float** F;
+        double** D;
+        double** F;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -184,12 +184,12 @@ class DOCKS {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
-        D = new float*[l + 1];
-        float* Dpool = new float[(l+1)* vertexExp];
+        D = new double*[l + 1];
+        double* Dpool = new double[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
         hittingStream.open(hittingPath); 
-        F = new float*[l + 1];
-        float* Fpool = new float[(l+1)* vertexExp];
+        F = new double*[l + 1];
+        double* Fpool = new double[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         while (calculatePaths(l)) {
             int imaxHittingNum = calculateHittingNumber(l);
