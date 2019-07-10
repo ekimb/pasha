@@ -18,8 +18,8 @@ class DOCKS {
         byte* finished;
         byte* used;
         double* hittingNumArray;
-        double** D;
-        double** F;
+        float** D;
+        float** F;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -184,12 +184,12 @@ class DOCKS {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
-        D = new double*[l + 1];
-        double* Dpool = new double[(l+1)* vertexExp];
+        D = new float*[l + 1];
+        float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
         hittingStream.open(hittingPath); 
-        F = new double*[l + 1];
-        double* Fpool = new double[(l+1)* vertexExp];
+        F = new float*[l + 1];
+        float* Fpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         while (calculatePaths(l)) {
             int imaxHittingNum = calculateHittingNumber(l);
@@ -216,7 +216,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         for (int i = 0; i < edgeNum; i++) {
             double hittingNum = 0;
             for (int j = (1 - edgeArray[i]) * L; j < L; j++) {
-                hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
+                hittingNum = hittingNum + F[j][i % vertexExp]/1.4e-45 * D[(L-j-1)][i / ALPHABET_SIZE]/1.4e-45;
                 hittingNumArray[i] = hittingNum;
             }
             if (hittingNum > maxHittingNum) {maxHittingNum = hittingNum; imaxHittingNum = i;}
@@ -235,7 +235,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
         vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; F[0][i] = 1;}
+        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; F[0][i] = 1.4e-45;}
         for (int j = 1; j <= L; j++) {
             for (int i = 0; i < vertexExp; i++) {
                 int index = (i * 4);
