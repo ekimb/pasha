@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <cstdint>
 #include <omp.h>
+#include <limits>
 using namespace std;
 using byte = uint8_t;
 class PASHA {
@@ -21,9 +22,9 @@ class PASHA {
         double delta;
         double epsilon;
         double* hittingNumArray;
-        double** D;
-        double* Fcurr;
-        double* Fprev;
+        float** D;
+        float* Fcurr;
+        float* Fprev;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -203,12 +204,12 @@ class PASHA {
         finished = new byte[vertexExp];
         pick = new byte[(int)edgeNum];
         topoSort = new int[vertexExp];
-        D = new double*[l + 1];
-        double* Dpool = new double[(l+1)* vertexExp];
+        D = new float*[l + 1];
+        float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
         //hittingStream.open(hittingFile); 
-        Fcurr = new double[vertexExp];
-        Fprev = new double[vertexExp];
+        Fcurr = new float[vertexExp];
+        Fprev = new float[vertexExp];
         //double* Fpool = new double[(l+1)* vertexExp];
        // for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
@@ -316,8 +317,9 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             }
         }
         for (int i = 0; i < (int)edgeNum; i++) {
-            if (hittingNumArray[i]*edgeArray[i] > maxHittingNum) {
+            if ((hittingNumArray[i])*edgeArray[i] > maxHittingNum) {
                 maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;
+                //cout << maxHittingNum << endl;
             }
         }
         return imaxHittingNum;
@@ -335,12 +337,15 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
         vertexExp_1 = pow(ALPHABET_SIZE, k-2);
+        double maxD = 0;
+        double maxF = 0;
         #pragma omp parallel for num_threads(threads)
-        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; Fprev[i] = 1;}
+        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
         for (int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
                 D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+                if (D[j][i] > maxD) maxD = D[j][i]; 
             }
         }
         #pragma omp parallel for num_threads(threads)
@@ -350,17 +355,21 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             for (int i = 0; i < vertexExp; i++) {
                 int index = (i * 4);
                 Fcurr[i] = edgeArray[index]*Fprev[index & vertexExpMask] + edgeArray[index + 1]*Fprev[(index + 1) & vertexExpMask] + edgeArray[index + 2]*Fprev[(index + 2) & vertexExpMask] + edgeArray[index + 3]*Fprev[(index + 3) & vertexExpMask];
-                //cout << Fcurr[i] << endl;
+                if (Fcurr[i] > maxF) maxF = Fcurr[i]; 
+               //cout << Fcurr[i] << endl;
             }
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < (int)edgeNum; i++) {
-                hittingNumArray[i] += Fprev[i % vertexExp] * D[(L-curr)][i / ALPHABET_SIZE];
+                //cout << Fprev[i % vertexExp] << " " << D[(L-curr)][i / ALPHABET_SIZE] << endl;
+                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45 * D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
+                //cout << hittingNumArray[i] << endl;
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) Fprev[i] = Fcurr[i];
             curr++;
         }
+        // << "MaxD: " << maxD << " maxF: " << maxF << " Float max: " << FLT_MAX << endl;
         return 1;
     }
     int findLog(double base, double x) {

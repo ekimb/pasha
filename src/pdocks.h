@@ -18,9 +18,9 @@ class PDOCKS {
         byte* finished;
         byte* used;
         double* hittingNumArray;
-        double** D;
-        double* Fcurr;
-        double* Fprev;
+        float** D;
+        float* Fcurr;
+        float* Fprev;
         int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -185,11 +185,11 @@ class PDOCKS {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
-        D = new double*[l + 1];
-        double* Dpool = new double[(l+1)* vertexExp];
+        D = new float*[l + 1];
+        float* Dpool = new float[(l+1)* vertexExp];
         for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
-        Fcurr = new double[vertexExp];
-        Fprev = new double[vertexExp];
+        Fcurr = new float[vertexExp];
+        Fprev = new float[vertexExp];
         //for(int i = 0; i < l+1; i++, Fcurrpool += vertexExp) Fcurr[i] = Fcurrpool;
         //for(int i = 0; i < l+1; i++, Fprevpool += vertexExp) Fprev[i] = Fprevpool;
         while (calculatePaths(l, threads)) {
@@ -247,7 +247,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
         vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1; Fprev[i] = 1;}
+        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
         for (int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
@@ -265,7 +265,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             }
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < (int)edgeNum; i++) {
-                hittingNumArray[i] += Fprev[i % vertexExp] * D[(L-curr)][i / ALPHABET_SIZE];
+                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45 * D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
             #pragma omp parallel for num_threads(threads)
