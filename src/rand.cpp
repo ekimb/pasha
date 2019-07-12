@@ -14,9 +14,9 @@
         struct timespec start, finish;
         double elapsed;
         size_t pos;
-        int k = stoi(argv[1], &pos);
-        int L = stoi(argv[2], &pos);
-        int threads = stoi(argv[3], &pos);
+        unsigned int k = stoi(argv[1], &pos);
+        unsigned int L = stoi(argv[2], &pos);
+        unsigned int threads = stoi(argv[3], &pos);
         const char *decyclingPath = argv[4];
         const char *hittingPath = argv[5];
         string decyclingFile;
@@ -36,7 +36,7 @@
         cout << "Decycling set size: " << decyclingSize << endl;
         decyclingStream.close();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads);
+        unsigned int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
