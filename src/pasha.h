@@ -56,7 +56,7 @@ class PASHA {
         ALPHABET_SIZE = 4;
         k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new byte[(int)edgeNum];
+        edgeArray = new byte[(unsigned int)edgeNum];
         generateGraph(k);
         map<char, int> alphabetMap;
         for (int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,int>(ALPHABET[i], i));
@@ -198,7 +198,7 @@ class PASHA {
         cout << "Epsilon: " << epsilon << endl;
         int i;
         int j;
-        hittingNumArray = new double[(int)edgeNum];
+        hittingNumArray = new double[(unsigned int)edgeNum];
         stageArray = new byte[(int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
@@ -301,7 +301,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         int imaxHittingNum = -1;
         int count = 0;
         #pragma omp parallel for num_threads(threads)
-        for (int i = 0; i < (int)edgeNum; i++) {
+        for (int i = 0; i < (unsigned int)edgeNum; i++) {
           //  calculateForEach(i, L);
             if (random == true) {
                 if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
@@ -316,7 +316,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 }   
             }
         }
-        for (int i = 0; i < (int)edgeNum; i++) {
+        for (int i = 0; i < (unsigned int)edgeNum; i++) {
             if ((hittingNumArray[i])*edgeArray[i] > maxHittingNum) {
                 maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;
                 //cout << maxHittingNum << endl;
@@ -349,7 +349,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             }
         }
         #pragma omp parallel for num_threads(threads)
-        for (int i = 0; i < (int)edgeNum; i++) hittingNumArray[i] = 0;
+        for (int i = 0; i < (unsigned int)edgeNum; i++) hittingNumArray[i] = 0;
         while (curr <= L) {
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
@@ -359,7 +359,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                //cout << Fcurr[i] << endl;
             }
             #pragma omp parallel for num_threads(threads)
-            for (int i = 0; i < (int)edgeNum; i++) {
+            for (int i = 0; i < (unsigned int)edgeNum; i++) {
                 //cout << Fprev[i % vertexExp] << " " << D[(L-curr)][i / ALPHABET_SIZE] << endl;
                 hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45 * D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
                 //cout << hittingNumArray[i] << endl;
