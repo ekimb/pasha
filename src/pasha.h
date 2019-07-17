@@ -350,11 +350,11 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
        // Fval(res) = [Fval1 >> (Fexp - Fexp1)] + [Fval2 >> (Fexp - Fexp2)] + [Fval3 >> (Fexp - Fexp3)] + [Fval4 >> (Fexp - Fexp4)]
 
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < vertexExp; i++) {Dexp[0][i] = 0; Dval[0][i] = 1; Fprev[i] = 1; Fcurr[i] = 0;}
+        for (unsigned int i = 0; i < vertexExp; i++) {Dexp[0][i] = 0; Dval[0][i] = 1; Fprev[i] = 1e-45; Fcurr[i] = 0;}
         for (unsigned int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < vertexExp; i++) {
-                vector<byte> initList = {Dexp[j-1][(i >> 2)], Dexp[j-1][((i + vertexExp) >> 2)], Dexp[j-1][((i + vertexExp2) >> 2)], Dexp[j-1][((i + vertexExp3) >> 2)]};
+                vector<byte> initList = {(uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]), (uint8_t)(edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]), (uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]), (uint8_t)(edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp3) >> 2)])};
                 Dexp[j][i] = *max_element(initList.begin(), initList.end());
                 Dval[j][i] = (Dval[j-1][(i >> 2)] >> (Dexp[j][i] - Dexp[j-1][(i >> 2)]))*edgeArray[i] + (Dval[j-1][((i + vertexExp) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp) >> 2)]))*edgeArray[i + vertexExp] + (Dval[j-1][((i + vertexExp2) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp2) >> 2)]))*edgeArray[i + vertexExp2] + (Dval[j-1][((i + vertexExp3) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp3) >> 2)]))*edgeArray[i + vertexExp3];
                if (Dval[j][i] > 63) {
@@ -393,8 +393,8 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             }
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
-                //cout << Fprev[i % vertexExp] << " " << D[(L-curr)][i / ALPHABET_SIZE] << endl;
-                hittingNumArray[i] += (Fprev[i % vertexExp]) * ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE])));
+                //cout << Fprev[i % vertexExp] << " " << ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE]))) << endl;
+                hittingNumArray[i] += (Fprev[i % vertexExp]/1e-45) * ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE])));
                 //cout << hittingNumArray[i] << endl;
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
