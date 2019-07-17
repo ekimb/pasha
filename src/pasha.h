@@ -354,17 +354,19 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         for (unsigned int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < vertexExp; i++) {
-                vector<byte> initList = {(uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]), (uint8_t)(edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]), (uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]), (uint8_t)(edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp3) >> 2)])};
-                Dexp[j][i] = *max_element(initList.begin(), initList.end());
+                uint8_t r1;
+                uint8_t r2;
+                uint8_t r3;
+                r1 = (uint8_t)edgeArray[i]*Dexp[j-1][(i >> 2)] ^ (((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) < ((uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]));
+                r2 = (uint8_t)edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)] ^ (((uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][((i + vertexExp) >> 2)]) < ((uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)]));
+                r3 = (uint8_t)r1 ^ ((r1 ^ r2) & -(r1 < r2));
+                Dexp[j][i] = r3;
                 Dval[j][i] = (Dval[j-1][(i >> 2)] >> (Dexp[j][i] - Dexp[j-1][(i >> 2)]))*edgeArray[i] + (Dval[j-1][((i + vertexExp) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp) >> 2)]))*edgeArray[i + vertexExp] + (Dval[j-1][((i + vertexExp2) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp2) >> 2)]))*edgeArray[i + vertexExp2] + (Dval[j-1][((i + vertexExp3) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp3) >> 2)]))*edgeArray[i + vertexExp3];
-               if (Dval[j][i] > 63) {
-                    Dexp[j][i] = Dexp[j][i] + 1;
-                    Dval[j][i] = Dval[j][i] >> 1;
-                }
-                if (Dval[j][i] > 63) {
-                    Dexp[j][i] = Dexp[j][i] + 1;
-                    Dval[j][i] = Dval[j][i] >> 1;
-                }
+                Dexp[j][i] = Dexp[j][i] + ((128 & Dval[j][i]) >> 7);
+                Dval[j][i] = Dval[j][i] >> ((128 & Dval[j][i]) >> 7);
+                Dexp[j][i] = Dexp[j][i] + ((64 & Dval[j][i]) >> 6);
+                Dval[j][i] = Dval[j][i] >> ((64 & Dval[j][i]) >> 6);
+
                 //cout << (float)(Dval[j][i] * pow(2, Dexp[j][i])) << endl;
                 //D[j][i] = Dval[i];
                 if ((float)(Dval[j][i] * pow(2, Dexp[j][i])) > maxD) maxD = ((float)Dval[j][i] * pow(2, Dexp[j][i])); 
