@@ -12,7 +12,9 @@
 #include <cstdint>
 #include <omp.h>
 #include <limits>
+#include "half.hpp"
 using namespace std;
+using half_float::half;
 using byte = uint8_t;
 class PASHA {
     public:
@@ -21,10 +23,10 @@ class PASHA {
         byte* used;
         double delta;
         double epsilon;
-        double* hittingNumArray;
-        float** D;
-        float* Fcurr;
-        float* Fprev;
+        float* hittingNumArray;
+        half** D;
+        half* Fcurr;
+        half* Fprev;
         unsigned int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -198,18 +200,18 @@ class PASHA {
         cout << "Epsilon: " << epsilon << endl;
         unsigned int i;
         unsigned int j;
-        hittingNumArray = new double[(unsigned int)edgeNum];
+        hittingNumArray = new float[(unsigned int)edgeNum];
         stageArray = new byte[(unsigned int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         pick = new byte[(unsigned int)edgeNum];
         topoSort = new int[vertexExp];
-        D = new float*[l + 1];
-        float* Dpool = new float[(l+1)* vertexExp];
-        for(unsigned int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+        D = new half*[l + 1];
+       //float* Dpool = new float[(l+1)* vertexExp];
+        for(unsigned int i = 0; i < l+1; i++) D[i] = new half[vertexExp];
         //hittingStream.open(hittingFile); 
-        Fcurr = new float[vertexExp];
-        Fprev = new float[vertexExp];
+        Fcurr = new half[vertexExp];
+        Fprev = new half[vertexExp];
         //double* Fpool = new double[(l+1)* vertexExp];
        // for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
@@ -341,11 +343,11 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         double maxD = 0;
         double maxF = 0;
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
+        for (unsigned int i = 0; i < vertexExp; i++) {D[0][i] = std::numeric_limits<half>::min(); Fprev[i] = std::numeric_limits<half>::min();}
         for (unsigned int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < vertexExp; i++) {
-                D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+                D[j][i] = (edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)]);
                 if (D[j][i] > maxD) maxD = D[j][i]; 
             }
         }
@@ -355,14 +357,14 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < vertexExp; i++) {
                 unsigned int index = (i * 4);
-                Fcurr[i] = edgeArray[index]*Fprev[index & vertexExpMask] + edgeArray[index + 1]*Fprev[(index + 1) & vertexExpMask] + edgeArray[index + 2]*Fprev[(index + 2) & vertexExpMask] + edgeArray[index + 3]*Fprev[(index + 3) & vertexExpMask];
+                Fcurr[i] = (edgeArray[index]*Fprev[index & vertexExpMask] + edgeArray[index + 1]*Fprev[(index + 1) & vertexExpMask] + edgeArray[index + 2]*Fprev[(index + 2) & vertexExpMask] + edgeArray[index + 3]*Fprev[(index + 3) & vertexExpMask]);
                 if (Fcurr[i] > maxF) maxF = Fcurr[i]; 
                //cout << Fcurr[i] << endl;
             }
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
                 //cout << Fprev[i % vertexExp] << " " << D[(L-curr)][i / ALPHABET_SIZE] << endl;
-                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45 * D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
+                hittingNumArray[i] += (Fprev[i % vertexExp])/std::numeric_limits<half>::min() * (D[(L-curr)][i / ALPHABET_SIZE])/std::numeric_limits<half>::min();
                 //cout << hittingNumArray[i] << endl;
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
