@@ -17,6 +17,8 @@ class PDOCKS {
     public:
         byte* finished;
         byte* used;
+        byte** Dexp;
+        byte** Dval;
         double* hittingNumArray;
         float** D;
         float* Fcurr;
@@ -185,9 +187,9 @@ class PDOCKS {
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
-        D = new float*[l + 1];
-        float* Dpool = new float[(l+1)* vertexExp];
-        for(int i = 0; i < l+1; i++, Dpool += vertexExp) D[i] = Dpool;
+        Dexp = new byte*[l + 1];
+        Dval = new byte*[l + 1];
+        for(int i = 0; i < l+1; i++) {Dexp[i] = new byte[vertexExp];Dval[i] = new byte[vertexExp];}
         Fcurr = new float[vertexExp];
         Fprev = new float[vertexExp];
         //for(int i = 0; i < l+1; i++, Fcurrpool += vertexExp) Fcurr[i] = Fcurrpool;
@@ -247,11 +249,23 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
         vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-        for (int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
+        for (int i = 0; i < vertexExp; i++) {Dexp[0][i] = 0; Dval[0][i] = 1; Fprev[i] = 1.4e-45;}
         for (int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < vertexExp; i++) {
-                D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
+                uint8_t r1;
+                uint8_t r2;
+                uint8_t r3;
+                r1 = (uint8_t)edgeArray[i]*Dexp[j-1][(i >> 2)] ^ (((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) < ((uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]));
+                r2 = (uint8_t)edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)] ^ (((uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][((i + vertexExp) >> 2)]) < ((uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)]));
+                r3 = (uint8_t)r1 ^ ((r1 ^ r2) & -(r1 < r2));
+                Dexp[j][i] = r3;
+                Dval[j][i] = (Dval[j-1][(i >> 2)] >> (Dexp[j][i] - Dexp[j-1][(i >> 2)]))*edgeArray[i] + (Dval[j-1][((i + vertexExp) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp) >> 2)]))*edgeArray[i + vertexExp] + (Dval[j-1][((i + vertexExp2) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp2) >> 2)]))*edgeArray[i + vertexExp2] + (Dval[j-1][((i + vertexExp3) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp3) >> 2)]))*edgeArray[i + vertexExp3];
+                Dexp[j][i] = Dexp[j][i] + ((128 & Dval[j][i]) >> 7);
+                Dval[j][i] = Dval[j][i] >> ((128 & Dval[j][i]) >> 7);
+                Dexp[j][i] = Dexp[j][i] + ((64 & Dval[j][i]) >> 6);
+                Dval[j][i] = Dval[j][i] >> ((64 & Dval[j][i]) >> 6);
+                //D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
             }
         }
         #pragma omp parallel for num_threads(threads)
@@ -265,7 +279,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
             }
             #pragma omp parallel for num_threads(threads)
             for (int i = 0; i < (int)edgeNum; i++) {
-                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45 * D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
+                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45) * ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE])));
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
             #pragma omp parallel for num_threads(threads)
