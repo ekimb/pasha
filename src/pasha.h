@@ -15,7 +15,7 @@
 #include <limits>
 #include "half.hpp"
 using namespace std;
-using half_float::half;
+//using half_float::half;
 using byte = uint8_t;
 class PASHA {
     public:
@@ -25,11 +25,11 @@ class PASHA {
         double delta;
         double epsilon;
         float* hittingNumArray;
-        //float** D;
+        float** D;
         float* Fcurr;
         float* Fprev;
-        byte** Dexp;
-        byte** Dval;
+        //byte** Dexp;
+        //byte** Dval;
         unsigned int ALPHABET_SIZE;
         double edgeCount;
         double edgeNum;
@@ -209,10 +209,10 @@ class PASHA {
         finished = new byte[vertexExp];
         pick = new byte[(unsigned int)edgeNum];
         topoSort = new int[vertexExp];
-        Dval = new byte*[l + 1];
-        Dexp = new byte*[l + 1];
+        D = new float*[l + 1];
+        //Dexp = new byte*[l + 1];
        //float* Dpool = new float[(l+1)* vertexExp];
-        for(unsigned int i = 0; i < l+1; i++) {Dval[i] = new byte[vertexExp]; Dexp[i] = new byte[vertexExp];}
+        for(unsigned int i = 0; i < l+1; i++) {D[i] = new float[vertexExp];}
         //hittingStream.open(hittingFile); 
         Fcurr = new float[vertexExp];
         Fprev = new float[vertexExp];
@@ -344,32 +344,32 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         vertexExp3 = vertexExp * 3;
         vertexExpMask = vertexExp - 1;
         vertexExp_1 = pow(ALPHABET_SIZE, k-2);
-        double maxD = 0;
-        double maxF = 0;
+        //double maxD = 0;
+       // double maxF = 0;
         //Fexp(res) = max(Fexp1, Fexp2, Fexp3, Fexp4)
        // Fval(res) = [Fval1 >> (Fexp - Fexp1)] + [Fval2 >> (Fexp - Fexp2)] + [Fval3 >> (Fexp - Fexp3)] + [Fval4 >> (Fexp - Fexp4)]
 
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < vertexExp; i++) {Dexp[0][i] = 0; Dval[0][i] = 1; Fprev[i] = 1e-45; Fcurr[i] = 0;}
+        for (unsigned int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
         for (unsigned int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < vertexExp; i++) {
-                uint8_t r1;
-                uint8_t r2;
-                uint8_t r3;
-                r1 = (uint8_t)edgeArray[i]*Dexp[j-1][(i >> 2)] ^ (((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) < ((uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]));
-                r2 = (uint8_t)edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)] ^ (((uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][((i + vertexExp) >> 2)]) < ((uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)]));
-                r3 = (uint8_t)r1 ^ ((r1 ^ r2) & -(r1 < r2));
-                Dexp[j][i] = r3;
-                Dval[j][i] = (Dval[j-1][(i >> 2)] >> (Dexp[j][i] - Dexp[j-1][(i >> 2)]))*edgeArray[i] + (Dval[j-1][((i + vertexExp) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp) >> 2)]))*edgeArray[i + vertexExp] + (Dval[j-1][((i + vertexExp2) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp2) >> 2)]))*edgeArray[i + vertexExp2] + (Dval[j-1][((i + vertexExp3) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp3) >> 2)]))*edgeArray[i + vertexExp3];
-                Dexp[j][i] = Dexp[j][i] + ((128 & Dval[j][i]) >> 7);
-                Dval[j][i] = Dval[j][i] >> ((128 & Dval[j][i]) >> 7);
-                Dexp[j][i] = Dexp[j][i] + ((64 & Dval[j][i]) >> 6);
-                Dval[j][i] = Dval[j][i] >> ((64 & Dval[j][i]) >> 6);
-
+                //uint8_t r1;
+                //uint8_t r2;
+                //uint8_t r3;
+                //r1 = (uint8_t)edgeArray[i]*Dexp[j-1][(i >> 2)] ^ (((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][(i >> 2)]) < ((uint8_t)edgeArray[i + vertexExp]*Dexp[j-1][((i + vertexExp) >> 2)]));
+                //r2 = (uint8_t)edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)] ^ (((uint8_t)(edgeArray[i + vertexExp2]*Dexp[j-1][((i + vertexExp2) >> 2)]) ^ (uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)])) & -((uint8_t)(edgeArray[i]*Dexp[j-1][((i + vertexExp) >> 2)]) < ((uint8_t)edgeArray[i + vertexExp3]*Dexp[j-1][((i + vertexExp3) >> 2)]));
+                //r3 = (uint8_t)r1 ^ ((r1 ^ r2) & -(r1 < r2));
+                //Dexp[j][i] = r3;
+                //Dval[j][i] = (Dval[j-1][(i >> 2)] >> (Dexp[j][i] - Dexp[j-1][(i >> 2)]))*edgeArray[i] + (Dval[j-1][((i + vertexExp) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp) >> 2)]))*edgeArray[i + vertexExp] + (Dval[j-1][((i + vertexExp2) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp2) >> 2)]))*edgeArray[i + vertexExp2] + (Dval[j-1][((i + vertexExp3) >> 2)] >> (Dexp[j][i] - Dexp[j-1][((i + vertexExp3) >> 2)]))*edgeArray[i + vertexExp3];
+                //Dexp[j][i] = Dexp[j][i] + ((128 & Dval[j][i]) >> 7);
+                //Dval[j][i] = Dval[j][i] >> ((128 & Dval[j][i]) >> 7);
+                //Dexp[j][i] = Dexp[j][i] + ((64 & Dval[j][i]) >> 6);
+                //Dval[j][i] = Dval[j][i] >> ((64 & Dval[j][i]) >> 6);
+                D[j][i] = edgeArray[i]*D[j-1][(i >> 2)] + edgeArray[i + vertexExp]*D[j-1][((i + vertexExp) >> 2)] + edgeArray[i + vertexExp2]*D[j-1][((i + vertexExp2) >> 2)] + edgeArray[i + vertexExp3]*D[j-1][((i + vertexExp3) >> 2)];
                 //cout << (float)(Dval[j][i] * pow(2, Dexp[j][i])) << endl;
                 //D[j][i] = Dval[i];
-                if ((float)(Dval[j][i] * pow(2, Dexp[j][i])) > maxD) maxD = ((float)Dval[j][i] * pow(2, Dexp[j][i])); 
+                //if ((float)(Dval[j][i] * pow(2, Dexp[j][i])) > maxD) maxD = ((float)Dval[j][i] * pow(2, Dexp[j][i])); 
             }
             //if (maxD > std::numeric_limits<half>::max()/4) {
              //   for (unsigned int i = 0; i < vertexExp; i++) D[j][i] = D[j][i] * 0.5;
@@ -390,13 +390,13 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 //    Fexp[i] = Fexp[i] + 1;
                 //    Fval[i] = Fval[i] >> 1;
                 //}
-               if (Fcurr[i] > maxF) maxF = Fcurr[i]; 
+               //if (Fcurr[i] > maxF) maxF = Fcurr[i]; 
                //cout << Fval[i] << endl;
             }
             #pragma omp parallel for num_threads(threads)
             for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
                 //cout << Fprev[i % vertexExp] << " " << ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE]))) << endl;
-                hittingNumArray[i] += (Fprev[i % vertexExp]/1e-45) * ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE])));
+                hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45) * (D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
                 //cout << hittingNumArray[i] << endl;
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
