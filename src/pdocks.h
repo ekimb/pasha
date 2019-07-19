@@ -19,7 +19,7 @@ class PDOCKS {
         byte* used;
         //byte** Dexp;
         //byte** Dval;
-        double* hittingNumArray;
+        float* hittingNumArray;
         float** D;
         float* Fcurr;
         float* Fprev;
