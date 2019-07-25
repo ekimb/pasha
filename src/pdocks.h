@@ -19,7 +19,7 @@ class PDOCKS {
         byte* used;
         //byte** Dexp;
         //byte** Dval;
-        float* hittingNumArray;
+        double* hittingNumArray;
         float** D;
         float* Fcurr;
         float* Fprev;
@@ -183,7 +183,7 @@ class PDOCKS {
         ofstream hittingStream(hittingPath);
         int hittingCount = 0;
         l = L-k+1;
-        hittingNumArray = new float[(int)edgeNum];
+        hittingNumArray = new double[(int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
         topoSort = new int[vertexExp];
