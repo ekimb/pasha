@@ -24,7 +24,7 @@ class PASHA {
         byte* used;
         double delta;
         double epsilon;
-        float* hittingNumArray;
+        double* hittingNumArray;
         float** D;
         float* Fcurr;
         float* Fprev;
@@ -203,7 +203,7 @@ class PASHA {
         cout << "Epsilon: " << epsilon << endl;
         unsigned int i;
         unsigned int j;
-        hittingNumArray = new float[(unsigned int)edgeNum];
+        hittingNumArray = new double[(unsigned int)edgeNum];
         stageArray = new byte[(unsigned int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
