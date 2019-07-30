@@ -114,7 +114,7 @@ double calcSparse(vector<int> umerVector, int count) {
   int count = len - w + 1;
   #pragma omp parallel for num_threads(24)
   for (int i = 0; i < count; i++) {
-    cout << "Window " << i+1 << endl;
+    //cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
     int minPos = findMin(testWindow, k, w, i, len, UHS);
     int umerCount = findUmer(testWindow, k, w, i, len, UHS);
