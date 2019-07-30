@@ -9,6 +9,20 @@
   #include <sys/types.h> 
   #include "pdocks.h"
   #include <unordered_set>
+  #include <iostream>
+  #include <fstream>
+  #include <cmath>
+  #include <string>
+  #include <vector>
+  #include <algorithm>
+  #include <initializer_list>
+  #include <map>
+  #include <cstdlib>
+  #include <iomanip>
+  #include <cstdint>
+  #include <omp.h>
+  #include <limits>
+  #include "half.hpp"
 
 char* genRandomSeq(const int len) {
     char* seq = new char[len];
@@ -93,10 +107,12 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
  vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
+  omp_set_dynamic(0);
   vector<int> minPosVector;
   vector<int> umerVector;
   vector< vector<int> > res;
   int count = len - w + 1;
+  #pragma omp parallel for num_threads(24)
   for (int i = 0; i < count; i++) {
     cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
