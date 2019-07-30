@@ -196,7 +196,10 @@ class PASHA {
         l = L-k+1;
         delta = 1/(double)l;
         epsilon = (1-8*(delta))/4;
-        if (epsilon == 0) epsilon = 0.083333;
+        if (epsilon == 0) {
+            delta = 0.0555556;
+            epsilon = 0.138889;
+        }
         double alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;

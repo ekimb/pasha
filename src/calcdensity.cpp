@@ -93,7 +93,7 @@ int findUmer (char* window, const int k, const int w, int count, const int len, 
       umerCount++;
     }
   }
-  //cout << "Universal k-mer count: " << umerCount << endl;
+  cout << "Universal k-mer count: " << umerCount << endl;
   return umerCount;
 
 }
