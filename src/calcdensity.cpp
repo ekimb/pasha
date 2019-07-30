@@ -132,8 +132,9 @@ int main (int argc, char* argv[]) {
   while(getline(fin2, decyckmer)) {
     UHS.insert(decyckmer);
   }
-  vector<int> minPosVector = findMinSeq(seq, k, w, len, UHS)[0];
-  vector<int> umerVector = findMinSeq(seq, k, w, len, UHS)[1];
+  vector< vector <int> > resVector = findMinSeq(seq, k, w, len, UHS);
+  vector<int> minPosVector = resVector[0];
+  vector<int> umerVector = resVector[1];
   double sparsity = calcSparse(umerVector, len - w - 1);
   //cout << minPosVector.size() << endl;
   sort(minPosVector.begin(), minPosVector.end());
