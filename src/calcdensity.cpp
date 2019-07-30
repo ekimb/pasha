@@ -112,7 +112,6 @@ double calcSparse(vector<int> umerVector, int count) {
   vector<int> umerVector;
   vector< vector<int> > res;
   int count = len - w + 1;
-  #pragma omp parallel for num_threads(24)
   for (int i = 0; i < count; i++) {
     //cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
