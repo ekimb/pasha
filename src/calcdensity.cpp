@@ -107,7 +107,6 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
  vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
-  omp_set_dynamic(0);
   vector<int> minPosVector;
   vector<int> umerVector;
   vector< vector<int> > res;
