@@ -31,8 +31,8 @@ class PASHA {
         //byte** Dexp;
         //byte** Dval;
         unsigned int ALPHABET_SIZE;
-        double edgeCount;
-        double edgeNum;
+        unsigned int edgeCount;
+        unsigned int edgeNum;
         unsigned int k;
         unsigned int l;
         unsigned int h;

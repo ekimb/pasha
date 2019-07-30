@@ -37,72 +37,81 @@ string findTestKmer(char* window, const int k, int pos) {
 char* genWindow (char* seq, const int k, const int w, int count, const int len) {
   int foo = 0;
   char* window;
-  if ((count+1)*w > len) {
-    window = new char[len-(count*w)];
-    for (int i = 0; i < len-(count*w); i++) {
-      window[i] = seq[i + count*w];
-      cout << window[i];
-      foo++;
-    }
+  window = new char[w];
+  for (int i = 0; i < w; i++) {
+    window[i] = seq[i + count];
+    //cout << window[i];
+    foo++;
   }
-  else {
-    window = new char[w];
-    for (int i = 0; i < w; i++) {
-
-        window[i] = seq[i + count*w];
-        cout << window[i];
-        foo++;
-    }
-  }
-  cout << endl;
-  cout << foo << endl;
+  //cout << endl;
+  //cout << foo << endl;
   return window;
 }
-string findMin (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
+int findMin (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
   unordered_set<string>:: iterator check;
   string min = "Z";
-  if ((count+1)*w > len) {
-    for (int pos = 0; pos <= len-(count*w) - k + 1; pos++) {
-      string testKmer = findTestKmer(window, k, pos);
-      //cout << testKmer << pos << endl;
-      if (min > testKmer) min = testKmer;
+  int minPos;
+  for (int pos = 0; pos < w - k + 1; pos++) {
+    string testKmer = findTestKmer(window, k, pos);
+    //cout << "Testing " << testKmer << endl;
+    check = UHS.find(testKmer);
+    if (check != UHS.end()) {
+      //cout << "kmer in UHS" << endl;
+      if (min > testKmer) {
+        min = testKmer;
+        minPos = pos;
+      }
+    }
 
-    }
   }
-  else {
-    for (int pos = 0; pos < w - k + 1; pos++) {
-      string testKmer = findTestKmer(window, k, pos);
-      if (min > testKmer) min = testKmer; 
-      check = UHS.find(testKmer);
-      if (check != UHS.end()) {
-        cout << "kmer in UHS" << endl;
-        if (testKmer == min) {
-          cout << "kmer both minimizer and in UHS" << endl;
-        }
-        else cout << "kmer in UHS but not minimizer" << endl;
-      } 
-      //cout << testKmer << pos << endl;
-      
-    }
-  }
-  if (min.length() < k) {
-    cout << "No minimizer" << endl;
-    return "";
-  }
-  //cout << min << endl;
-  return min;
+  //cout << "Min: " << min << " in position: " << minPos+count << endl;
+  return minPos+count;
 
 }
-void findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
+int findUmer (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
+  unordered_set<string>:: iterator check;
+  int umerCount = 0;
+  for (int pos = 0; pos < w - k + 1; pos++) {
+    string testKmer = findTestKmer(window, k, pos);
+    //cout << "Testing " << testKmer << endl;
+    check = UHS.find(testKmer);
+    if (check != UHS.end()) {
+      umerCount++;
+    }
+  }
+  //cout << "Universal k-mer count: " << umerCount << endl;
+  return umerCount;
 
-  int count = (len / w) + 1;
+}
+double calcSparse(vector<int> umerVector, int count) {
+  int sparseCount = 0;
+  for (int i = 0; i < umerVector.size(); i++) {
+    if (umerVector[i] == 1) sparseCount++;
+  }
+  double sparsity = (double)sparseCount / (double)count;
+  return sparsity;
+}
+
+ vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
+  vector<int> minPosVector;
+  vector<int> umerVector;
+  vector< vector<int> > res;
+  int count = len - w + 1;
   for (int i = 0; i < count; i++) {
+    cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
-    string min = findMin(testWindow, k, w, i, len, UHS);
-    cout << min << "for window " << i+1 << endl;
-
+    int minPos = findMin(testWindow, k, w, i, len, UHS);
+    int umerCount = findUmer(testWindow, k, w, i, len, UHS);
+    minPosVector.push_back(minPos);
+    umerVector.push_back(umerCount);
   }
+  res.push_back(minPosVector);
+  res.push_back(umerVector);
+
+  return res;
 }
+
+
 
 int main (int argc, char* argv[]) {
   const int len = atoi(argv[1]);
@@ -111,15 +120,25 @@ int main (int argc, char* argv[]) {
   const int w = L - k + 1;
   char* seq = genRandomSeq(len);
   const char* UHSfile = argv[4];
-  cout << UHSfile << endl;
+  const char* decycfile = argv[5];
   string UHSkmer;
+  string decyckmer;
   unordered_set<string> UHS;
   ifstream fin(UHSfile);
+  ifstream fin2(decycfile);
   while (getline(fin, UHSkmer)) {
     UHS.insert(UHSkmer);
   }
-  findMinSeq(seq, k, w, len, UHS);
-  //char* testWindow = genWindow(seq, k, w, 1, len);
-  //string min = findMin(testWindow, k, w, 1, len);
+  while(getline(fin2, decyckmer)) {
+    UHS.insert(decyckmer);
+  }
+  vector<int> minPosVector = findMinSeq(seq, k, w, len, UHS)[0];
+  vector<int> umerVector = findMinSeq(seq, k, w, len, UHS)[1];
+  double sparsity = calcSparse(umerVector, len - w - 1);
+  //cout << minPosVector.size() << endl;
+  sort(minPosVector.begin(), minPosVector.end());
+  int uniqueCount = set<int>(minPosVector.begin(), minPosVector.end()).size();
+  double density = (double)uniqueCount / (len - w - k);
+  cout << "Density: " << density << " Sparsity: " << sparsity << endl;
 
 }

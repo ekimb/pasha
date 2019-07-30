@@ -25,6 +25,7 @@
         string directory;
         ofstream decyclingStream(decyclingPath);
         PASHA pasha = PASHA(k);
+        //cout << "Graph OK" << endl;
         decycling newDecycling;
         vector<int> decyclingSet = newDecycling.computeDecyclingSet(k);
         for (int i = 0; i < decyclingSet.size(); i++) {
