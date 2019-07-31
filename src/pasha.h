@@ -15,7 +15,7 @@
 #include <limits>
 #include "half.hpp"
 using namespace std;
-//using half_float::half;
+using unsigned_int = uint64_t;
 using byte = uint8_t;
 class PASHA {
     public:
@@ -30,28 +30,28 @@ class PASHA {
         float* Fprev;
         //byte** Dexp;
         //byte** Dval;
-        unsigned int ALPHABET_SIZE;
-        unsigned int edgeCount;
-        unsigned int edgeNum;
-        unsigned int k;
-        unsigned int l;
-        unsigned int h;
+        unsigned_int ALPHABET_SIZE;
+        unsigned_int edgeCount;
+        unsigned_int edgeNum;
+        unsigned_int k;
+        unsigned_int l;
+        unsigned_int h;
         double count;
-        unsigned int total;
-        unsigned int curr;
-        unsigned int vertexCount; 
-        unsigned int vertexExp;
-        unsigned int vertexExp2;
-        unsigned int vertexExp3;
-        unsigned int vertexExpMask;
-        unsigned int vertexExp_1;
+        unsigned_int total;
+        unsigned_int curr;
+        unsigned_int vertexCount; 
+        unsigned_int vertexExp;
+        unsigned_int vertexExp2;
+        unsigned_int vertexExp3;
+        unsigned_int vertexExpMask;
+        unsigned_int vertexExp_1;
         byte* edgeArray;
         byte* stageArray;
         int* topoSort;
-        static map<char, unsigned int> alphabetMap;
+        static map<char, unsigned_int> alphabetMap;
         string ALPHABET;
-        vector<unsigned int> stageVertices;
-    PASHA (unsigned int argK) {
+        vector<unsigned_int> stageVertices;
+    PASHA (unsigned_int argK) {
     /**
     Definition of a graph object. Generates a graph of order k, creates an empty
     edge index array, calculates number of edges, builds a character-index map.
@@ -60,24 +60,25 @@ class PASHA {
         ALPHABET = "ACGT";
         ALPHABET_SIZE = 4;
         k = argK;
-        edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new byte[(long int)edgeNum];
+        edgeNum = static_cast<unsigned_int>(pow(ALPHABET_SIZE, k));
+        edgeArray = new byte[static_cast<unsigned_int>(edgeNum)];
+        cout << k << ALPHABET_SIZE << edgeNum << endl;
         generateGraph(k);
-        map<char, unsigned int> alphabetMap;
-        for (unsigned int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,unsigned int>(ALPHABET[i], i));
+        map<char, unsigned_int> alphabetMap;
+        for (unsigned_int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,unsigned_int>(ALPHABET[i], i));
     }
 
-    void generateGraph(unsigned int k) {  
+    void generateGraph(unsigned_int k) {  
     /**
     Generates a complete de Bruijn graph of order k.
     @param k: Desired k-mer length (order of complete graph).
     */
-        for (unsigned int i = 0; i < edgeNum; i++) edgeArray[i] = 1;
+        for (unsigned_int i = 0; i < edgeNum; i++) edgeArray[i] = 1;
         edgeCount = edgeNum;
         vertexCount = edgeNum / ALPHABET_SIZE; 
     }
 
-    char getChar(unsigned int i) {
+    char getChar(unsigned_int i) {
     /**
     Gets alphabet character from index.
     @param i: Index of character.
@@ -86,14 +87,14 @@ class PASHA {
         return ALPHABET[i];
     }
 
-    string getLabel(unsigned int i) {
+    string getLabel(unsigned_int i) {
     /**
     Gets label of the input edge index.
     @param i: Index of edge.
     @return The label of the edge.
     */
         string finalString = "";
-        for (unsigned int j = 0; j < k; j++) {
+        for (unsigned_int j = 0; j < k; j++) {
             finalString = getChar((i % ALPHABET_SIZE)) + finalString;
             i = i / ALPHABET_SIZE;
         }
@@ -106,11 +107,11 @@ class PASHA {
     */
         vector<int> depth(vertexExp);
         int maxDepth = -1;
-        for (unsigned int i = 0; i < vertexExp; i++) {
+        for (unsigned_int i = 0; i < vertexExp; i++) {
             int maxVertDepth = -1;
-            for (unsigned int j = 0; j < ALPHABET_SIZE; j++) {
-                unsigned int edgeIndex = topoSort[i] + j * vertexExp;
-                unsigned int vertexIndex = edgeIndex / ALPHABET_SIZE;
+            for (unsigned_int j = 0; j < ALPHABET_SIZE; j++) {
+                unsigned_int edgeIndex = topoSort[i] + j * vertexExp;
+                unsigned_int vertexIndex = edgeIndex / ALPHABET_SIZE;
                 if ((depth[vertexIndex] > maxVertDepth) && (edgeArray[edgeIndex] == 1)) maxVertDepth = depth[vertexIndex];
             }
             depth[topoSort[i]] = maxVertDepth + 1;
@@ -119,7 +120,7 @@ class PASHA {
         return maxDepth;
     }
 
-    void removeEdge(unsigned int i) {
+    void removeEdge(unsigned_int i) {
     /**
     Removes an edge from the graph.
     @param i: Index of edge.
@@ -132,9 +133,9 @@ class PASHA {
     /**
     Traverses the graph in topological order.
     */
-        for (unsigned int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
+        for (unsigned_int i = 0; i < vertexExp; i++) {used[i] = false; finished[i] = false;}
         int index = 0;
-        for (unsigned int i = 0; i < vertexExp; i++) {
+        for (unsigned_int i = 0; i < vertexExp; i++) {
             if (used[i] == false) {
                 index = depthFirstSearch(index, i);
                 if (index == -1) {topoSort = NULL; return;}
@@ -143,7 +144,7 @@ class PASHA {
        // int rc[vertexExp];
         //for (int i = 0; i < vertexExp; i++) rc[i] = topoSort[vertexExp-i-1];
     }
-    int depthFirstSearch(int index, unsigned int u) {
+    int depthFirstSearch(int index, unsigned_int u) {
     /**
     Depth-first search of a given index of an edge.
     @param index: Depth of recursion, u: Index of edge.
@@ -151,7 +152,7 @@ class PASHA {
     */
         used[u] = true;
         bool cycle = false;
-        for (unsigned int v : getAdjacent(u)) {
+        for (unsigned_int v : getAdjacent(u)) {
             if (used[v] == true && finished[v] == false) cycle = true;
             if (used[v] == false) {
                 index = depthFirstSearch(index, v);
@@ -163,26 +164,26 @@ class PASHA {
         if (cycle) return -1;
         else return index + 1;
     }
-    vector<unsigned int> getAdjacent(unsigned int v) {
+    vector<unsigned_int> getAdjacent(unsigned_int v) {
     /**
     Get adjacent vertices to a given index of a vertex.
     @param v: Index of vertex.
     @return rc: Array of adjacent vertices.
     */
-        unsigned int count = 0;
-        unsigned int adjVertex[ALPHABET_SIZE];
-        for (unsigned int i = 0; i < ALPHABET_SIZE; i++) {
-            unsigned int index = v + i * vertexExp;
+        unsigned_int count = 0;
+        unsigned_int adjVertex[ALPHABET_SIZE];
+        for (unsigned_int i = 0; i < ALPHABET_SIZE; i++) {
+            unsigned_int index = v + i * vertexExp;
             if (edgeArray[index] == 1) adjVertex[count++] = index / ALPHABET_SIZE;
         }
-        vector<unsigned int> rc(count);
-        for (unsigned int i = 0; i < count; i++) {
+        vector<unsigned_int> rc(count);
+        for (unsigned_int i = 0; i < count; i++) {
             rc[i] = adjVertex[i];
         }
         return rc;
     }
 
-    unsigned int HittingRandomParallel(unsigned int L, const char *hittingPath, unsigned int threads) {
+    unsigned_int HittingRandomParallel(unsigned_int L, const char *hittingPath, unsigned_int threads) {
     /**
     Performs hitting set calculations with parallelization
     and with randomization, counting L-k+1-long paths.
@@ -204,18 +205,18 @@ class PASHA {
         cout << "Alpha: " << 1/alpha << endl;
         cout << "Delta: " << delta << endl;
         cout << "Epsilon: " << epsilon << endl;
-        unsigned int i;
-        unsigned int j;
-        hittingNumArray = new double[(unsigned int)edgeNum];
-        stageArray = new byte[(unsigned int)edgeNum];
+        unsigned_int i;
+        unsigned_int j;
+        hittingNumArray = new double[(unsigned_int)edgeNum];
+        stageArray = new byte[(unsigned_int)edgeNum];
         used = new byte[vertexExp];
         finished = new byte[vertexExp];
-        pick = new byte[(unsigned int)edgeNum];
+        pick = new byte[(unsigned_int)edgeNum];
         topoSort = new int[vertexExp];
         D = new float*[l + 1];
         //Dexp = new byte*[l + 1];
        //float* Dpool = new float[(l+1)* vertexExp];
-        for(unsigned int i = 0; i < l+1; i++) {D[i] = new float[vertexExp];}
+        for(unsigned_int i = 0; i < l+1; i++) {D[i] = new float[vertexExp];}
         //hittingStream.open(hittingFile); 
         Fcurr = new float[vertexExp];
         Fprev = new float[vertexExp];
@@ -228,13 +229,13 @@ class PASHA {
         double prob = delta/(double)l;
         while (h > 0) {
             total = 0;
-            unsigned int hittingCountStage = 0;
+            unsigned_int hittingCountStage = 0;
             double pathCountStage = 0;
             calculatePaths(l, threads);
             if (calculateHittingNumberParallel(l, true, threads) < 0) break;
             stageVertices = pushBackVector();
             #pragma omp parallel for num_threads(threads)
-            for (unsigned int it = 0; it < stageVertices.size(); it++) {
+            for (unsigned_int it = 0; it < stageVertices.size(); it++) {
                 i = stageVertices[it];
                 #pragma omp critical
                 if ((pick[i] == false) && (hittingNumArray[i] > (pow(delta, 3) * total))) {
@@ -245,8 +246,8 @@ class PASHA {
                 }
             }
             #pragma omp parallel for collapse (2) num_threads(threads) 
-            for (unsigned int it = 0; it < stageVertices.size(); it++) {
-                for (unsigned int jt = 0; jt < stageVertices.size(); jt++) {
+            for (unsigned_int it = 0; it < stageVertices.size(); it++) {
+                for (unsigned_int jt = 0; jt < stageVertices.size(); jt++) {
                     i = stageVertices[it];
                     #pragma omp critical
                     if (pick[i] == false) {
@@ -272,7 +273,7 @@ class PASHA {
             hittingCount += hittingCountStage;
             #pragma omp barrier
             if (pathCountStage >= hittingCountStage * pow((1.0 + epsilon), h) * (1 - 4*delta - 2*epsilon)) {
-                for (unsigned int it = 0; it < stageVertices.size(); it++) {
+                for (unsigned_int it = 0; it < stageVertices.size(); it++) {
                     i = stageVertices[it];
                     if (pick[i] == true) {
                         removeEdge(i);
@@ -300,7 +301,7 @@ sequence length, counting paths of length L-k+1.
        // for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         //hittingNumArray[i] = hittingNum;
     //}
-    int calculateHittingNumberParallel(unsigned int L, bool random, unsigned int threads) {
+    int calculateHittingNumberParallel(unsigned_int L, bool random, unsigned_int threads) {
 /**
 Calculates hitting number of all edges, counting paths of length L-k+1, in parallel.
 @param L: Sequence length.
@@ -309,9 +310,9 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         omp_set_dynamic(0);
         double maxHittingNum = 0;
         int imaxHittingNum = -1;
-        unsigned int count = 0;
+        unsigned_int count = 0;
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
+        for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
           //  calculateForEach(i, L);
             if (random == true) {
                 if (((hittingNumArray[i]) >= pow((1.0+epsilon), h-1)) && ((hittingNumArray[i]) <= pow((1.0+epsilon), h))) {
@@ -326,7 +327,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 }   
             }
         }
-        for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
+        for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
             if ((hittingNumArray[i])*edgeArray[i] > maxHittingNum) {
                 maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;
                 //cout << maxHittingNum << endl;
@@ -335,7 +336,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         return imaxHittingNum;
     }
 
-    int calculatePaths(unsigned int L, unsigned int threads) {
+    int calculatePaths(unsigned_int L, unsigned_int threads) {
     /**
     Calculates number of L-k+1 long paths for all vertices.
     @param L: Sequence length.
@@ -353,10 +354,10 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
        // Fval(res) = [Fval1 >> (Fexp - Fexp1)] + [Fval2 >> (Fexp - Fexp2)] + [Fval3 >> (Fexp - Fexp3)] + [Fval4 >> (Fexp - Fexp4)]
 
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
-        for (unsigned int j = 1; j <= L; j++) {
+        for (unsigned_int i = 0; i < vertexExp; i++) {D[0][i] = 1.4e-45; Fprev[i] = 1.4e-45;}
+        for (unsigned_int j = 1; j <= L; j++) {
             #pragma omp parallel for num_threads(threads)
-            for (unsigned int i = 0; i < vertexExp; i++) {
+            for (unsigned_int i = 0; i < vertexExp; i++) {
                 //uint8_t r1;
                 //uint8_t r2;
                 //uint8_t r3;
@@ -375,17 +376,17 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                 //if ((float)(Dval[j][i] * pow(2, Dexp[j][i])) > maxD) maxD = ((float)Dval[j][i] * pow(2, Dexp[j][i])); 
             }
             //if (maxD > std::numeric_limits<half>::max()/4) {
-             //   for (unsigned int i = 0; i < vertexExp; i++) D[j][i] = D[j][i] * 0.5;
+             //   for (unsigned_int i = 0; i < vertexExp; i++) D[j][i] = D[j][i] * 0.5;
             //}
 
 
         }
         #pragma omp parallel for num_threads(threads)
-        for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) hittingNumArray[i] = 0;
+        for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) hittingNumArray[i] = 0;
         while (curr <= L) {
             #pragma omp parallel for num_threads(threads)
-            for (unsigned int i = 0; i < vertexExp; i++) {
-                unsigned int index = (i * 4);
+            for (unsigned_int i = 0; i < vertexExp; i++) {
+                unsigned_int index = (i * 4);
                 Fcurr[i] = (edgeArray[index]*Fprev[index & vertexExpMask] + edgeArray[index + 1]*Fprev[(index + 1) & vertexExpMask] + edgeArray[index + 2]*Fprev[(index + 2) & vertexExpMask] + edgeArray[index + 3]*Fprev[(index + 3) & vertexExpMask]);
                 //cout << "Fexp: " << Fexp[i] << endl;
                 //Fval[i] = (Fprev[index & vertexExpMask] >> (Fexp[i] - Fexp[index & vertexExpMask])) + (Fprev[(index+1) & vertexExpMask] >> (Fexp[i] - Fexp[(index+1) & vertexExpMask])) + (Fprev[(index+2) & vertexExpMask] >> (Fexp[i] - Fexp[(index+2) & vertexExpMask])) + (Fprev[(index+3) & vertexExpMask] >> (Fexp[i] - Fexp[(index+3) & vertexExpMask]));
@@ -397,14 +398,14 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
                //cout << Fval[i] << endl;
             }
             #pragma omp parallel for num_threads(threads)
-            for (unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
+            for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
                 //cout << Fprev[i % vertexExp] << " " << ((float)(Dval[(L-curr)][i / ALPHABET_SIZE] * pow(2, Dexp[(L-curr)][i / ALPHABET_SIZE]))) << endl;
                 hittingNumArray[i] += (Fprev[i % vertexExp]/1.4e-45) * (D[(L-curr)][i / ALPHABET_SIZE]/1.4e-45);
                 //cout << hittingNumArray[i] << endl;
                 if (edgeArray[i] == 0) hittingNumArray[i] = 0;
             }
             #pragma omp parallel for num_threads(threads)
-            for (unsigned int i = 0; i < vertexExp; i++) Fprev[i] = Fcurr[i];
+            for (unsigned_int i = 0; i < vertexExp; i++) Fprev[i] = Fcurr[i];
             curr++;
             //cout << curr << endl;
         }
@@ -419,9 +420,9 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
     */
         return (int)(log(x) / log(base));
     }
-    vector<unsigned int> pushBackVector() {
-        vector<unsigned int> stageVertices;
-        for(unsigned int i = 0; i < (unsigned int)edgeNum; i++) {
+    vector<unsigned_int> pushBackVector() {
+        vector<unsigned_int> stageVertices;
+        for(unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
             if (stageArray[i] == 1) stageVertices.push_back(i);
         }
         return stageVertices;

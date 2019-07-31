@@ -14,9 +14,9 @@
         struct timespec start, finish;
         double elapsed;
         size_t pos;
-        unsigned int k = stoi(argv[1], &pos);
-        unsigned int L = stoi(argv[2], &pos);
-        unsigned int threads = stoi(argv[3], &pos);
+        unsigned_int k = stoi(argv[1], &pos);
+        unsigned_int L = stoi(argv[2], &pos);
+        unsigned_int threads = stoi(argv[3], &pos);
         const char *decyclingPath = argv[4];
         const char *hittingPath = argv[5];
         string decyclingFile;
@@ -25,20 +25,23 @@
         string directory;
         ofstream decyclingStream(decyclingPath);
         PASHA pasha = PASHA(k);
-        //cout << "Graph OK" << endl;
+        cout << "Graph OK" << endl;
         decycling newDecycling;
         vector<unsigned int> decyclingSet = newDecycling.computeDecyclingSet(k);
-        for (unsigned int i = 0; i < decyclingSet.size(); i++) {
+        cout << "Decycling max size: " << decyclingSet.max_size() << "Decycling size: " << decyclingSet.size() << endl;
+        for (unsigned_int i = 0; i < decyclingSet.size(); i++) {
+            cout << "Removing decycling edge " << decyclingSet[i] << endl;
             string label = pasha.getLabel(decyclingSet[i]);
+            cout << label << " Index: " << decyclingSet[i] << endl;
             pasha.removeEdge(decyclingSet[i]);
             //cout << label << endl;
             decyclingStream << label << "\n";
         }
-        unsigned int decyclingSize = decyclingSet.size();
+        unsigned_int decyclingSize = decyclingSet.size();
         cout << "Decycling set size: " << decyclingSize << endl;
         decyclingStream.close();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        unsigned int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads);
+        unsigned_int hittingSize = pasha.HittingRandomParallel(L, hittingPath, threads);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
