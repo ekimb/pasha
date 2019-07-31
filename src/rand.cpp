@@ -27,13 +27,14 @@
         PASHA pasha = PASHA(k);
         //cout << "Graph OK" << endl;
         decycling newDecycling;
-        vector<int> decyclingSet = newDecycling.computeDecyclingSet(k);
-        for (int i = 0; i < decyclingSet.size(); i++) {
+        vector<unsigned int> decyclingSet = newDecycling.computeDecyclingSet(k);
+        for (unsigned int i = 0; i < decyclingSet.size(); i++) {
             string label = pasha.getLabel(decyclingSet[i]);
             pasha.removeEdge(decyclingSet[i]);
+            //cout << label << endl;
             decyclingStream << label << "\n";
         }
-        int decyclingSize = decyclingSet.size();
+        unsigned int decyclingSize = decyclingSet.size();
         cout << "Decycling set size: " << decyclingSize << endl;
         decyclingStream.close();
         clock_gettime(CLOCK_MONOTONIC, &start);

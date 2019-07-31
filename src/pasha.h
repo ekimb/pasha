@@ -61,7 +61,7 @@ class PASHA {
         ALPHABET_SIZE = 4;
         k = argK;
         edgeNum = pow(ALPHABET_SIZE, k);
-        edgeArray = new byte[(unsigned int)edgeNum];
+        edgeArray = new byte[(long int)edgeNum];
         generateGraph(k);
         map<char, unsigned int> alphabetMap;
         for (unsigned int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,unsigned int>(ALPHABET[i], i));
