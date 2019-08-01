@@ -24,7 +24,7 @@
         ofstream decyclingStream(decyclingPath);
         PDOCKS pdocks = PDOCKS(k);
         decycling newDecycling;
-        vector<int> decyclingSet = newDecycling.computeDecyclingSet(k);
+        vector<unsigned int> decyclingSet = newDecycling.computeDecyclingSet(k);
         for (int i = 0; i < decyclingSet.size(); i++) {
             string label = pdocks.getLabel(decyclingSet[i]);
             pdocks.removeEdge(decyclingSet[i]);
