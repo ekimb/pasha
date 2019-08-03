@@ -67,10 +67,10 @@ int findMin (char* window, const int k, const int w, int count, const int len, u
   int minPos;
   for (int pos = 0; pos < w - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
-    //cout << "Testing " << testKmer << endl;
+    cout << "Testing " << testKmer << endl;
     check = UHS.find(testKmer);
     if (check != UHS.end()) {
-      //cout << "kmer in UHS" << endl;
+      cout << "kmer in UHS" << endl;
       if (min > testKmer) {
         min = testKmer;
         minPos = pos;
@@ -78,7 +78,7 @@ int findMin (char* window, const int k, const int w, int count, const int len, u
     }
 
   }
-  //cout << "Min: " << min << " in position: " << minPos+count << endl;
+  cout << "Min: " << min << " in position: " << minPos+count << endl;
   return minPos+count;
 
 }
@@ -112,7 +112,7 @@ double calcSparse(vector<int> umerVector, int count) {
   vector< vector<int> > res;
   int count = len - w + 1;
   for (int i = 0; i < count; i++) {
-    //cout << "Window " << i+1 << endl;
+    cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
     int minPos = findMin(testWindow, k, w, i, len, UHS);
     int umerCount = findUmer(testWindow, k, w, i, len, UHS);
