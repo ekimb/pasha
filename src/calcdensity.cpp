@@ -26,6 +26,7 @@
   using byte = uint8_t;
 
 char* genRandomSeq(const int len) {
+    srand(time(0));
     char* seq = new char[len];
     static const char alphabet[] =
         "A"
@@ -36,6 +37,7 @@ char* genRandomSeq(const int len) {
     for (int i = 0; i < len; ++i) {
         seq[i] = alphabet[rand() % (sizeof(alphabet) - 1)];
         //cout << seq[i] << endl;
+
     }
     return seq;
 }
@@ -94,7 +96,8 @@ vector<int> findMin (char* window, const int k, const int w, int count, const in
     }
 
   }
-  cout << "Min: " << min << " in position: " << minPos+count << endl;
+  //cout << "Min: " << min << " in position: " << minPos+count << endl;
+  //if (UHScount == 1) cout << "UHS count: " << UHScount << endl;
   vector<int> res;
   res.push_back(minPos+count);
   res.push_back(UHScount);
@@ -133,7 +136,7 @@ double calcSparse(vector<int> umerVector, int count) {
   vector< vector<int> > res2;
   int count = len - w + 1;
   for (int i = 0; i < count; i++) {
-    cout << "Window " << i+1 << endl;
+    //cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
     res = findMin(testWindow, k, w, i, len, UHS);
     minPosVector.push_back(res[0]);
@@ -147,10 +150,15 @@ double calcSparse(vector<int> umerVector, int count) {
 
 int main (int argc, char* argv[]) {
   const int len = atoi(argv[1]);
+
   const int k = atoi(argv[2]);
-  const int L = atoi(argv[3]);
-  const int w = L - k + 1;
+  const int w = atoi(argv[3]);
+  //const char* seqFile = argv[1];
+  //char* seq;
+  //ifstream dbg(seqFile);
+  //while (getline(dbg, dbgstr)) seq = dbgstr;
   char* seq = genRandomSeq(len);
+  //cout << seq << endl;
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
