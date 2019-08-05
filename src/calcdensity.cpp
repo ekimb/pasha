@@ -40,6 +40,19 @@ char* genRandomSeq(const int len) {
     return seq;
 }
 
+int getIdx(string kmer) {
+  int idx = 0;
+  for (int i = 0; i < kmer.length(); i++) {
+    int base;
+    if (kmer[i] == 'A') base = 0;
+    if (kmer[i] == 'C') base = 1;
+    if (kmer[i] == 'G') base = 2;
+    if (kmer[i] == 'T') base = 3;
+    idx += pow(4, kmer.length()-i-1) * base;
+  }
+  return idx;
+}
+
 string findTestKmer(char* window, const int k, int pos) {
   string kmer = "";
   for(int i = 0; i < k; i++) {
@@ -62,19 +75,19 @@ char* genWindow (char* seq, const int k, const int w, int count, const int len) 
   //cout << foo << endl;
   return window;
 }
-vector<int> findMin (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
+vector<int> findMin (char* window, const int k, const int w, int count, const int len, byte* UHS) {
   unordered_set<string>:: iterator check;
-  string min = "Z";
+  string min = "TTTTTTTTTTTTTTTTTTT";
   int minPos = 0;
   int UHScount = 0;
   for (int pos = 0; pos < w - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
     //cout << "Testing " << testKmer << endl;
-    check = UHS.find(testKmer);
-    if (check != UHS.end()) {
+    int idx = getIdx(testKmer);
+    if (UHS[idx] == 1) {
       //cout << "kmer in UHS" << endl;
       UHScount++;
-      if (min > testKmer) {
+      if (getIdx(min) > getIdx(testKmer)) {
         min = testKmer;
         minPos = pos;
       }
@@ -88,14 +101,14 @@ vector<int> findMin (char* window, const int k, const int w, int count, const in
   return res;
 
 }
-int findUmer (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
+int findUmer (char* window, const int k, const int w, int count, const int len, byte* UHS) {
   unordered_set<string>:: iterator check;
   int umerCount = 0;
   for (int pos = 0; pos < w - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
+    int idx = getIdx(testKmer);
     //cout << "Testing " << testKmer << endl;
-    check = UHS.find(testKmer);
-    if (check != UHS.end()) {
+    if (UHS[idx] == 1) {
       umerCount++;
     }
   }
@@ -112,7 +125,7 @@ double calcSparse(vector<int> umerVector, int count) {
   return sparsity;
 }
 
- vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
+ vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, byte* UHS) {
 
   vector<int> minPosVector;
   vector<int> umerVector;
@@ -132,8 +145,6 @@ double calcSparse(vector<int> umerVector, int count) {
   return res2;
 }
 
-
-
 int main (int argc, char* argv[]) {
   const int len = atoi(argv[1]);
   const int k = atoi(argv[2]);
@@ -143,26 +154,23 @@ int main (int argc, char* argv[]) {
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
-  //byte* edgeArray = new byte[static_cast<unsigned int>(edgeNum)];
+  byte* UHS = new byte[static_cast<unsigned int>(edgeNum)];
+  for (int i = 0; i < edgeNum; i++) UHS[i] = 0;
   PDOCKS pdocks = PDOCKS(k);
   string UHSkmer;
   string decyckmer;
-  unordered_set<string> UHS;
   ifstream fin(UHSfile);
   ifstream fin2(decycfile);
   unordered_set<string>:: iterator check;
   while (getline(fin, UHSkmer)) {
-    UHS.insert(UHSkmer);
+    int idx = getIdx(UHSkmer);
+    UHS[idx] = 1;
   }
   while(getline(fin2, decyckmer)) {
-    UHS.insert(decyckmer);
+    int idx = getIdx(decyckmer);
+    UHS[idx] = 1;
   }
-  for (int i = 0; i < edgeNum; i++) {
-    check = UHS.find(pdocks.getLabel(i));
-    if (check != UHS.end()) {
-      pdocks.edgeArray[i] = 1;
-    }
-  }
+  cout << "UHS complete" << endl;
   vector< vector <int> > resVector = findMinSeq(seq, k, w, len, UHS);
   vector<int> minPosVector = resVector[0];
   vector<int> umerVector = resVector[1];
