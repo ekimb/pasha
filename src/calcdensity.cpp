@@ -23,6 +23,7 @@
   #include <omp.h>
   #include <limits>
   #include "half.hpp"
+  using byte = uint8_t;
 
 char* genRandomSeq(const int len) {
     char* seq = new char[len];
@@ -61,16 +62,18 @@ char* genWindow (char* seq, const int k, const int w, int count, const int len) 
   //cout << foo << endl;
   return window;
 }
-int findMin (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
+vector<int> findMin (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
   unordered_set<string>:: iterator check;
   string min = "Z";
-  int minPos;
+  int minPos = 0;
+  int UHScount = 0;
   for (int pos = 0; pos < w - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
-    cout << "Testing " << testKmer << endl;
+    //cout << "Testing " << testKmer << endl;
     check = UHS.find(testKmer);
     if (check != UHS.end()) {
-      cout << "kmer in UHS" << endl;
+      //cout << "kmer in UHS" << endl;
+      UHScount++;
       if (min > testKmer) {
         min = testKmer;
         minPos = pos;
@@ -79,7 +82,10 @@ int findMin (char* window, const int k, const int w, int count, const int len, u
 
   }
   cout << "Min: " << min << " in position: " << minPos+count << endl;
-  return minPos+count;
+  vector<int> res;
+  res.push_back(minPos+count);
+  res.push_back(UHScount);
+  return res;
 
 }
 int findUmer (char* window, const int k, const int w, int count, const int len, unordered_set<string> UHS) {
@@ -107,22 +113,23 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
  vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, unordered_set<string> UHS) {
+
   vector<int> minPosVector;
   vector<int> umerVector;
-  vector< vector<int> > res;
+  vector<int> res;
+  vector< vector<int> > res2;
   int count = len - w + 1;
   for (int i = 0; i < count; i++) {
     cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, w, i, len);
-    int minPos = findMin(testWindow, k, w, i, len, UHS);
-    int umerCount = findUmer(testWindow, k, w, i, len, UHS);
-    minPosVector.push_back(minPos);
-    umerVector.push_back(umerCount);
+    res = findMin(testWindow, k, w, i, len, UHS);
+    minPosVector.push_back(res[0]);
+    umerVector.push_back(res[1]);
   }
-  res.push_back(minPosVector);
-  res.push_back(umerVector);
+  res2.push_back(minPosVector);
+  res2.push_back(umerVector);
 
-  return res;
+  return res2;
 }
 
 
@@ -135,16 +142,26 @@ int main (int argc, char* argv[]) {
   char* seq = genRandomSeq(len);
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
+  unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
+  //byte* edgeArray = new byte[static_cast<unsigned int>(edgeNum)];
+  PDOCKS pdocks = PDOCKS(k);
   string UHSkmer;
   string decyckmer;
   unordered_set<string> UHS;
   ifstream fin(UHSfile);
   ifstream fin2(decycfile);
+  unordered_set<string>:: iterator check;
   while (getline(fin, UHSkmer)) {
     UHS.insert(UHSkmer);
   }
   while(getline(fin2, decyckmer)) {
     UHS.insert(decyckmer);
+  }
+  for (int i = 0; i < edgeNum; i++) {
+    check = UHS.find(pdocks.getLabel(i));
+    if (check != UHS.end()) {
+      pdocks.edgeArray[i] = 1;
+    }
   }
   vector< vector <int> > resVector = findMinSeq(seq, k, w, len, UHS);
   vector<int> minPosVector = resVector[0];

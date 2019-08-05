@@ -266,6 +266,7 @@ class PASHA {
                                 pathCountStage += hittingNumArray[j];
 
                             }
+                            else pick[i] = false;
                         }
                     }
                 }
