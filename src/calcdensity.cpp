@@ -77,12 +77,12 @@ char* genWindow (char* seq, const int k, const int w, int count, const int len) 
   //cout << foo << endl;
   return window;
 }
-vector<int> findMin (char* window, const int k, const int w, int count, const int len, byte* UHS) {
+vector<int> findMin (char* window, const int k, const int L, int count, const int len, byte* UHS) {
   unordered_set<string>:: iterator check;
   string min = "TTTTTTTTTTTTTTTTTTT";
   int minPos = 0;
   int UHScount = 0;
-  for (int pos = 0; pos < w - k + 1; pos++) {
+  for (int pos = 0; pos < L - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
     //cout << "Testing " << testKmer << endl;
     int idx = getIdx(testKmer);
@@ -96,7 +96,7 @@ vector<int> findMin (char* window, const int k, const int w, int count, const in
     }
 
   }
-  //cout << "Min: " << min << " in position: " << minPos+count << endl;
+  cout << "Min: " << min << " in position: " << minPos+count << endl;
   //if (UHScount == 1) cout << "UHS count: " << UHScount << endl;
   vector<int> res;
   res.push_back(minPos+count);
@@ -104,10 +104,10 @@ vector<int> findMin (char* window, const int k, const int w, int count, const in
   return res;
 
 }
-int findUmer (char* window, const int k, const int w, int count, const int len, byte* UHS) {
+int findUmer (char* window, const int k, const int L, int count, const int len, byte* UHS) {
   unordered_set<string>:: iterator check;
   int umerCount = 0;
-  for (int pos = 0; pos < w - k + 1; pos++) {
+  for (int pos = 0; pos < L - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
     int idx = getIdx(testKmer);
     //cout << "Testing " << testKmer << endl;
@@ -128,17 +128,17 @@ double calcSparse(vector<int> umerVector, int count) {
   return sparsity;
 }
 
- vector< vector<int> > findMinSeq(char* seq, const int k, const int w, const int len, byte* UHS) {
+ vector< vector<int> > findMinSeq(char* seq, const int k, const int L, const int len, byte* UHS) {
 
   vector<int> minPosVector;
   vector<int> umerVector;
   vector<int> res;
   vector< vector<int> > res2;
-  int count = len - w + 1;
+  int count = len - L + 1;
   for (int i = 0; i < count; i++) {
     //cout << "Window " << i+1 << endl;
-    char* testWindow = genWindow(seq, k, w, i, len);
-    res = findMin(testWindow, k, w, i, len, UHS);
+    char* testWindow = genWindow(seq, k, L, i, len);
+    res = findMin(testWindow, k, L, i, len, UHS);
     minPosVector.push_back(res[0]);
     umerVector.push_back(res[1]);
   }
@@ -149,22 +149,34 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
 int main (int argc, char* argv[]) {
-  const int len = atoi(argv[1]);
-
+  //const int len = atoi(argv[1]);
   const int k = atoi(argv[2]);
-  const int w = atoi(argv[3]);
-  //const char* seqFile = argv[1];
-  //char* seq;
-  //ifstream dbg(seqFile);
-  //while (getline(dbg, dbgstr)) seq = dbgstr;
-  char* seq = genRandomSeq(len);
+  const int L = atoi(argv[3]);
+  const int w = L - k + 1;
+  const char* seqFile = argv[1];
+  unsigned int size = (unsigned int)pow(4, k+w) + k+w - 1;
+  cout << size << endl;
+  char* seq = new char[size];
+  ifstream dbg(seqFile);
+  int i = 0;
+  cout << i << endl;
+  if (dbg.is_open()) {
+    while (!dbg.eof()) {
+      dbg >> seq[i];
+      //cout << seq[i] << endl;
+      i++;
+    } 
+  }     
+  //while (getline(dbg, dbgstr)) strcpy(seq, dbgstr.c_str());
+  //cout << seq[0] << endl;
+  //char* seq = genRandomSeq(len);
   //cout << seq << endl;
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
   byte* UHS = new byte[static_cast<unsigned int>(edgeNum)];
   for (int i = 0; i < edgeNum; i++) UHS[i] = 0;
-  PDOCKS pdocks = PDOCKS(k);
+  //PDOCKS pdocks = PDOCKS(k);
   string UHSkmer;
   string decyckmer;
   ifstream fin(UHSfile);
@@ -179,14 +191,14 @@ int main (int argc, char* argv[]) {
     UHS[idx] = 1;
   }
   cout << "UHS complete" << endl;
-  vector< vector <int> > resVector = findMinSeq(seq, k, w, len, UHS);
+  vector< vector <int> > resVector = findMinSeq(seq, k, L, size, UHS);
   vector<int> minPosVector = resVector[0];
   vector<int> umerVector = resVector[1];
-  double sparsity = calcSparse(umerVector, len - w - 1);
+  double sparsity = calcSparse(umerVector, size - L - 1);
   //cout << minPosVector.size() << endl;
   sort(minPosVector.begin(), minPosVector.end());
   int uniqueCount = set<int>(minPosVector.begin(), minPosVector.end()).size();
-  double density = (double)uniqueCount / (len - w - k);
+  double density = (double)uniqueCount / (size - w - k);
   cout << "Density: " << density << " Sparsity: " << sparsity << endl;
 
 }

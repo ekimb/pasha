@@ -197,7 +197,7 @@ class PASHA {
         l = L-k+1;
         delta = 1/(double)l;
         epsilon = (1-8*(delta))/4;
-        if (epsilon == 0) {
+        if (epsilon <= 0) {
             delta = 0.0555556;
             epsilon = 0.138889;
         }
@@ -228,6 +228,7 @@ class PASHA {
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
         while (h > 0) {
+            cout << h << endl;
             total = 0;
             unsigned_int hittingCountStage = 0;
             double pathCountStage = 0;

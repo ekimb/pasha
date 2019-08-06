@@ -28,11 +28,11 @@
         cout << "Graph OK" << endl;
         decycling newDecycling;
         vector<unsigned int> decyclingSet = newDecycling.computeDecyclingSet(k);
-        cout << "Decycling max size: " << decyclingSet.max_size() << "Decycling size: " << decyclingSet.size() << endl;
+        //cout << "Decycling max size: " << decyclingSet.max_size() << "Decycling size: " << decyclingSet.size() << endl;
         for (unsigned_int i = 0; i < decyclingSet.size(); i++) {
-            cout << "Removing decycling edge " << decyclingSet[i] << endl;
+            //cout << "Removing decycling edge " << decyclingSet[i] << endl;
             string label = pasha.getLabel(decyclingSet[i]);
-            cout << label << " Index: " << decyclingSet[i] << endl;
+            //cout << label << " Index: " << decyclingSet[i] << endl;
             pasha.removeEdge(decyclingSet[i]);
             //cout << label << endl;
             decyclingStream << label << "\n";
