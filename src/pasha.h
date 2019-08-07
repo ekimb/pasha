@@ -198,8 +198,8 @@ class PASHA {
         delta = 1/(double)l;
         epsilon = (1-8*(delta))/4;
         if (epsilon <= 0) {
-            delta = 0.0555556;
-            epsilon = 0.138889;
+            delta = 0.08333333;
+            epsilon = 0.08333333;
         }
         double alpha = 1 - 4*delta -2*epsilon;
         cout << "Alpha: " << 1/alpha << endl;

@@ -149,28 +149,28 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
 int main (int argc, char* argv[]) {
-  //const int len = atoi(argv[1]);
+  const int len = atoi(argv[1]);
   const int k = atoi(argv[2]);
   const int L = atoi(argv[3]);
   const int w = L - k + 1;
-  const char* seqFile = argv[1];
-  unsigned int size = (unsigned int)pow(4, k+w) + k+w - 1;
-  cout << size << endl;
-  char* seq = new char[size];
-  ifstream dbg(seqFile);
-  int i = 0;
-  cout << i << endl;
-  if (dbg.is_open()) {
-    while (!dbg.eof()) {
-      dbg >> seq[i];
+  //const char* seqFile = argv[1];
+  //unsigned int size = (unsigned int)pow(4, k+w) + k+w - 1;
+  //cout << size << endl;
+  //char* seq = new char[size];
+  //ifstream dbg(seqFile);
+  //int i = 0;
+  //cout << i << endl;
+  //if (dbg.is_open()) {
+  //  while (!dbg.eof()) {
+  //    dbg >> seq[i];
       //cout << seq[i] << endl;
-      i++;
-    } 
-  }     
+  //    i++;
+  //  } 
+  //}     
   //while (getline(dbg, dbgstr)) strcpy(seq, dbgstr.c_str());
   //cout << seq[0] << endl;
-  //char* seq = genRandomSeq(len);
-  //cout << seq << endl;
+  char* seq = genRandomSeq(len);
+  cout << seq << endl;
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
@@ -191,14 +191,14 @@ int main (int argc, char* argv[]) {
     UHS[idx] = 1;
   }
   cout << "UHS complete" << endl;
-  vector< vector <int> > resVector = findMinSeq(seq, k, L, size, UHS);
+  vector< vector <int> > resVector = findMinSeq(seq, k, L, len, UHS);
   vector<int> minPosVector = resVector[0];
   vector<int> umerVector = resVector[1];
-  double sparsity = calcSparse(umerVector, size - L - 1);
+  double sparsity = calcSparse(umerVector, len - L - 1);
   //cout << minPosVector.size() << endl;
   sort(minPosVector.begin(), minPosVector.end());
   int uniqueCount = set<int>(minPosVector.begin(), minPosVector.end()).size();
-  double density = (double)uniqueCount / (size - w - k);
+  double density = (double)uniqueCount / (len - w - k);
   cout << "Density: " << density << " Sparsity: " << sparsity << endl;
 
 }
