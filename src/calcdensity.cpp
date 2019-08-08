@@ -82,12 +82,13 @@ vector<int> findMin (char* window, const int k, const int L, int count, const in
   string min = "TTTTTTTTTTTTTTTTTTT";
   int minPos = 0;
   int UHScount = 0;
+  bool UHSfound = false;
   for (int pos = 0; pos < L - k + 1; pos++) {
     string testKmer = findTestKmer(window, k, pos);
     //cout << "Testing " << testKmer << endl;
     int idx = getIdx(testKmer);
     if (UHS[idx] == 1) {
-      //cout << "kmer in UHS" << endl;
+      UHSfound = true;
       UHScount++;
       if (getIdx(min) > getIdx(testKmer)) {
         min = testKmer;
@@ -170,7 +171,7 @@ int main (int argc, char* argv[]) {
   //while (getline(dbg, dbgstr)) strcpy(seq, dbgstr.c_str());
   //cout << seq[0] << endl;
   char* seq = genRandomSeq(len);
-  cout << seq << endl;
+  //cout << seq << endl;
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
@@ -190,7 +191,7 @@ int main (int argc, char* argv[]) {
     int idx = getIdx(decyckmer);
     UHS[idx] = 1;
   }
-  cout << "UHS complete" << endl;
+  //cout << "UHS complete" << endl;
   vector< vector <int> > resVector = findMinSeq(seq, k, L, len, UHS);
   vector<int> minPosVector = resVector[0];
   vector<int> umerVector = resVector[1];
