@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <omp.h>
 #include <limits>
-#include "half.hpp"
 using namespace std;
 using unsigned_int = uint64_t;
 using byte = uint8_t;
