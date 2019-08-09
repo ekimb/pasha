@@ -36,6 +36,7 @@ class PASHA {
         unsigned_int l;
         unsigned_int h;
         double count;
+        int exit;
         unsigned_int total;
         unsigned_int curr;
         unsigned_int vertexCount; 
@@ -220,7 +221,7 @@ class PASHA {
         //double* Fpool = new double[(l+1)* vertexExp];
        // for(int i = 0; i < l+1; i++, Fpool += vertexExp) F[i] = Fpool;
         calculatePaths(l, threads);
-        int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
+        unsigned_int imaxHittingNum = calculateHittingNumberParallel(l, false, threads);
         cout << "Max hitting number: " << hittingNumArray[imaxHittingNum] << endl;
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
@@ -230,7 +231,8 @@ class PASHA {
             unsigned_int hittingCountStage = 0;
             double pathCountStage = 0;
             calculatePaths(l, threads);
-            if (calculateHittingNumberParallel(l, true, threads) < 0) break;
+            imaxHittingNum = calculateHittingNumberParallel(l, true, threads);
+            if (exit == -1) break;
             stageVertices = pushBackVector();
             #pragma omp parallel for num_threads(threads)
             for (unsigned_int it = 0; it < stageVertices.size(); it++) {
@@ -300,7 +302,7 @@ sequence length, counting paths of length L-k+1.
        // for (int j = (1 - edgeArray[i]) * L; j < L; j++) hittingNum = hittingNum + F[j][i % vertexExp] * D[(L-j-1)][i / ALPHABET_SIZE];
         //hittingNumArray[i] = hittingNum;
     //}
-    int calculateHittingNumberParallel(unsigned_int L, bool random, unsigned_int threads) {
+    unsigned_int calculateHittingNumberParallel(unsigned_int L, bool random, unsigned_int threads) {
 /**
 Calculates hitting number of all edges, counting paths of length L-k+1, in parallel.
 @param L: Sequence length.
@@ -308,8 +310,9 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
 */  
         omp_set_dynamic(0);
         double maxHittingNum = 0;
-        int imaxHittingNum = -1;
+        unsigned_int imaxHittingNum = 0;
         unsigned_int count = 0;
+        exit = -1;
         #pragma omp parallel for num_threads(threads)
         for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
           //  calculateForEach(i, L);
@@ -329,7 +332,7 @@ Calculates hitting number of all edges, counting paths of length L-k+1, in paral
         for (unsigned_int i = 0; i < (unsigned_int)edgeNum; i++) {
             if ((hittingNumArray[i])*edgeArray[i] > maxHittingNum) {
                 maxHittingNum = hittingNumArray[i]; imaxHittingNum = i;
-                //cout << maxHittingNum << endl;
+                exit = 0;
             }
         }
         return imaxHittingNum;
