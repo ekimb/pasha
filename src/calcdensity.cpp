@@ -137,6 +137,10 @@ double calcSparse(vector<int> umerVector, int count) {
   vector< vector<int> > res2;
   int count = len - L + 1;
   for (int i = 0; i < count; i++) {
+    if (i == 1000000) cout << i << endl;
+    if (i == 10000000) cout << i << endl;
+    if (i == 100000000) cout << i << endl;
+    if (i == 1000000000) cout << i << endl;
     //cout << "Window " << i+1 << endl;
     char* testWindow = genWindow(seq, k, L, i, len);
     res = findMin(testWindow, k, L, i, len, UHS);
