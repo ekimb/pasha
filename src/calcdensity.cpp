@@ -97,7 +97,7 @@ vector<int> findMin (char* window, const int k, const int L, int count, const in
     }
 
   }
-  cout << "Min: " << min << " in position: " << minPos+count << endl;
+  //cout << "Min: " << min << " in position: " << minPos+count << endl;
   //if (UHScount == 1) cout << "UHS count: " << UHScount << endl;
   vector<int> res;
   res.push_back(minPos+count);
@@ -150,28 +150,36 @@ double calcSparse(vector<int> umerVector, int count) {
 }
 
 int main (int argc, char* argv[]) {
-  const int len = atoi(argv[1]);
+  //const int len = atoi(argv[1]);
   const int k = atoi(argv[2]);
   const int L = atoi(argv[3]);
   const int w = L - k + 1;
-  //const char* seqFile = argv[1];
+  const char* seqFile = argv[1];
   //unsigned int size = (unsigned int)pow(4, k+w) + k+w - 1;
   //cout << size << endl;
-  //char* seq = new char[size];
   //ifstream dbg(seqFile);
-  //int i = 0;
+  int i = 0;
   //cout << i << endl;
-  //if (dbg.is_open()) {
-  //  while (!dbg.eof()) {
-  //    dbg >> seq[i];
-      //cout << seq[i] << endl;
-  //    i++;
-  //  } 
-  //}     
+  fstream seqs(seqFile, fstream::in);
+  vector<char> seqv;
+  char base;
+  seqs.get(base);
+    while (seqs >> noskipws >> base) {
+      if(base == 'A' || base == 'C' || base == 'G' || base == 'T') {
+        seqv.push_back(base);
+        //cout << seqv[i] << endl;
+      }
+      i++;
+      seqs.get(base);
+    }      
   //while (getline(dbg, dbgstr)) strcpy(seq, dbgstr.c_str());
   //cout << seq[0] << endl;
-  char* seq = genRandomSeq(len);
+ // char* seq = genRandomSeq(len);
   //cout << seq << endl;
+  cout << seqv.size() << endl;
+  int len = seqv.size();
+  char* seq = new char[len];
+  for (int i = 0; i < len; i++) seq[i] = seqv[i];
   const char* UHSfile = argv[4];
   const char* decycfile = argv[5];
   unsigned int edgeNum = static_cast<unsigned int>(pow(4, k));
