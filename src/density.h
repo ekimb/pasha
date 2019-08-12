@@ -41,25 +41,29 @@
     uint64_t edgeNum;
     byte* UHS;
 
-    density(int argK, int argL, const char* seqFile, const char* UHSfile, const char* decycfile) {
+    density(int argK, int argL, int argLen, const char* seqFile, const char* UHSfile, const char* decycfile, bool random) {
       k = argK;
       L = argL;
+      len = argLen;
       int i = 0;
-      fstream seqs(seqFile, fstream::in);
-      vector<char> seqv;
-      char base;
-      seqs.get(base);
-      while (seqs >> noskipws >> base) {
-        if(base == 'A' || base == 'C' || base == 'G' || base == 'T') {
-          seqv.push_back(base);
-        }
-        i++;
+      if (!random) {
+        fstream seqs(seqFile, fstream::in);
+        vector<char> seqv;
+        char base;
         seqs.get(base);
-      }      
-      cout << seqv.size() << endl;
-      len = seqv.size();
-      seq = new char[len];
-      for (int i = 0; i < len; i++) seq[i] = seqv[i];
+        while (seqs >> noskipws >> base) {
+          if(base == 'A' || base == 'C' || base == 'G' || base == 'T') {
+            seqv.push_back(base);
+          }
+          i++;
+          seqs.get(base);
+        }      
+        cout << seqv.size() << endl;
+        len = seqv.size();
+        seq = new char[len];
+        for (int i = 0; i < len; i++) seq[i] = seqv[i];
+      }
+      else seq = genRandomSeq(len);
       w = L - k + 1;
       edgeNum = static_cast<uint64_t>(pow(4, k));
       UHS = new byte[edgeNum];
@@ -79,7 +83,7 @@
       }
     }
 
-    char* genRandomSeq(const int len) {
+    char* genRandomSeq(int len) {
         srand(time(0));
         char* seq = new char[len];
         static const char alphabet[] =
@@ -118,7 +122,7 @@
 
       return kmer;
     }
-    char* genWindow (char* seq, const int k, const int w, int count, const int len) {
+    char* genWindow (char* seq, const int k, const int w, int count, int len) {
       int foo = 0;
       char* window;
       window = new char[w];
@@ -131,7 +135,7 @@
       //cout << foo << endl;
       return window;
     }
-    void findMin (char* window, const int k, const int L, int count, const int len, byte* UHS) {
+    void findMin (char* window, const int k, const int L, int count, int len, byte* UHS) {
       unordered_set<string>:: iterator check;
       string min = "TTTTTTTTTTTTTTTTTTT";
       minPos = 0;
@@ -157,10 +161,10 @@
 
     }
 
-    void findMinSeq(char* seq, const int k, const int L, const int len, byte* UHS) {
+    void findMinSeq(char* seq, const int k, const int L, int len, byte* UHS) {
       sparseCount = 0;
       count = len - L + 1;
-      for (int i = 0; i < 10000000; i++) {
+      for (int i = 0; i < count; i++) {
         if (i % 1000000 == 0) cout << i/1000000 << endl;
         //if (i == 10000000) cout << i << endl;
         //if (i == 100000000) cout << i << endl;
@@ -168,7 +172,7 @@
         //cout << "Window " << i+1 << endl;
         char* testWindow = genWindow(seq, k, L, i, len);
         findMin(testWindow, k, L, i, len, UHS);
-        sparseCount += UHScount;
+        if (UHScount == 1) sparseCount += UHScount;
       }
     }
 };

@@ -226,7 +226,7 @@ class PASHA {
         h = findLog((1.0+epsilon), hittingNumArray[imaxHittingNum]);
         double prob = delta/(double)l;
         while (h > 0) {
-            cout << h << endl;
+            //cout << h << endl;
             total = 0;
             unsigned_int hittingCountStage = 0;
             double pathCountStage = 0;
