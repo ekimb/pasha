@@ -15,7 +15,7 @@ PASHA is a tool for research and still under development. It is not presented as
 
 Clone the repository to your local machine, and compile via `g++` using the commands:
 
-`cd src`
+`cd src`<br>
 `g++ -O3 -o pasha rand.cpp -fopenmp`
 
 The `-O3` or `-Ofast` flag is necessary for efficient parallelization and optimization. The `-fopenmp` flag is needed to process parallelization via OpenMP.
@@ -46,7 +46,7 @@ PASHA is freely available under the [MIT License](https://opensource.org/license
 
 If you find PASHA useful, please cite the following papers:
 
-- Ekim, B., Orenstein, Y., Berger, B. Parallel algorithms for approximating compact universal hitting sets. *bioRxiv* (2019).
+- Ekim, B., Orenstein, Y., Berger, B. A randomized parallel algorithm for efficientlyfinding near-optimal universal hitting sets. *bioRxiv* (2019).
 
 - Orenstein, Y., Pellow, D., Marçais, G., Shamir, R., Kingsford, C. Compact universal k-mer sets. *16th International Workshop on Algorithms in Bioinformatics* (2016).
 
