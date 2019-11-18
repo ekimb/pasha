@@ -46,7 +46,7 @@ PASHA is freely available under the [MIT License](https://opensource.org/license
 
 If you find PASHA useful, please cite the following papers:
 
-- Ekim, B., Berger, B., Orenstein, Y. A randomized parallel algorithm for efficientlyfinding near-optimal universal hitting sets. *bioRxiv* (2019).
+- Ekim, B., Berger, B., Orenstein, Y. A randomized parallel algorithm for efficiently finding near-optimal universal hitting sets. *bioRxiv* (2019).
 
 - Orenstein, Y., Pellow, D., Marçais, G., Shamir, R., Kingsford, C. Compact universal k-mer sets. *16th International Workshop on Algorithms in Bioinformatics* (2016).
 
