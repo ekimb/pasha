@@ -5,7 +5,7 @@
 
 **PASHA** (A randomized parallel algorithm for efficiently finding near-optimal universal hitting sets) is a tool for finding approximations for a small universal hitting set (a small set of k-mers that hits every sequence of length L). A detailed description of the functionality of PASHA, along with results in set size, running time, memory usage and CPU utilization are provided in:
 
-> Ekim, B., Orenstein, Y., Berger, B. A randomized parallel algorithm for efficiently finding near-optimal universal hitting sets. *bioRxiv* (2019).
+> Ekim, B., Berger, B., Orenstein, Y. A randomized parallel algorithm for efficiently finding near-optimal universal hitting sets. *bioRxiv* (2019).
 
 PASHA is a tool for research and still under development. It is not presented as accurate or free of any errors, and is provided "AS IS", without warranty of any kind.
 
@@ -46,7 +46,7 @@ PASHA is freely available under the [MIT License](https://opensource.org/license
 
 If you find PASHA useful, please cite the following papers:
 
-- Ekim, B., Orenstein, Y., Berger, B. A randomized parallel algorithm for efficientlyfinding near-optimal universal hitting sets. *bioRxiv* (2019).
+- Ekim, B., Berger, B., Orenstein, Y. A randomized parallel algorithm for efficientlyfinding near-optimal universal hitting sets. *bioRxiv* (2019).
 
 - Orenstein, Y., Pellow, D., Marçais, G., Shamir, R., Kingsford, C. Compact universal k-mer sets. *16th International Workshop on Algorithms in Bioinformatics* (2016).
 
