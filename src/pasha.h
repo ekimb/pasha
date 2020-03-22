@@ -111,7 +111,7 @@ class PASHA {
         for (unsigned_int j = 0; j < k; j++) {
             //cout << alphabetMap[label[j]] << endl;
             index += alphabetMap[label[j]] * pow(4, k-j-1);
-            cout << index << endl;
+            //cout << index << endl;
         }
         return index;
     }
