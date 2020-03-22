@@ -48,7 +48,7 @@ class PASHA {
         byte* edgeArray;
         byte* stageArray;
         int* topoSort;
-        static map<char, unsigned_int> alphabetMap;
+        map<char, unsigned_int> alphabetMap;
         string ALPHABET;
         vector<unsigned_int> stageVertices;
     PASHA (unsigned_int argK) {
@@ -65,7 +65,6 @@ class PASHA {
         cout << k << ALPHABET_SIZE << edgeNum << endl;
         generateGraph(k);
         map<char, unsigned_int> alphabetMap;
-        for (unsigned_int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,unsigned_int>(ALPHABET[i], i));
     }
 
     void generateGraph(unsigned_int k) {  
@@ -99,6 +98,22 @@ class PASHA {
             i = i / ALPHABET_SIZE;
         }
         return finalString;
+    }
+    unsigned_int getIndex(string label) {
+    /**
+    Gets index of the input edge label.
+    @param i: label of edge.
+    @return The index of the edge.
+    */
+        map<char, unsigned_int> alphabetMap;
+        for (unsigned_int i = 0; i < ALPHABET_SIZE; i++) alphabetMap.insert(pair<char,unsigned_int>(ALPHABET[i], i));
+        unsigned_int index = 0;
+        for (unsigned_int j = 0; j < k; j++) {
+            //cout << alphabetMap[label[j]] << endl;
+            index += alphabetMap[label[j]] * pow(4, k-j-1);
+            cout << index << endl;
+        }
+        return index;
     }
     int maxLength() {
     /**
