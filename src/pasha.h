@@ -205,6 +205,7 @@ class PASHA {
     @param L: Sequence length, hittingFile: Output file destination.
     @return hittingCount: Size of hitting set.
     */
+        srand (1);       
         omp_set_dynamic(0);
         vertexExp = pow(ALPHABET_SIZE, k-1);
         ofstream hittingStream(hittingPath);
