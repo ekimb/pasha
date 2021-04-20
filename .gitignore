@@ -1,3 +1,7 @@
+# Rust
+rust-pasha/target/
+*.uhs
+
 # Prerequisites
 *.d
 
