@@ -44,22 +44,24 @@ pub fn compute_decyc_set(uhs: &mut uhs::UHS, decycling_path: &str) -> usize {
 
 pub fn get_edge(a: &Vec<isize>, i: usize, k: usize) -> usize {
     let u = 3.415926 * 2.0 / (k as f64);
-    let mut q;
+    let mut q = 0;
     if i < k {q = k;}
     else {
         q = 1;
-        let mut s = 0.0;
-        while s >= 0.0001 {
+        while true {
+            let mut s = 0.0;
             for l in 1..k+1 {
                 s += a[l] as f64 * (((l - 1 + k - q) % k) as f64 * u).sin();
             }
+            if s < 0.0001 {break;}
             q += 1;
         } 
-        s = 0.0;
-        while s < 0.0001 && q < k+k {
+        while q < k+k {
+            let mut s = 0.0;
             for l in 1..k+1 {
                 s += a[l] as f64 * (((l - 1 + k + k - q) % k) as f64 * u).sin();
             }
+            if s >= 0.0001 {break;}
             q += 1;
         }
         if q > k {q -= k;}
