@@ -3,7 +3,7 @@ mod uhs;
 fn main() {
     println!("Hello, world!");
     let k = 8;
-    let L = 100;
+    let L = 20;
     let mut uhs = uhs::UHS::new(k);
     let decycling_path = format!("decyc{}.uhs", k);
     let additional_path = format!("add{}{}.uhs", k, L);

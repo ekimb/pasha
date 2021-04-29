@@ -102,9 +102,7 @@ impl UHS {
         self.pick = vec![0; array_size(self.edge_num)];
         self.used = vec![0; array_size(self.vertex_exp)];
         self.finished = vec![0; array_size(self.vertex_exp)];
-        println!("Initialized arrays.");
         self.topological_sort();
-        println!("Finished topological sort.");
         println!("Length of longest remaining path: {}", self.max_length());
         self.calculate_paths(threads);
         let mut stage_vertices = Vec::<usize>::new();
@@ -118,8 +116,8 @@ impl UHS {
             let mut path_count_stage = 0.0;
             self.calculate_paths(threads);
             max_index = self.find_max(&mut stage_vertices, threads, true);
-            if stage_vertices.len() == 0 {self.h -= 1;continue;}
             if self.exit == -1 {break;}
+            if stage_vertices.len() == 0 {self.h -= 1;continue;}
             for v in stage_vertices.iter() {
                 if get_bit(&mut self.pick, *v) == 0 && (self.hitting_num_array[*v] > (self.delta.powf(3.0) * self.total)) {
                     toggle_bit(&mut self.pick, *v);
@@ -144,6 +142,8 @@ impl UHS {
                         }
                     }
                 }
+            }
+            if path_count_stage >= hitting_count_stage * (1.0 + self.epsilon).powf(self.h as f64) * alpha {
                 for v in stage_vertices.iter() {
                     if get_bit(&mut self.pick, *v) == 1 {
                         self.remove_edge(*v);
@@ -165,12 +165,14 @@ impl UHS {
         let mut max_val = 0.0;
         let mut max_idx = 0;
         let mut count = 0;
+        self.exit = -1;
         for i in 0..self.edge_num {
             if get_bit(&mut self.edge_array, i) == 1 && self.hitting_num_array[i] > max_val {
                 max_val = self.hitting_num_array[i];
                 max_idx = i;
+                self.exit = 0;
             }
-            if in_stage && (self.hitting_num_array[i] >= (1.0+self.epsilon).powf(self.h as f64-1.0)) && (self.hitting_num_array[i] <= (1.0+self.epsilon).powf(self.h as f64)) {
+            if in_stage && get_bit(&mut self.edge_array, i) == 1 && (self.hitting_num_array[i] >= (1.0+self.epsilon).powf(self.h as f64-1.0)) && (self.hitting_num_array[i] <= (1.0+self.epsilon).powf(self.h as f64)) {
                 stage_vertices.push(i);
                 self.total += self.hitting_num_array[i];
                 count += 1;
@@ -185,18 +187,21 @@ impl UHS {
         self.vertex_exp3 = self.vertex_exp * 3;
         self.vertex_exp_mask = self.vertex_exp - 1;
         self.vertex_exp_1 = 4_u32.pow((self.k-2) as u32) as usize;
-        for j in 1..self.l {
+        self.D[0] = vec![1.4e-45_f64; self.vertex_exp];
+        self.F_prev = vec![1.4e-45_f64; self.vertex_exp];
+        for j in 1..self.l+1 {
             for i in 0..self.vertex_exp {
                 self.D[j][i] = get_bit(&mut self.edge_array, i) as f64*self.D[j-1][(i >> 2)] + get_bit(&mut self.edge_array, i + self.vertex_exp) as f64*self.D[j-1][((i + self.vertex_exp) >> 2)] + get_bit(&mut self.edge_array, i + self.vertex_exp2) as f64*self.D[j-1][((i + self.vertex_exp2) >> 2)] + get_bit(&mut self.edge_array, i + self.vertex_exp3) as f64*self.D[j-1][((i + self.vertex_exp3) >> 2)];
             }
         }
+        self.hitting_num_array = vec![0.0; self.edge_num];
         while self.curr <= self.l {
             for i in 0..self.vertex_exp {
                 let index = i * 4;
                 self.F_curr[i] = get_bit(&mut self.edge_array, index) as f64*self.F_prev[index & self.vertex_exp_mask] + get_bit(&mut self.edge_array, index + 1) as f64*self.F_prev[(index + 1) & self.vertex_exp_mask] + get_bit(&mut self.edge_array, index + 2) as f64*self.F_prev[(index + 2) & self.vertex_exp_mask] + get_bit(&mut self.edge_array, index + 3) as f64*self.F_prev[(index + 3) & self.vertex_exp_mask];
             }
             for i in 0..self.edge_num {
-                self.hitting_num_array[i] += self.F_prev[i % self.vertex_exp]/1.4e-45_f64 * self.D[(self.l-self.curr)][i / 4] / 1.4e-45_f64;
+                self.hitting_num_array[i] += (self.F_prev[i % self.vertex_exp]/(1.4e-45_f64)) * (self.D[(self.l-self.curr)][i / 4] / 1.4e-45_f64);
                 if get_bit(&mut self.edge_array, i) == 0 {self.hitting_num_array[i] = 0.0;}
             }
             for i in 0..self.vertex_exp {self.F_prev[i] = self.F_curr[i];}
@@ -218,7 +223,6 @@ impl UHS {
         toggle_bit(&mut self.used, u);
         let mut cycle : bool = false;
         for v in self.get_adjacent(u).iter() {
-            //println!("{} to {}", u, v);
             if get_bit(&mut self.used, *v) == 1 && get_bit(&mut self.finished, *v) == 0 {
                 cycle = true;
             }
@@ -235,7 +239,6 @@ impl UHS {
 
     pub fn topological_sort(&mut self) {
         let mut index : isize = 0;
-        println!("{} edges will be sorted.", self.edge_count);
         for i in 0..self.vertex_exp {
             if get_bit(&mut self.used, i) == 0 {
                 index = self.depth_first_search(index, i);
