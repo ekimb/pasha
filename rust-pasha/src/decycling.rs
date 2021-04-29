@@ -28,7 +28,7 @@ pub fn compute_decyc_set(uhs: &mut uhs::UHS, decycling_path: &str) -> usize {
             writeln!(&mut f, "{}", label);
         }
         i = uhs.k;
-        while i > 0 {
+        while i >= 0 {
             if a[i] != 3 {break;}
             i -= 1;
         }
@@ -43,7 +43,7 @@ pub fn compute_decyc_set(uhs: &mut uhs::UHS, decycling_path: &str) -> usize {
 }
 
 pub fn get_edge(a: &Vec<isize>, i: usize, k: usize) -> usize {
-    let u = 3.415926 * 2.0 / (k as f64);
+    let u = 3.1415926 * 2.0 / (k as f64);
     let mut q = 0;
     if i < k {q = k;}
     else {
